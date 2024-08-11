@@ -65,15 +65,6 @@ CREATE TABLE IF NOT EXISTS appointment
     CONSTRAINT appointment_doctor_fk FOREIGN KEY (doctor_id) REFERENCES staff(staff_id)
 ) ENGINE = InnoDB;
 
--- Report table (for reporting purposes, this can include more fields based on the specific report)
-CREATE TABLE IF NOT EXISTS report
-(
-    report_id      INT AUTO_INCREMENT,
-    content        TEXT,
-    created_date   DATE,
-    CONSTRAINT report_pk PRIMARY KEY (report_id)
-) ENGINE = InnoDB;
-
 -- Treatment History table (relating patients and treatments over time)
 CREATE TABLE IF NOT EXISTS treatment_history
 (
@@ -86,3 +77,5 @@ CREATE TABLE IF NOT EXISTS treatment_history
     CONSTRAINT treatment_history_patient_fk FOREIGN KEY (patient_id) REFERENCES patient(patient_id),
     CONSTRAINT treatment_history_doctor_fk FOREIGN KEY (doctor_id) REFERENCES staff(staff_id)
 ) ENGINE = InnoDB;
+
+

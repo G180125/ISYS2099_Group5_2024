@@ -1,24 +1,40 @@
 ----------------------- Procedure to view working schedule of all doctors for a given duration -----------------------
 /*
 Description:
-
+This procedure retrieves the working schedules of all doctors within a specified date and time range, and also indicates whether each doctor is busy or available during that time.
 */
 DROP PROCEDURE IF EXISTS view_all_doctor_schedules_in_duration;
 DELIMITER //
 CREATE PROCEDURE view_all_doctor_schedules_in_duration(
     IN a_start_date DATE,
     IN a_start_time TIME, 
-    IN a_end_date Date,
+    IN a_end_date DATE,
     IN a_end_time TIME
 )
 BEGIN
-SELECT *
-    FROM appointment
+    SELECT *
+        CASE 
+            WHEN EXISTS (
+                SELECT 1 
+                FROM appointment a2
+                WHERE a2.doctor_id = a.doctor_id
+                AND (
+                    (a2.appointment_date > a_start_date OR (a2.appointment_date = a_start_date AND a2.appointment_time >= a_start_time))
+                    AND
+                    (a2.appointment_date < a_end_date OR (a2.appointment_date = a_end_date AND a2.appointment_time <= a_end_time))
+                )
+            ) THEN 'Busy'
+            ELSE 'Available'
+        END AS doctor_status
+    FROM 
+        appointment a
     WHERE 
-        (appointment_date > a_start_date OR (appointment_date = a_start_date AND appointment_time >= a_start_time))
+        (a.appointment_date > a_start_date OR (a.appointment_date = a_start_date AND a.appointment_time >= a_start_time))
         AND
-        (appointment_date < a_end_date OR (appointment_date = a_end_date AND appointment_time <= a_end_time))
-    ORDER BY appointment_date, appointment_time;
+        (a.appointment_date < a_end_date OR (a.appointment_date = a_end_date AND a.appointment_time <= a_end_time))
+    ORDER BY 
+        a.appointment_date, 
+        a.appointment_time;
 END //
 DELIMITER ;
 

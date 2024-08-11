@@ -36,7 +36,6 @@ BEGIN
 END //
 DELIMITER ;
 
-
 ----------------------- Procedure to list staff by department -----------------------
 /*
 Description:
