@@ -10,6 +10,7 @@ DELIMITER //
 CREATE PROCEDURE add_new_staff (
     IN s_first_name VARCHAR(100),
     IN s_last_name VARCHAR(100),
+    IN gender ENUM('M', 'F', 'O'),
     IN s_job_type ENUM('D', 'N', 'A'),
     IN s_department_id INT,
     IN s_salary DECIMAL(10, 2),
@@ -22,6 +23,7 @@ BEGIN
     -- validate the salary
     IF s_salary <= 0 THEN
         ROLLBACK;
+        SELECT CONCAT('Salary must be a positive number.') AS message;
         LEAVE this_proc;
     END IF;
 
@@ -44,12 +46,12 @@ This stored procedure retrieves a list of all staff members belonging to a speci
 DROP PROCEDURE IF EXISTS list_staff_by_department;
 DELIMITER //
 CREATE PROCEDURE list_staff_by_department(
-    IN s_department_id INT,
+    IN s_department_id INT
 )
 BEGIN
     --  return the staff list by department
     SELECT * FROM staff 
-    WHERE department_id = s_department_id;
+    WHERE department_id = s_department_id
     ORDER BY department_id, last_name, first_name;
 END //
 DELIMITER ;
@@ -111,12 +113,14 @@ BEGIN
 
     IF authorized_manager_id != s_manager_id THEN
         ROLLBACK;
+        SELECT CONCAT('You do not have the permission to update this staff member.') AS message;
         LEAVE this_proc;
     END IF;
 
     -- Check if the salary is valid (positive value)
     IF s_salary <= 0 THEN
         ROLLBACK;
+        SELECT CONCAT('Salary must be a positive number.') AS message;
         LEAVE this_proc;
     END IF;
 
@@ -158,6 +162,7 @@ BEGIN
     -- Check if the staff ID exists
     IF (SELECT COUNT(*) FROM staff WHERE staff_id = s_staff_id) = 0 THEN
         ROLLBACK;
+        SELECT CONCAT('Found No User.') AS message;
         LEAVE this_proc;
     ELSE
         -- Lock the row to ensure it is not modified by other transactions
@@ -187,18 +192,19 @@ entries in the schedule table associated with the given staff ID, sorted by date
 DROP PROCEDURE IF EXISTS view_staff_schedule;
 DELIMITER //
 CREATE PROCEDURE view_staff_schedule(
-    IN p_staff_id INT,       -- The ID of the staff member whose schedule you want to view.       
+    IN p_staff_id INT       -- The ID of the staff member whose schedule you want to view.       
 )
 BEGIN
     -- If staff ID exists, retrieve the schedule
     SELECT *
     FROM schedule
     WHERE staff_id = p_staff_id
-    ORDER BY schedule_date, schedule_time;
+    ORDER BY schedule_date;
 END //
 DELIMITER ;
 
 ----------------------- Procedure to update staff schedule -----------------------
+
 
 
 ------------------------ Procedure to add a custom object ------------------------

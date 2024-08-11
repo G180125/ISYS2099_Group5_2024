@@ -6,35 +6,28 @@ This procedure retrieves the working schedules of all doctors within a specified
 DROP PROCEDURE IF EXISTS view_all_doctor_schedules_in_duration;
 DELIMITER //
 CREATE PROCEDURE view_all_doctor_schedules_in_duration(
-    IN a_start_date DATE,
+    IN a_date DATE,
     IN a_start_time TIME, 
-    IN a_end_date DATE,
     IN a_end_time TIME
 )
 BEGIN
-    SELECT *
-        CASE 
-            WHEN EXISTS (
-                SELECT 1 
-                FROM appointment a2
-                WHERE a2.doctor_id = a.doctor_id
-                AND (
-                    (a2.appointment_date > a_start_date OR (a2.appointment_date = a_start_date AND a2.appointment_time >= a_start_time))
-                    AND
-                    (a2.appointment_date < a_end_date OR (a2.appointment_date = a_end_date AND a2.appointment_time <= a_end_time))
-                )
-            ) THEN 'Busy'
+    -- Get all doctors who are scheduled on the specified date
+    SELECT
+        s.staff_id,
+        CONCAT(st.first_name, ' ', st.last_name) AS doctor_name,
+        CASE
+            WHEN ap.appointment_id IS NOT NULL THEN 'Busy'
+            WHEN sch.schedule_id IS NULL THEN 'Day Off'
             ELSE 'Available'
-        END AS doctor_status
-    FROM 
-        appointment a
-    WHERE 
-        (a.appointment_date > a_start_date OR (a.appointment_date = a_start_date AND a.appointment_time >= a_start_time))
-        AND
-        (a.appointment_date < a_end_date OR (a.appointment_date = a_end_date AND a.appointment_time <= a_end_time))
-    ORDER BY 
-        a.appointment_date, 
-        a.appointment_time;
+        END AS status
+    FROM
+        staff st
+    LEFT JOIN
+        schedule sch ON st.staff_id = sch.staff_id AND sch.schedule_date = a_date
+    LEFT JOIN
+        appointment ap ON sch.schedule_id = ap.schedule_id AND ap.start_time >= a_start_time AND ap.end_time <= a_end_time
+    WHERE
+        st.job_type = 'D';
 END //
 DELIMITER ;
 
@@ -50,36 +43,44 @@ CREATE PROCEDURE book_an_appointment(
 )
 this_proc:
 BEGIN
-    DECLARE v_conflict_count INT;
+    DECLARE v_schedule_id INT;
+    DECLARE v_appointment_end_time TIME;
+
+    -- Calculate appointment end time assuming a 1-hour duration (adjust as needed)
+    SET v_appointment_end_time = ADDTIME(a_appointment_time, '01:00:00');
 
     START TRANSACTION;
 
-    -- Check if the patient or doctor already has an appointment during this time
-    SELECT COUNT(*) INTO v_conflict_count
-    FROM appointment
-    WHERE 
-        (appointment_date = a_appointment_date)
-        AND (
-            -- If the new appointment start time falls within an existing appointment.
-            (a_appointment_time BETWEEN appointment_time AND ADDTIME(appointment_time, '01:00:00'))
-            OR
-            -- If the new appointment end time falls within an existing appointment.
-            (ADDTIME(a_appointment_time, '01:00:00') BETWEEN appointment_time AND ADDTIME(appointment_time, '01:00:00'))
-            OR
-            -- If an existing appointment starts between the new appointment start and end time.
-            (appointment_time BETWEEN a_appointment_time AND ADDTIME(a_appointment_time, '01:00:00'))
-        )
-        AND (patient_id = a_patient_id OR doctor_id = a_doctor_id);
+    -- Check if the doctor has a working schedule on the specified date and lock the row
+    SELECT s.schedule_id INTO v_schedule_id
+    FROM schedule s
+    WHERE s.staff_id = a_doctor_id AND s.schedule_date = a_appointment_date
+    FOR UPDATE;
 
-    -- If there's a conflict, rollback and exit
-    IF v_conflict_count > 0 THEN
+    -- If the doctor doesn't have a schedule for that day, rollback and exit
+    IF v_schedule_id IS NULL THEN
         ROLLBACK;
+        SELECT CONCAT('This doctor does not have the working schedule on ', a_appointment_date, '.') AS message;
+        LEAVE this_proc;
+    END IF;
+
+    -- Check for any appointment conflicts and lock the rows if found
+    IF EXISTS (
+        SELECT 1
+        FROM appointment a
+        WHERE a.schedule_id = v_schedule_id
+        AND a_appointment_time < a.end_time
+        AND v_appointment_end_time > a.start_time
+        FOR UPDATE
+    ) THEN
+        ROLLBACK;
+        SELECT CONCAT('This doctor is busy at ', a_appointment_time, '.' ) AS message;
         LEAVE this_proc;
     END IF;
 
     -- If no conflicts, insert the new appointment
-    INSERT INTO appointment (patient_id, doctor_id, appointment_date, appointment_time, purpose)
-    VALUES (a_patient_id, a_doctor_id, a_appointment_date, a_appointment_time, a_purpose);
+    INSERT INTO appointment (patient_id, schedule_id, start_time, end_time, purpose)
+    VALUES (a_patient_id, v_schedule_id, a_appointment_time, v_appointment_end_time, a_purpose);
 
     COMMIT;
 
@@ -88,6 +89,7 @@ BEGIN
 END //
 DELIMITER ;
 
+
 ---------------------- Procedure to cancel an appointment with doctor ----------------------
 DROP PROCEDURE IF EXISTS cancel_an_appointment;
 DELIMITER //
@@ -95,33 +97,25 @@ CREATE PROCEDURE cancel_an_appointment(
     IN a_patient_id INT,
     IN a_appointment_id INT
 )
-this_proc:
 BEGIN
-    DECLARE v_appointment_time DATETIME;
-    DECLARE v_conflict_count INT;
+    -- Check if the appointment exists for the given patient and appointment ID
+    IF EXISTS (
+        SELECT 1
+        FROM appointment
+        WHERE appointment_id = a_appointment_id AND patient_id = a_patient_id
+    ) THEN
+        -- If found, delete the appointment
+        DELETE FROM appointment
+        WHERE appointment_id = a_appointment_id AND patient_id = a_patient_id;
 
-    START TRANSACTION;
-
-    -- Check if the patient owns the appointment and if it's at least an hour away
-    SELECT COUNT(*), CONCAT(appointment_date, ' ', appointment_time) INTO v_conflict_count, v_appointment_time
-    FROM appointment
-    WHERE 
-        appointment_id = a_appointment_id 
-        AND patient_id = a_patient_id
-        AND TIMESTAMP(appointment_date, appointment_time) >= ADDTIME(NOW(), '01:00:00')
-    FOR UPDATE;
-
-    IF v_conflict_count = 0 THEN
-        -- If the appointment is not found, or is less than an hour away, rollback and exit
+        COMMIT;
+        
+        SELECT CONCAT('Appointment has been canceled.') AS message;
+    ELSE
+        -- If not found, rollback and return an error message
         ROLLBACK;
-        LEAVE this_proc;
+        SELECT CONCAT('You do not have the permission to cancel this appointment') AS message;
     END IF;
-
-    -- Delete the appointment
-    DELETE FROM appointment
-    WHERE appointment_id = a_appointment_id;
-
-    COMMIT;
 END //
 DELIMITER ;
 
