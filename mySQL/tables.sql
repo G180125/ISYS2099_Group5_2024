@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS appointment
     purpose        TEXT,
     notes_before   TEXT,
     notes_after    TEXT,
-    status         ENUM('U', 'I', 'F'), --(U)pcoming, (I)nprocess, (F)inish
+    status         ENUM('C', 'U', 'I', 'F'), --(C)ancel, (U)pcoming, (I)nprocess, (F)inish
     CONSTRAINT appointment_pk PRIMARY KEY (appointment_id),
     CONSTRAINT appointment_patient_fk FOREIGN KEY (patient_id) REFERENCES patient(patient_id),
     CONSTRAINT appointment_schedule_fk FOREIGN KEY (schedule_id) REFERENCES schedule(schedule_id)

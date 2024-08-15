@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 const { setTokenCookie, verifyToken } = require("../utils");
 const { model } = require("../models");
+const httpStatus = require("../utils/httpStatus");
 
 const authenticate = async (req, res, next) => {
   const { accessToken, refreshToken } = req.cookies;
@@ -12,7 +13,9 @@ const authenticate = async (req, res, next) => {
   try {
     // Check if there are any tokens in the cookies
     if (!refreshToken) {
-      res.status(403).send("Authentication Ivalid");
+      res
+        .status(httpStatus.FORBIDDEN().code)
+        .json({ error: httpStatus.FORBIDDEN("Authentication Ivalid").message });
     } else {
       const payload = verifyToken(
         refreshToken,
@@ -44,7 +47,9 @@ const authenticate = async (req, res, next) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("An error occurred during authentication");
+    res
+      .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+      .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
   }
 };
 

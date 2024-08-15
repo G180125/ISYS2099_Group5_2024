@@ -1,6 +1,7 @@
 require("express");
 const db = require("../models/db.js");
 const moment = require('moment'); 
+const httpStatus = require("../utils/httpStatus");
 
 const validGenders = ["female", "male", "other"];
 
@@ -11,7 +12,9 @@ const patientController = {
       res.json(results);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal server error" });
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
 
@@ -21,7 +24,9 @@ const patientController = {
       res.json(results);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal server error" });
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
 
@@ -33,16 +38,16 @@ const patientController = {
         [email],
       );
       if (results.length === 0) {
-        return res.status(404).json({
-          error: `No Patient Found with the email: ${email}`,
-          email: email,
-          role: "patient",
-        });
+        return res
+          .status(httpStatus.NOT_FOUND().code)
+          .json({ error: httpStatus.NOT_FOUND("Patient").message});
       }
       return res.json(results[0]);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal server error" });
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
 
@@ -54,16 +59,16 @@ const patientController = {
         [email],
       );
       if (results.length === 0) {
-        return res.status(404).json({
-          error: `No Patient Found with the email: ${email}`,
-          email: email,
-          role: "staff",
-        });
+        return res
+        .status(httpStatus.NOT_FOUND().code)
+        .json({ error: httpStatus.NOT_FOUND("Staff").message});
       }
       return res.json(results[0]);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal server error" });
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
 
@@ -75,12 +80,16 @@ const patientController = {
   
       // Validate DOB (not after today)
       if (newDOB && !moment(newDOB, 'YYYY-MM-DD', true).isBefore(moment())) {
-        throw new Error("The date of birth must be a valid date and not in the future");
+        return res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({ error: httpStatus.BAD_REQUEST("The date of birth must be a valid date and not in the future").message});
       }
   
       // Validate gender
       if (newGender && !validGenders.includes(newGender.toLowerCase())) {
-        throw new Error("Gender must be 'female', 'male', or 'other'");
+        return res
+        .status(httpStatus.BAD_REQUEST().code)
+        .json({ error: httpStatus.BAD_REQUEST("Gender must be 'female', 'male', or 'other'").message});
       }
   
       // Prepare update query based on provided fields
@@ -121,12 +130,16 @@ const patientController = {
           role: "patient",
         });
       } else {
-        res.status(400).json({ error: "No valid fields provided for update" });
+        res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({ error: httpStatus.BAD_REQUEST("No valid fields provided for update").message});
       }
   
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal server error" });
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
 
@@ -153,10 +166,11 @@ const patientController = {
       // Check for rollback message in the result
       const errorMessage = results[0]?.[0]?.message;
       if (errorMessage) {
-        res.status(400).json({ error: errorMessage });
+        res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({ error: httpStatus.BAD_REQUEST(errorMessage).message});
       } else {
-        res.json({
-          message: `Staff ${staffId} updated successfully`,
+        const responseData = {
           staff_id: staffId,
           manager_id: managerId || null,
           first_name: firstName,
@@ -164,48 +178,51 @@ const patientController = {
           job_type: jobType || null,
           department_id: departmentId || null,
           salary: salary || null,
-        });
+        };
+        res
+          .status(httpStatus.OK().code)
+          .json(httpStatus.OK(`Staff ${staffId} updated successfully`, responseData).data);
       }
   
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal server error" });
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
   
-  // Delete a buyer by username
   deletePatientByEmail: async (req, res) => {
     try {
       const email = req.email;
       await db.pool.query(`DELETE FROM patient WHERE email = ?`, [
         email,
       ]);
-      res.json({
-        message: `Patient ${email} deleted successfully`,
-        email: email,
-        role: "admin",
-      });
+      res
+        .status(httpStatus.OK().code)
+        .json(httpStatus.OK(`Patient member ${email} deleted successfully`, email).data);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal server error" });
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
 
-  // Delete a wh admin by username
   deleteStaffByEmail: async (req, res) => {
     try {
       const email = req.email;
       await db.pool.query(`DELETE FROM staff WHERE email = ?`, [
         email,
       ]);
-      res.json({
-        message: `Staff member ${email} deleted successfully`,
-        email: email,
-        role: "admin",
-      });
+      res
+        .status(httpStatus.OK().code)
+        .json(httpStatus.OK(`Staff member ${email} deleted successfully`, email).data);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal server error" });
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
 

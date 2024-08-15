@@ -3,11 +3,10 @@ const cookieParser = require("cookie-parser");
 const app = express();
 app.use(cookieParser());
 
-
 const { db, model } = require("../models");
-const { hashSync, genSaltSync, compareSync } = require("bcrypt");
-
+const { hashSync, genSaltSync } = require("bcrypt");
 const { generateToken, setCookie, introspect } = require("../utils");
+const httpStatus = require("../utils/httpStatus"); 
 
 // Endpoint for /register
 const register = async (req, res) => {
@@ -26,15 +25,15 @@ const register = async (req, res) => {
       (await model.getStaffByEmail(email))
     ) {
       return res
-        .status(409)
-        .json({ error: "Email already exists", email: email });
+        .status(httpStatus.CONFLICT().code)
+        .json({ error: httpStatus.CONFLICT(`Email ${email} already exists`).message });
     }
 
     if (!email || !role) {
       return res
-        .status(400)
-        .json({ error: "Please enter a email and role" });
-    } 
+        .status(httpStatus.BAD_REQUEST().code)
+        .json({ error: httpStatus.BAD_REQUEST("Please enter an email and role").message });
+    }
 
     // Hash the password
     const salt = genSaltSync(10);
@@ -49,7 +48,7 @@ const register = async (req, res) => {
     req.role = role;
     req.email = email;
 
-    return res.status(200).json({
+    return res.status(httpStatus.OK.code).json({
       message: `User ${role} created with email: ${email}`,
       email: email,
       role: role,
@@ -57,8 +56,8 @@ const register = async (req, res) => {
   } catch (err) {
     console.error("error: " + err.stack);
     return res
-      .status(500)
-      .json({ error: "Error inserting user into database" });
+      .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+      .json({ error: httpStatus.INTERNAL_SERVER_ERROR("Error inserting user into database").message });
   }
 };
 
