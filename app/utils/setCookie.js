@@ -1,4 +1,4 @@
-const generateTokens = require("./generateTokens");
+const generateTokens = require("./generateToken");
 
 const setCookie = (res, email, role) => {
   const tokens = generateTokens(email, role);

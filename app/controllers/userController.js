@@ -1,11 +1,11 @@
 require("express");
 const db = require("../models/db.js");
 const moment = require('moment'); 
-const httpStatus = require("../utils/httpStatus");
+const httpStatus = require("../utils/httpStatus.js");
 
 const validGenders = ["female", "male", "other"];
 
-const patientController = {
+const userController = {
   getAllPatients: async (req, res) => {
     try {
       const [results] = await db.pool.query(`SELECT * FROM patient`);
@@ -13,19 +13,39 @@ const patientController = {
     } catch (error) {
       console.error(error);
       res
-        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
         .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
 
   getAllStaffs: async (req, res) => {
     try {
-      const [results] = await db.pool.query(`SELECT * FROM staff`);
+      const job_type = req.query.job_type;
+      const department = req.query.department;
+      let results;
+      if(job_type & department){
+        results = await db.pool.query(
+          `SELECT * FROM staff WHERE job_type = ? AND department = ?`,
+          [job_type, department]
+        );
+      } else if (job_type){
+        results = await db.pool.query(
+          `SELECT * FROM staff WHERE job_type = ?`,
+          [job_type]
+        );
+      } else if (department){
+        results = await db.pool.query(
+          `SELECT * FROM staff WHERE department = ?`,
+          [department]
+        );
+      } else {
+        results = await db.pool.query(`SELECT * FROM staff`);
+      }
       res.json(results);
     } catch (error) {
       console.error(error);
       res
-        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
         .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
@@ -46,7 +66,7 @@ const patientController = {
     } catch (error) {
       console.error(error);
       res
-        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
         .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
@@ -67,7 +87,7 @@ const patientController = {
     } catch (error) {
       console.error(error);
       res
-        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
         .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
@@ -138,7 +158,7 @@ const patientController = {
     } catch (error) {
       console.error(error);
       res
-        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
         .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
@@ -187,7 +207,7 @@ const patientController = {
     } catch (error) {
       console.error(error);
       res
-        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
         .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
@@ -204,7 +224,7 @@ const patientController = {
     } catch (error) {
       console.error(error);
       res
-        .status(httpStatus.INTERNAL_SERVER_ERROR().code)
+        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
         .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
     }
   },
@@ -228,4 +248,4 @@ const patientController = {
 
 };
 
-module.exports = patientController;
+module.exports = userController;
