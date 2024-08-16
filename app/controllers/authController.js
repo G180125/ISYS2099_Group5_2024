@@ -1,11 +1,12 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const app = express();
-app.use(cookieParser());
-
 const { db, model } = require("../models");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
-const { generateToken, setCookie, httpStatus } = require("../utils");
+const { generateToken, setCookie } = require("../utils");
+const httpStatus = require("../utils/httpStatus");
+
+const app = express();
+app.use(cookieParser());
 
 const register = async (req, res) => {
   try {
@@ -46,7 +47,7 @@ const register = async (req, res) => {
     req.email = email;
 
     return res
-      .status(httpStatus.OK.code)
+      .status(httpStatus.OK().code)
       .json({ message: `User ${role} created with email: ${email}` });
   } catch (err) {
     console.error("error: " + err.stack);
@@ -92,11 +93,11 @@ const login = async (req, res) => {
     req.email = email;
 
     return res
-      .status(httpStatus.OK.code)
+      .status(httpStatus.OK().code)
       .json({ message: "User authenticated", tokens });
-  } catch (e) {
-    console.log(e);
-    res
+  } catch (err) {
+    console.error("error: " + err.stack);
+    return res
       .status(httpStatus.INTERNAL_SERVER_ERROR.code)
       .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
   }
@@ -143,11 +144,11 @@ const loginStaff = async (req, res) => {
     req.email = email;
 
     return res
-      .status(httpStatus.OK.code)
+      .status(httpStatus.OK().code)
       .json({ message: "User authenticated", tokens });
-  } catch (e) {
-    console.log(e);
-    res
+  } catch (err) {
+    console.error("error: " + err.stack);
+    return res
       .status(httpStatus.INTERNAL_SERVER_ERROR.code)
       .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
   }
@@ -180,11 +181,11 @@ const logout = async (req, res) => {
     });
 
     return res
-      .status(httpStatus.OK.code)
+      .status(httpStatus.OK().code)
       .json({ message: `User ${req.email} logged out` });
-  } catch (e) {
-    console.log(e);
-    res
+  } catch (err) {
+    console.error("error: " + err.stack);
+    return res
       .status(httpStatus.INTERNAL_SERVER_ERROR.code)
       .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
   }

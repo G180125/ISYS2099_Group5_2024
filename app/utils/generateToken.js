@@ -30,17 +30,17 @@ const generateToken = (email, role) => {
 
     // Store the refresh token in the database
     if (role === "admin") {
-      db.pool.query(
+      db.poolAdmin.query(
         "UPDATE staff SET refresh_token = ? WHERE email = ? AND job_type = 'A'",
         [refreshToken, email],
       );
     } else if (role === "staff"){
-      db.pool.query(
+      db.poolStaff.query(
         "UPDATE staff SET refresh_token = ? WHERE email = ? AND job_type <> 'A'",
         [refreshToken, email],
       );
     } else {
-        db.pool.query(
+        db.poolPatient.query(
             "UPDATE patient SET refresh_token = ? WHERE email = ? ",
             [refreshToken, email],
         );

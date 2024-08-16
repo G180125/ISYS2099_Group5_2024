@@ -1,6 +1,6 @@
-INSERT INTO patient (patient_id, first_name, last_name, date_of_birth, gender, allergies) 
+INSERT INTO patient (patient_id, first_name, last_name, email, password, date_of_birth, gender, allergies) 
 VALUES 
-    (1, 'Paul', 'Buck', '2010-05-20', 'M', 'Grass'),
+    (1, 'Paul', 'Buck', 'paul@gmail.com', '$2b$10$35fsU3ORgYUv6jnLrfDn3OeLwImRVDsEAzHaoKdUGSklEP85dw80S','2010-05-20', 'M', 'Grass'),
     (2, 'Claire', 'Hartman', '1976-03-17', 'F', ''),
     (3, 'Manuel', 'Leon', '1960-09-28', 'F', ''),
     (4, 'Sophia', 'Beasley', '1956-03-14', 'F', ''),

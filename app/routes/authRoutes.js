@@ -17,4 +17,4 @@ authRouter.post("/login/staff", loginStaff);
 
 authRouter.delete("/logout", authenticate, logout);
 
-module.exports = authRouter;
+module.exports = authRouter;  

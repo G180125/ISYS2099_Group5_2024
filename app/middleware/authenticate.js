@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-const { setTokenCookie, verifyToken } = require("../utils");
-const { getUserByRole } = require("../models");
+const { setCookie, introspect } = require("../utils");
+const { getUserByRole } = require("../models/models");
 const httpStatus = require("../utils/httpStatus");
 
 const authenticate = async (req, res, next) => {
@@ -15,16 +15,16 @@ const authenticate = async (req, res, next) => {
     if (!refreshToken) {
       return res
         .status(httpStatus.FORBIDDEN().code)
-        .json(httpStatus.FORBIDDEN("Authentication Invalid").data);
+        .json({ error: httpStatus.FORBIDDEN("Authentication Invalid").message });
     }
 
     // Verify refresh token
-    const payload = verifyToken(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const payload = introspect(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
     if (!payload) {
       return res
         .status(httpStatus.UNAUTHORIZED().code)
-        .json(httpStatus.UNAUTHORIZED("Invalid token").data);
+        .json({ error: httpStatus.UNAUTHORIZED("Invalid token").message });
     }
 
     console.log("\n");
@@ -36,14 +36,14 @@ const authenticate = async (req, res, next) => {
     if (!user || !user.refresh_token) {
       return res
         .status(httpStatus.FORBIDDEN().code)
-        .json(httpStatus.FORBIDDEN("Authentication Invalid").data);
+        .json({ error: httpStatus.FORBIDDEN("Authentication Invalid").message });
     }
 
     console.log("\n");
     console.log(`Auth user ${user.email} refresh token ${user.refresh_token}`);
 
     // Set new token cookies
-    setTokenCookie(res, user.email, payload.role);
+    setCookie(res, user.email, payload.role);
 
     // Attach user information to the request
     req.email = payload.email;
@@ -54,7 +54,7 @@ const authenticate = async (req, res, next) => {
     console.error(err);
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-      .json(httpStatus.INTERNAL_SERVER_ERROR.data);
+      .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
   }
 };
 

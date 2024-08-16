@@ -15,11 +15,11 @@ database.getPatient = async (email) => {
   }
 };
 
-database.insertPatient = async (email) => {
+database.insertPatient = async (email, password) => {
   try {
     const [results] = await db.poolPatient.query(
-      `INSERT INTO patient (email) VALUES (?)`,
-      [email]
+      `INSERT INTO patient (email, password) VALUES (?, ?)`,
+      [email, password]
     );
     return results.insertId;
   } catch (err) {
@@ -81,7 +81,7 @@ database.deleteStaffToken = async (email) => {
 database.getAdmin = async (email) => {
   try {
     const [results] = await db.poolAdmin.query(
-      `SELECT * FROM wh_admin WHERE email = ? AND job_type='A'`,
+      `SELECT * FROM staff WHERE email = ? AND job_type='A'`,
       [email]
     );
     return results[0];
