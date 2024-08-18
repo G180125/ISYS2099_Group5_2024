@@ -15,19 +15,6 @@ database.getPatient = async (email) => {
   }
 };
 
-database.insertPatient = async (email, password) => {
-  try {
-    const [results] = await db.poolPatient.query(
-      `INSERT INTO patient (email, password) VALUES (?, ?)`,
-      [email, password]
-    );
-    return results.insertId;
-  } catch (err) {
-    console.error("error: " + err.stack);
-    throw err;
-  }
-};
-
 database.deletePatientToken = async (email) => {
   try {
     await db.poolPatient.query(
@@ -43,7 +30,7 @@ database.deletePatientToken = async (email) => {
 database.getStaff = async (email) => {
   try {
     const [results] = await db.poolStaff.query(
-      `SELECT * FROM staff WHERE email = ?`,
+      `SELECT * FROM staff WHERE email = ? AND job_type <> 'A'`,
       [email]
     );
     return results[0];
@@ -53,16 +40,16 @@ database.getStaff = async (email) => {
   }
 };
 
-database.insertStaff = async (email, password) => {
+database.getStaffId = async (email) => {
   try {
     const [results] = await db.poolStaff.query(
-      `INSERT INTO staff (email, password) VALUES (?, ?)`,
-      [email, password]
+      `SELECT staff_id FROM staff WHERE email = ?`,
+      [email]
     );
-    return results.insertId;
-  } catch (err) {
-    console.error("error: " + err.stack);
-    throw err;
+    return results.length > 0 ? results[0].staff_id : null;
+  } catch (error) {
+    console.error('Error fetching staff ID by email:', error);
+    throw error;
   }
 };
 
@@ -85,19 +72,6 @@ database.getAdmin = async (email) => {
       [email]
     );
     return results[0];
-  } catch (err) {
-    console.error("error: " + err.stack);
-    throw err;
-  }
-};
-
-database.insertAdmin = async (email, password) => {
-  try {
-    const [results] = await db.poolAdmin.query(
-      `INSERT INTO staff (email, password, job_type) VALUES (?, ?, 'A')`,
-      [email, password]
-    );
-    return results.insertId;
   } catch (err) {
     console.error("error: " + err.stack);
     throw err;

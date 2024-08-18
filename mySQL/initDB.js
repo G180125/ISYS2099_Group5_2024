@@ -7,18 +7,40 @@ const stdin = readline.createInterface({
   output: process.stdout,
 });
 
-async function promptPassword(user) {
-  return new Promise(resolve => {
-    stdin.question(`Enter MySQL password for "${user}": `, password => {
-      resolve(password);
-    });
-  });
-}
-
 async function promptUser() {
   return new Promise(resolve => {
     stdin.question("Enter MySQL root username: ", user => {
       resolve(user);
+    });
+  });
+}
+
+async function promptPassword(user) {
+  return new Promise(resolve => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      terminal: true
+    });
+
+    // Override _writeToOutput to hide input
+    rl._writeToOutput = function _writeToOutput(stringToWrite) {
+      rl.output.write("\x1B[2K\x1B[200D" + `Enter MySQL password for "${user}": `);
+    };
+
+    // Manually display the prompt
+    rl.output.write(`Enter MySQL password for "${user}": `);
+
+    let password = '';
+    rl.input.on('keypress', (char) => {
+      if (char === '\r') { // Enter key pressed
+        rl.output.write("\x1B[2K\x1B[200D");
+        rl.close();
+        resolve(password);
+      } else {
+        password += char;
+        rl._writeToOutput('*');
+      }
     });
   });
 }
@@ -65,7 +87,7 @@ async function executeSetupScript(connection, scriptPath) {
       multipleStatements: true,
     });
 
-    console.log("Connected to MySQL database as id " + connection.threadId);
+    console.log("\nConnected to MySQL database as id " + connection.threadId);
 
     // Check if validate_password.policy exists
     const checkPolicyQuery = "SHOW VARIABLES LIKE 'validate_password.policy'";
@@ -84,7 +106,10 @@ async function executeSetupScript(connection, scriptPath) {
       scripts = [
         "mySQL/tables.sql",
         "mySQL/index.sql",
+        "mySQL/Procedure/patient_procedures.sql",
+        "mySQL/Procedure/staff_procedures.sql",
         "mySQL/app_user.sql",
+        "mySQL/insert_data.sql"
       ];
     } 
 

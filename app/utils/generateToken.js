@@ -34,6 +34,7 @@ const generateToken = (email, role) => {
         "UPDATE staff SET refresh_token = ? WHERE email = ? AND job_type = 'A'",
         [refreshToken, email],
       );
+      console.log(`admin`);
     } else if (role === "staff"){
       db.poolStaff.query(
         "UPDATE staff SET refresh_token = ? WHERE email = ? AND job_type <> 'A'",

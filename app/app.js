@@ -7,9 +7,7 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const helmet = require("helmet");
 
-const authRouter = require("./routes/authRoutes");
-const userRouter = require("./routes/userRoutes");
-const httpStatus = require("./utils/httpStatus");
+const { appointmentRoutes, authRoutes, scheduleRoutes, userRoutes } = require("./routes");
 
 const app = express();
 
@@ -41,8 +39,10 @@ app.use(
 );
 
 // Routes setup with prefix
-app.use(`${API_PREFIX}/auth`, authRouter);
-app.use(`${API_PREFIX}/user`, userRouter);
+app.use(`${API_PREFIX}/auth`, authRoutes);
+app.use(`${API_PREFIX}/user`, userRoutes);
+app.use(`${API_PREFIX}/schedule`, scheduleRoutes);
+app.use(`${API_PREFIX}/appointment`, appointmentRoutes);
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -57,10 +57,15 @@ app.get("/hospital_management/api/v1", (req, res) => {
 // Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res
-  .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-  .json(httpStatus.INTERNAL_SERVER_ERROR.data);
+  
+  // Set a default error code if it's not provided
+  const statusCode = err.code || 500;
+  
+  res.status(statusCode).json({
+    message: err.message || "Internal Server Error",
+  });
 });
+
 
 // Start the server
 app.listen(SERVER_PORT, () => {

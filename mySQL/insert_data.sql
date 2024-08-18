@@ -1,25 +1,25 @@
 INSERT INTO patient (patient_id, first_name, last_name, email, password, date_of_birth, gender, allergies) 
 VALUES 
-    (1, 'Paul', 'Buck', 'paul@gmail.com', '$2b$10$35fsU3ORgYUv6jnLrfDn3OeLwImRVDsEAzHaoKdUGSklEP85dw80S','2010-05-20', 'M', 'Grass'),
-    (2, 'Claire', 'Hartman', '1976-03-17', 'F', ''),
-    (3, 'Manuel', 'Leon', '1960-09-28', 'F', ''),
-    (4, 'Sophia', 'Beasley', '1956-03-14', 'F', ''),
-    (5, 'Rhonda', 'Sanchez', '1981-09-12', 'M', ''),
-    (6, 'Jennifer', 'Thomas', '1988-11-12', 'M', ''),
-    (7, 'Sherri', 'Austin', '1980-08-12', 'F', ''),
-    (8, 'Brian', 'Webster', '1982-04-24', 'F', 'Peanut'),
-    (9, 'Caroline', 'Rocha', '1989-03-17', 'F', ''),
-    (10, 'Annette', 'Wu', '1975-11-02', 'F', ''),
-    (11, 'Sarah', 'Coleman', '1997-08-16', 'F', ''),
-    (12, 'Alan', 'King', '1989-09-19', 'M', ''),
-    (13, 'Jessica', 'Camacho', '1969-09-12', 'F', ''),
-    (14, 'Kathy', 'Grant', '1989-02-04', 'M', ''),
-    (15, 'Janet', 'Sanchez', '1971-07-29', 'F', ''),
-    (16, 'Jesse', 'Wang', '1999-12-31', 'M', ''),
-    (17, 'Elijah', 'Calhoun', '1988-06-29', 'F', ''),
-    (18, 'Michael', 'Sawyer', '1995-12-04', 'M', ''),
-    (19, 'Angela', 'Matthews', '1997-02-07', 'M', ''),
-    (20, 'Jessica', 'Hernandez', '2003-01-30', 'M', '');
+    (1, 'Paul', 'Buck', 'paul@gmail.com', '$2b$10$lcpFllUbtVi2s9ko00mBoOBQ3d9JgvffGDTw2AMGXb2kOwHT7Y19e','2010-05-20', 'M', 'Grass'),
+    (2, 'Claire', 'Hartman', 'claire@gmail.com', '$2b$10$C2yOCLt.Phow5msDkfdp9.CkyOJaU64uaa0t7SSNHzlYVZjGIzcqi','1976-03-17', 'F', ''),
+    (3, 'Manuel', 'Leon', 'manuel@gmail.com', '$2b$10$C2yOCLt.Phow5msDkfdp9.CkyOJaU64uaa0t7SSNHzlYVZjGIzcqi','1960-09-28', 'F', ''),
+    (4, 'Sophia', 'Beasley', 'sophia@gmail.com', '$2b$10$6i6sQk17e1/hi5urchKeJOpb8zrhQhlU2x0/LVzWrDXNlDjrnfjOq','1956-03-14', 'F', ''),
+    (5, 'Rhonda', 'Sanchez', 'rhonda@gmail.com', '$2b$10$0W4VxLt8/61N8ZDglbj9y.PgR.0dnkETcbXEPUIEU9zdTY6k9Lcni','1981-09-12', 'M', ''),
+    (6, 'Jennifer', 'Thomas', 'jennifer@gmail.com', '$2b$10$BeRFj2h0yfBC/WcYd0InleBqzmyw109dHreSAWKWnOzOrb7n8P/e2', '1988-11-12', 'M', ''),
+    (7, 'Sherri', 'Austin', 'sherri@gmail.com', '$2b$10$BeRFj2h0yfBC/WcYd0InleBqzmyw109dHreSAWKWnOzOrb7n8P/e2', '1980-08-12', 'F', ''),
+    (8, 'Brian', 'Webster', 'brian@gmail.com', '$2b$10$nmzLNWhI.8lGAN6KnKFHF.v.RuxvfOlEiH52AHTGuo1yh5KGQnq5q', '1982-04-24', 'F', 'Peanut'),
+    (9, 'Caroline', 'Rocha', 'caroline@gmail.com', '$2b$10$y2pYL32ozTxQzlxT77sT7eHVs12YV9DV4lfGCj5XemMygo9mC61sm', '1989-03-17', 'F', ''),
+    (10, 'Annette', 'Wu', 'annette@gmail.com', '$2b$10$y2pYL32ozTxQzlxT77sT7eHVs12YV9DV4lfGCj5XemMygo9mC61sm','1975-11-02', 'F', ''),
+    (11, 'Sarah', 'Coleman', 'sarah@gmail.com', '$2b$10$R.Mae5ByfuYYUu44PGsHhOl8pa6f5m9cBHDtYDy5fOZ.T950hVWOK', '1997-08-16', 'F', ''),
+    (12, 'Alan', 'King', 'alan@gmail.com', '$2b$10$ZAwvoJ1pVl0tlEtsbq41..PoPW5K1VzfLPciq8eoRiCzhuZ.FD1q2', '1989-09-19', 'M', ''),
+    (13, 'Jessica', 'Camacho', 'jessica@gmail.com', '$2b$10$ZAwvoJ1pVl0tlEtsbq41..PoPW5K1VzfLPciq8eoRiCzhuZ.FD1q2','1969-09-12', 'F', ''),
+    (14, 'Kathy', 'Grant', 'kathy@gmail.com', '$2b$10$ZAwvoJ1pVl0tlEtsbq41..PoPW5K1VzfLPciq8eoRiCzhuZ.FD1q2', '1989-02-04', 'M', ''),
+    (15, 'Janet', 'Sanchez', 'janet@gmail.com', '$2b$10$ZAwvoJ1pVl0tlEtsbq41..PoPW5K1VzfLPciq8eoRiCzhuZ.FD1q2', '1971-07-29', 'F', ''),
+    (16, 'Jesse', 'Wang', 'jesse@gmail.com', '$2b$10$ZAwvoJ1pVl0tlEtsbq41..PoPW5K1VzfLPciq8eoRiCzhuZ.FD1q2','1999-12-31', 'M', ''),
+    (17, 'Elijah', 'Calhoun', 'elijah@gmail.com', '$2b$10$ZAwvoJ1pVl0tlEtsbq41..PoPW5K1VzfLPciq8eoRiCzhuZ.FD1q2', '1988-06-29', 'F', ''),
+    (18, 'Michael', 'Sawyer', 'michael@gmail.com', '$2b$10$FaCko4NmpkTQlS8b3W6BKuPpuBid8W4UOadstq/yhIm3vgI8lnaaq', '1995-12-04', 'M', ''),
+    (19, 'Angela', 'Matthews', 'angela@gmail.com', '$2b$10$uA7YnBvu8bgPp9.tFCCnyen6N9vVEpGeH9fTJ6Xl3voHTlLSt8YPW','1997-02-07', 'M', ''),
+    (20, 'Jessica', 'Hernandez', 'jessicaH@gmail.com', '$2b$10$gm6Cl/BOd.U.YhxPvYbUU.CSoDFAzov83otL6nuB6ZvLKstJxsTdO','2003-01-30', 'M', '');
 
 INSERT INTO department (department_id, department_name) 
 VALUES 
@@ -28,41 +28,41 @@ VALUES
     (3, 'Orthopedic Surgeon'),
     (4, 'Ophthalmologist');
 
-INSERT INTO staff (staff_id, first_name, last_name, gender, job_type, department_id, salary, manager_id) 
+INSERT INTO staff (staff_id, first_name, last_name, email, password, gender, job_type, department_id, salary, manager_id) 
 VALUES
-    (1, 'Eve', 'Williams', 'F', 'A', NULL, 80900, NULL),
-    (2, 'Eve', 'Brown', 'M', 'D', 1, 166600, 1),
-    (3, 'Eve', 'Wilson', 'F', 'D', 1, 162600, 2),
-    (4, 'Charlie', 'Moore', 'M', 'D', 1, 127600, 2),
-    (5, 'John', 'Brown', 'F', 'D', 1, 120300, 2),
-    (7, 'Frank', 'Johnson', 'F', 'N', 1, 58600, 2),
-    (8, 'Charlie', 'Williams', 'M', 'N', 1, 58000, 2),
-    (9, 'Alice', 'Smith', 'F', 'N', 1, 47700, 2),
-    (10, 'Grace', 'Smith', 'M', 'N', 1, 52500, 2),
-    (12, 'Diana', 'Williams', 'M', 'D', 2, 183300, 1),
-    (13, 'Diana', 'Jones', 'F', 'D', 2, 128300, 12),
-    (14, 'Hank', 'Smith', 'M', 'D', 2, 101400, 12),
-    (15, 'Diana', 'Jones', 'F', 'D', 2, 131900, 12),
-    (17, 'Grace', 'Wilson', 'F', 'N', 2, 64800, 12),
-    (18, 'Charlie', 'Wilson', 'F', 'N', 2, 52600, 12),
-    (19, 'Diana', 'Davis', 'F', 'N', 2, 40600, 12),
-    (20, 'Charlie', 'Moore', 'M', 'N', 2, 77700, 12),
-    (22, 'Grace', 'Taylor', 'F', 'D', 3, 182600, 1),
-    (23, 'Alice', 'Brown', 'M', 'D', 3, 152200, 22),
-    (24, 'John', 'Moore', 'F', 'D', 3, 187000, 22),
-    (25, 'Eve', 'Taylor', 'M', 'D', 3, 140200, 22),
-    (27, 'Frank', 'Jones', 'M', 'N', 3, 59600, 22),
-    (28, 'Frank', 'Davis', 'F', 'N', 3, 55100, 22),
-    (29, 'Grace', 'Smith', 'F', 'N', 3, 78900, 22),
-    (30, 'Jane', 'Johnson', 'M', 'N', 3, 47200, 22),
-    (32, 'Alice', 'Williams', 'F', 'D', 4, 182200, 1),
-    (33, 'Frank', 'Johnson', 'M', 'D', 4, 174400, 32),
-    (34, 'Grace', 'Johnson', 'F', 'D', 4, 151700, 32),
-    (35, 'Diana', 'Johnson', 'M', 'D', 4, 173300, 32),
-    (37, 'Eve', 'Smith', 'F', 'N', 4, 47200, 32),
-    (38, 'Jane', 'Wilson', 'M', 'N', 4, 66500, 32),
-    (39, 'John', 'Wilson', 'F', 'N', 4, 55000, 32),
-    (40, 'Bob', 'Smith', 'F', 'N', 4, 41600, 32);
+    (1, 'Eve', 'Williams', 'eve.williams@hospital.management.com', '$2b$10$lcpFllUbtVi2s9ko00mBoOBQ3d9JgvffGDTw2AMGXb2kOwHT7Y19e', 'F', 'A', NULL, 80900, NULL),
+    (2, 'Eve', 'Brown', 'eve.brown@hospital.management.com', '$2b$10$C2yOCLt.Phow5msDkfdp9.CkyOJaU64uaa0t7SSNHzlYVZjGIzcqi', 'M', 'D', 1, 166600, 1),
+    (3, 'Eve', 'Wilson', 'eve.wilson@hospital.management.com', '$2b$10$C2yOCLt.Phow5msDkfdp9.CkyOJaU64uaa0t7SSNHzlYVZjGIzcqi', 'F', 'D', 1, 162600, 2),
+    (4, 'Charlie', 'Moore', 'charlie.moore@hospital.management.com', '$2b$10$6i6sQk17e1/hi5urchKeJOpb8zrhQhlU2x0/LVzWrDXNlDjrnfjOq', 'M', 'D', 1, 127600, 2),
+    (5, 'John', 'Brown', 'john.brown@hospital.management.com', '$2b$10$0W4VxLt8/61N8ZDglbj9y.PgR.0dnkETcbXEPUIEU9zdTY6k9Lcni', 'F', 'D', 1, 120300, 2),
+    (7, 'Frank', 'Johnson', 'frank.johnson@hospital.management.com', '$2b$10$BeRFj2h0yfBC/WcYd0InleBqzmyw109dHreSAWKWnOzOrb7n8P/e2', 'F', 'N', 1, 58600, 2),
+    (8, 'Charlie', 'Williams', 'charlie.williams@hospital.management.com', '$2b$10$BeRFj2h0yfBC/WcYd0InleBqzmyw109dHreSAWKWnOzOrb7n8P/e2', 'M', 'N', 1, 58000, 2),
+    (9, 'Alice', 'Smith', 'alice.smith@hospital.management.com', '$2b$10$nmzLNWhI.8lGAN6KnKFHF.v.RuxvfOlEiH52AHTGuo1yh5KGQnq5q', 'F', 'N', 1, 47700, 2),
+    (10, 'Grace', 'Smith', 'grace.smith@hospital.management.com', '$2b$10$nmzLNWhI.8lGAN6KnKFHF.v.RuxvfOlEiH52AHTGuo1yh5KGQnq5q', 'M', 'N', 1, 52500, 2),
+    (12, 'Diana', 'Williams', 'diana.williams@hospital.management.com', '$2b$10$y2pYL32ozTxQzlxT77sT7eHVs12YV9DV4lfGCj5XemMygo9mC61sm', 'M', 'D', 2, 183300, 1),
+    (13, 'Diana', 'Jones', 'diana.jones@hospital.management.com', '$2b$10$y2pYL32ozTxQzlxT77sT7eHVs12YV9DV4lfGCj5XemMygo9mC61sm', 'F', 'D', 2, 128300, 12),
+    (14, 'Hank', 'Smith', 'hank.smith@hospital.management.com', '$2b$10$y2pYL32ozTxQzlxT77sT7eHVs12YV9DV4lfGCj5XemMygo9mC61sm', 'M', 'D', 2, 101400, 12),
+    (15, 'Diana', 'Jones', 'diana.jones2@hospital.management.com', '$2b$10$R.Mae5ByfuYYUu44PGsHhOl8pa6f5m9cBHDtYDy5fOZ.T950hVWOK', 'F', 'D', 2, 131900, 12),
+    (17, 'Grace', 'Wilson', 'grace.wilson@hospital.management.com', '$2b$10$R.Mae5ByfuYYUu44PGsHhOl8pa6f5m9cBHDtYDy5fOZ.T950hVWOK', 'F', 'N', 2, 64800, 12),
+    (18, 'Charlie', 'Wilson', 'charlie.wilson@hospital.management.com', '$2b$10$ZAwvoJ1pVl0tlEtsbq41..PoPW5K1VzfLPciq8eoRiCzhuZ.FD1q2', 'F', 'N', 2, 52600, 12),
+    (19, 'Diana', 'Davis', 'diana.davis@hospital.management.com', '$2b$10$ZAwvoJ1pVl0tlEtsbq41..PoPW5K1VzfLPciq8eoRiCzhuZ.FD1q2', 'F', 'N', 2, 40600, 12),
+    (20, 'Charlie', 'Moore', 'charlie.moore2@hospital.management.com', '$2b$10$gm6Cl/BOd.U.YhxPvYbUU.CSoDFAzov83otL6nuB6ZvLKstJxsTdO', 'M', 'N', 2, 77700, 12),
+    (22, 'Grace', 'Taylor', 'grace.taylor@hospital.management.com', '$2b$10$gm6Cl/BOd.U.YhxPvYbUU.CSoDFAzov83otL6nuB6ZvLKstJxsTdO', 'F', 'D', 3, 182600, 1),
+    (23, 'Alice', 'Brown', 'alice.brown@hospital.management.com', '$2b$10$lcpFllUbtVi2s9ko00mBoOBQ3d9JgvffGDTw2AMGXb2kOwHT7Y19e', 'M', 'D', 3, 152200, 22),
+    (24, 'John', 'Moore', 'john.moore@hospital.management.com', '$2b$10$lcpFllUbtVi2s9ko00mBoOBQ3d9JgvffGDTw2AMGXb2kOwHT7Y19e', 'F', 'D', 3, 187000, 22),
+    (25, 'Eve', 'Taylor', 'eve.taylor@hospital.management.com', '$2b$10$C2yOCLt.Phow5msDkfdp9.CkyOJaU64uaa0t7SSNHzlYVZjGIzcqi', 'M', 'D', 3, 140200, 22),
+    (27, 'Frank', 'Jones', 'frank.jones@hospital.management.com', '$2b$10$6i6sQk17e1/hi5urchKeJOpb8zrhQhlU2x0/LVzWrDXNlDjrnfjOq', 'M', 'N', 3, 59600, 22),
+    (28, 'Frank', 'Davis', 'frank.davis@hospital.management.com', '$2b$10$6i6sQk17e1/hi5urchKeJOpb8zrhQhlU2x0/LVzWrDXNlDjrnfjOq', 'F', 'N', 3, 55100, 22),
+    (29, 'Grace', 'Smith', 'grace.smith2@hospital.management.com', '$2b$10$0W4VxLt8/61N8ZDglbj9y.PgR.0dnkETcbXEPUIEU9zdTY6k9Lcni', 'F', 'N', 3, 78900, 22),
+    (30, 'Jane', 'Johnson', 'jane.johnson@hospital.management.com', '$2b$10$0W4VxLt8/61N8ZDglbj9y.PgR.0dnkETcbXEPUIEU9zdTY6k9Lcni', 'M', 'N', 3, 47200, 22),
+    (32, 'Alice', 'Williams', 'alice.williams@hospital.management.com', '$2b$10$BeRFj2h0yfBC/WcYd0InleBqzmyw109dHreSAWKWnOzOrb7n8P/e2', 'F', 'D', 4, 182200, 1),
+    (33, 'Frank', 'Johnson', 'frank.johnson2@hospital.management.com', '$2b$10$nmzLNWhI.8lGAN6KnKFHF.v.RuxvfOlEiH52AHTGuo1yh5KGQnq5q', 'M', 'D', 4, 174400, 32),
+    (34, 'Grace', 'Johnson', 'grace.johnson@hospital.management.com', '$2b$10$nmzLNWhI.8lGAN6KnKFHF.v.RuxvfOlEiH52AHTGuo1yh5KGQnq5q', 'F', 'D', 4, 151700, 32),
+    (35, 'Diana', 'Johnson', 'diana.johnson@hospital.management.com', '$2b$10$R.Mae5ByfuYYUu44PGsHhOl8pa6f5m9cBHDtYDy5fOZ.T950hVWOK', 'M', 'D', 4, 173300, 32),
+    (37, 'Eve', 'Smith', 'eve.smith@hospital.management.com', '$2b$10$ZAwvoJ1pVl0tlEtsbq41..PoPW5K1VzfLPciq8eoRiCzhuZ.FD1q2', 'F', 'N', 4, 47200, 32),
+    (38, 'Jane', 'Wilson', 'jane.wilson@hospital.management.com', '$2b$10$gm6Cl/BOd.U.YhxPvYbUU.CSoDFAzov83otL6nuB6ZvLKstJxsTdO', 'M', 'N', 4, 66500, 32),
+    (39, 'John', 'Wilson', 'john.wilson@hospital.management.com', '$2b$10$FaCko4NmpkTQlS8b3W6BKuPpuBid8W4UOadstq/yhIm3vgI8lnaaq', 'F', 'N', 4, 55000, 32),
+    (40, 'Bob', 'Smith', 'bob.smith@hospital.management.com', '$2b$10$uA7YnBvu8bgPp9.tFCCnyen6N9vVEpGeH9fTJ6Xl3voHTlLSt8YPW', 'F', 'N', 4, 41600, 32);
 
 INSERT INTO schedule (schedule_id, staff_id, schedule_date) 
 VALUES
@@ -161,6 +161,7 @@ VALUES
     (84, 40, '2024-09-15'),
     (85, 38, '2024-09-16');
 
+/*
 INSERT INTO treatment_history (history_id, treatment_name, patient_id, treatment_date, doctor_id) 
 VALUES
     (1, 'X-ray', 6, '2024-09-02', 12),
@@ -183,25 +184,37 @@ VALUES
     (18, 'CT Scan', 6, '2024-09-06', 34),
     (19, 'MRI Scan', 15, '2024-09-08', 35),
     (20, 'Allergy Test', 9, '2024-09-08', 2);
+*/
 
-INSERT INTO appointment (appointment_id, patient_id, schedule_id, start_time, end_time, purpose) VALUES
-    (1, 1, 66, '09:00:00', '10:00:00', 'Routine Check-up'),
-    (2, 2, 70, '10:00:00', '11:00:00', 'Specialist Referral'),
-    (3, 3, 51, '12:00:00', '13:00:00', 'Follow-up'),
-    (4, 4, 54, '15:00:00', '14:00:00', 'Routine Check-up'),
-    (5, 5, 66, '12:00:00', '13:00:00', 'Specialist Referral'),
-    (6, 6, 34, '08:00:00', '09:00:00', 'Follow-up'),
-    (7, 7, 70, '15:00:00', '16:00:00', 'Routine Check-up'),
-    (8, 8, 6, '12:00:00', '13:00:00', 'Specialist Referral'),
-    (9, 9, 35, '13:00:00', '14:00:00', 'Follow-up'),
-    (10, 10, 29, '12:00:00', '13:00:00', 'Routine Check-up'),
-    (11, 11, 73, '11:00:00', '12:00:00', 'Specialist Referral'),
-    (12, 12, 50, '15:00:00', '16:00:00', 'Follow-up'),
-    (13, 13, 33, '11:00:00', '12:00:00', 'Routine Check-up'),
-    (14, 14, 73, '14:00:00', '15:00:00', 'Specialist Referral'),
-    (15, 15, 33, '12:00:00', '13:00:00', 'Follow-up'),
-    (16, 16, 27, '11:00:00', '12:00:00', 'Consultation'),
-    (17, 17, 49, '12:00:00', '13:00:00', 'Consultation'),
-    (18, 18, 47, '09:00:00', '10:00:00', 'Consultation'),
-    (19, 19, 14, '12:00:00', '13:00:00', 'Consultation'),
-    (20, 20, 30, '13:00:00', '14:00:00', 'Consultation');
+/*
+    slot number:
+    9-10: 1
+    10-11: 2
+    11-12: 3
+    12-13: 4
+    13-14: 5
+    14-15: 6
+    15-16: 7
+    16-17: 8
+*/
+INSERT INTO appointment (appointment_id, patient_id, schedule_id, slot_number, purpose, status) VALUES
+    (1, 1, 66, 1, 'Routine Check-up', 'U'),
+    (2, 2, 70, 2, 'Specialist Referral', 'U'),
+    (3, 3, 51, 4, 'Follow-up', 'U'),
+    (4, 4, 54, 7, 'Routine Check-up', 'U'),
+    (5, 5, 66, 8, 'Specialist Referral', 'U'),
+    (6, 6, 34, 1, 'Follow-up', 'U'),
+    (7, 7, 70, 7, 'Routine Check-up', 'U'),
+    (8, 8, 6, 4, 'Specialist Referral', 'U'),
+    (9, 9, 35, 5, 'Follow-up', 'U'),
+    (10, 10, 29, 4, 'Routine Check-up', 'U'),
+    (11, 11, 73, 3, 'Specialist Referral', 'U'),
+    (12, 12, 50, 7, 'Follow-up', 'U'),
+    (13, 13, 33, 3, 'Routine Check-up', 'U'),
+    (14, 14, 73, 6, 'Specialist Referral', 'U'),
+    (15, 15, 33, 4, 'Follow-up', 'U'),
+    (16, 16, 27, 3, 'Consultation', 'U'),
+    (17, 17, 49, 4, 'Consultation', 'U'),
+    (18, 18, 47, 1, 'Consultation', 'U'),
+    (19, 19, 14, 4, 'Consultation', 'U'),
+    (20, 20, 30, 5, 'Consultation', 'U');

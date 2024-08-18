@@ -22,15 +22,23 @@ userRouter.get(
 
 // Get patient by email
 userRouter.get(
-  "/patient/:email",
+  "/patient",
   authenticate,
   checkRoles(["patient", "admin", "staff"]),
   userController.getPatientByEmail
 );
 
+// Get patient by name
+userRouter.get(
+  "/patient/search",
+  authenticate,
+  checkRoles(["patient", "admin"]),
+  userController.getPatientByname
+);
+
 // Get staff by email
 userRouter.get(
-  "/staff/:email",
+  "/patient",
   authenticate,
   checkRoles(["patient", "admin", "staff"]),
   userController.getStaffByEmail
@@ -38,7 +46,7 @@ userRouter.get(
 
 // Update a patient
 userRouter.put(
-  "/patient/:email",
+  "/patient",
   authenticate,
   checkRoles(["patient"]),
   userController.updatePatient
@@ -46,7 +54,7 @@ userRouter.put(
 
 // Update staff 
 userRouter.put(
-  "/staff/:email",
+  "/staff",
   authenticate,
   checkRoles(["staff", "admin"]),
   userController.updateStaff
@@ -54,7 +62,7 @@ userRouter.put(
 
 // Delete a patient
 userRouter.delete(
-  "/patient/:email",
+  "/patient",
   authenticate,
   checkRoles(["admin"]),
   userController.deletePatientByEmail
@@ -62,7 +70,7 @@ userRouter.delete(
 
 // Delete a staff
 userRouter.delete(
-  "/staff/:email",
+  "/staff",
   authenticate,
   checkRoles(["admin"]),
   userController.deletePatientByEmail

@@ -10,19 +10,19 @@ CREATE DATABASE IF NOT EXISTS hospital_management;
 USE hospital_management;
 
 -- Patient table
-CREATE TABLE IF NOT EXISTS patient
+CREATE TABLE IF NOT EXISTS patient 
 (
-    patient_id     INT AUTO_INCREMENT,
-    first_name     VARCHAR(100),
-    last_name      VARCHAR(100),
-    email          VARCHAR(100) UNIQUE NOT NULL,
-    password       VARCHAR(100) NOT NULL, 
-    refresh_token  VARCHAR(255),  
-    date_of_birth  DATE,
-    gender         ENUM('M', 'F', 'O'),
-    allergies      TEXT,
+    patient_id INT AUTO_INCREMENT,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL, 
+    date_of_birth DATE,
+    gender ENUM('M', 'F', 'O'),
+    allergies TEXT,
     CONSTRAINT patient_pk PRIMARY KEY (patient_id)
 ) ENGINE = InnoDB;
+
 
 -- Department table
 CREATE TABLE IF NOT EXISTS department
@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS appointment
     appointment_id INT AUTO_INCREMENT,
     patient_id     INT,
     schedule_id    INT,
+    slot_number    INT NOT NULL,
     purpose        TEXT,
     notes_before   TEXT,
     notes_after    TEXT,

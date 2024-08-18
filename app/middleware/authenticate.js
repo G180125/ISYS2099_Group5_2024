@@ -4,7 +4,7 @@ const { getUserByRole } = require("../models/models");
 const httpStatus = require("../utils/httpStatus");
 
 const authenticate = async (req, res, next) => {
-  const { accessToken, refreshToken } = req.cookies;
+  const { accessToken, refreshToken , email, role} = req.cookies;
 
   console.log("\n");
   console.log("Access token: " + accessToken);
@@ -41,9 +41,9 @@ const authenticate = async (req, res, next) => {
 
     console.log("\n");
     console.log(`Auth user ${user.email} refresh token ${user.refresh_token}`);
-
+    
     // Set new token cookies
-    setCookie(res, user.email, payload.role);
+    setCookie(res, accessToken, refreshToken, email, role);
 
     // Attach user information to the request
     req.email = payload.email;
