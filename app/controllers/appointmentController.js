@@ -33,9 +33,10 @@ const appointmentController = {
         JOIN patient P ON A.patient_id = P.patient_id
         JOIN schedule S ON A.schedule_id = S.schedule_id
         JOIN staff ST ON S.staff_id = ST.staff_id
-        JOIN department D ON ST.department_id = D.department_id`;
+        JOIN department D ON ST.department_id = D.department_id
+        LIMIT ? OFFSET ?`;
 
-        const [result] = await db.poolAdmin.query(query);
+        const [results] = await db.poolAdmin.query(query, [limit, offset]);
 
         const [countResult] = await db.poolAdmin.query(`SELECT COUNT(*) as total FROM appoitment`);
         const totalRecords = countResult[0].total;

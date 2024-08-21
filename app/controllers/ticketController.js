@@ -1,4 +1,3 @@
-const express = require("express");
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const { db, models } = require("../models"); 

@@ -7,7 +7,7 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const helmet = require("helmet");
 
-const { appointmentRoutes, authRoutes, scheduleRoutes, userRoutes } = require("./routes");
+const { appointmentRoutes, authRoutes, scheduleRoutes, patientRoutes, staffRoutes } = require("./routes");
 
 const app = express();
 
@@ -40,7 +40,8 @@ app.use(
 
 // Routes setup with prefix
 app.use(`${API_PREFIX}/auth`, authRoutes);
-app.use(`${API_PREFIX}/user`, userRoutes);
+app.use(`${API_PREFIX}/patient`, patientRoutes);
+app.use(`${API_PREFIX}/staff`, staffRoutes);
 app.use(`${API_PREFIX}/schedule`, scheduleRoutes);
 app.use(`${API_PREFIX}/appointment`, appointmentRoutes);
 

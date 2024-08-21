@@ -4,22 +4,21 @@ const { getUserByRole } = require("../models/models");
 const httpStatus = require("../utils/httpStatus");
 
 const authenticate = async (req, res, next) => {
-  const { accessToken, refreshToken , email, role} = req.cookies;
+  const { accessToken , email, role} = req.cookies;
 
   console.log("\n");
   console.log("Access token: " + accessToken);
-  console.log("Refresh token: " + refreshToken);
 
   try {
     // Check if refresh token exists
-    if (!refreshToken) {
+    if (!accessToken) {
       return res
         .status(httpStatus.FORBIDDEN().code)
         .json({ error: httpStatus.FORBIDDEN("Authentication Invalid").message });
     }
 
     // Verify refresh token
-    const payload = introspect(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const payload = introspect(accessToken, process.env.REFRESH_TOKEN_SECRET);
 
     if (!payload) {
       return res
@@ -33,17 +32,17 @@ const authenticate = async (req, res, next) => {
     // Get user by role
     const user = await getUserByRole(payload.role, payload.email);
 
-    if (!user || !user.refresh_token) {
+    if (!user || !user.access_token) {
       return res
         .status(httpStatus.FORBIDDEN().code)
         .json({ error: httpStatus.FORBIDDEN("Authentication Invalid").message });
     }
 
     console.log("\n");
-    console.log(`Auth user ${user.email} refresh token ${user.refresh_token}`);
+    console.log(`Auth user ${user.email} access token ${user.access_token}`);
     
     // Set new token cookies
-    setCookie(res, accessToken, refreshToken, email, role);
+    setCookie(res, accessToken);
 
     // Attach user information to the request
     req.email = payload.email;

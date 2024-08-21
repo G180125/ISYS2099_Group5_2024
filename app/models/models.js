@@ -18,7 +18,7 @@ database.getPatient = async (email) => {
 database.deletePatientToken = async (email) => {
   try {
     await db.poolPatient.query(
-      `UPDATE patient SET refresh_token = NULL WHERE email = ?`,
+      `UPDATE patient SET access_token = NULL WHERE email = ?`,
       [email]
     );
   } catch (err) {
@@ -56,7 +56,7 @@ database.getStaffId = async (email) => {
 database.deleteStaffToken = async (email) => {
   try {
     await db.poolStaff.query(
-      `UPDATE staff SET refresh_token = NULL WHERE email = ? AND job_type <> 'A'`,
+      `UPDATE staff SET access_token = NULL WHERE email = ? AND job_type <> 'A'`,
       [email]
     );
   } catch (err) {
@@ -81,7 +81,7 @@ database.getAdmin = async (email) => {
 database.deleteAdminToken = async (email) => {
   try {
     await db.poolAdmin.query(
-      `UPDATE staff SET refresh_token = NULL WHERE email = ? AND job_type='A'`,
+      `UPDATE staff SET access_token = NULL WHERE email = ? AND job_type='A'`,
       [email]
     );
   } catch (err) {

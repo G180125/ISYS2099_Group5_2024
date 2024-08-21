@@ -1,6 +1,5 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const express = require("express");
 const db = require("../models/db.js");
 const httpStatus = require("../utils/httpStatus.js");
 
@@ -85,7 +84,13 @@ const scheduleController = {
           .status(httpStatus.INTERNAL_SERVER_ERROR.code)
           .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
       }
-    }
+    },
+
+    updateSchedule: async (req, res) => {
+
+    },
+
+
 }
 
 module.exports = scheduleController;

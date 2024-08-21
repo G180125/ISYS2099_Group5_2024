@@ -4,7 +4,7 @@ const httpStatus = require("../utils/httpStatus");
 const checkRoles = (allowedRoles) => {
   return async (req, res, next) => {
     try {
-      const { email, role } = req.cookies;
+      const { email, role } = req;
 
       console.log(`role: ${role}`);
 
