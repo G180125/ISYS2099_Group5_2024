@@ -43,10 +43,20 @@ This project is part of the ISYS2099 course, where Group 5 has developed a compr
 - `node mySQL/init-db.js`: Initializes the MySQL database only.
 - `node app/app.js`: Starts the backend API server only.
 - `npm run start`: Runs both the database initialization and the API server.
-  Notes: only run npm run start once because it will resets the database and you will lost all the existing data.
+  
+   **Note**: *Run `npm run start` only once. This command resets the database, which will result in the loss of all existing data.*
 
 ## Contributors
-- Group 5, ISYS2099 - 2024
+
+| Name                  | Email                      | Score |
+|-----------------------|----------------------------|-------|
+| Dat Pham Xuan         | s3927188@rmit.edu.vn       | 5     |
+| Long Nguyen Vi Phi    | s3904632@rmit.edu.vn       | 5     |
+| Huan Nguyen Dang      | s3927467@rmit.edu.vn       | 5     |
+| Nhan Truong Vo Thien  | s3929215@rmit.edu.vn       | 5     |
+| Pavel Potemkin        | s3963284@rmit.edu.vn       | 5     |
+
+## Video Demo:
 
 ## License
 
