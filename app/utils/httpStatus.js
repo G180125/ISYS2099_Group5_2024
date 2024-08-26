@@ -9,5 +9,5 @@ const httpStatus = {
     INTERNAL_SERVER_ERROR: { code: 500, message: `Internal Server Error`},
   };
   
-  module.exports = httpStatus;
+module.exports = httpStatus;
   

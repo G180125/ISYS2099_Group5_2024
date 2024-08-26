@@ -8,7 +8,7 @@ const path = require("path");
 const helmet = require("helmet");
 const { errorHandler } = require("./controllers/errorController");
 const httpStatus = require("./utils/httpStatus");
-const { authRouter, patientRouter, staffRouter, scheduleRouter, appointmentRouter } = require("./router");
+const { authRouter, patientRouter, staffRouter, scheduleRouter, appointmentRouter } = require("./routers");
 const app = express();
 
 // SECURE HTTP HEADERS

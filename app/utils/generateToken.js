@@ -25,18 +25,18 @@ const generateToken = (email, role) => {
     if (role === "admin") {
       db.poolAdmin.query(
         "UPDATE staff SET access_token = ? WHERE email = ? AND job_type = 'A'",
-        [refreshToken, email],
+        [accessToken, email],
       );
       console.log(`admin`);
     } else if (role === "staff"){
       db.poolStaff.query(
         "UPDATE staff SET access_token = ? WHERE email = ? AND job_type <> 'A'",
-        [refreshToken, email],
+        [accessToken, email],
       );
     } else {
         db.poolPatient.query(
             "UPDATE patient SET access_token = ? WHERE email = ? ",
-            [refreshToken, email],
+            [accessToken, email],
         );
     }
 
