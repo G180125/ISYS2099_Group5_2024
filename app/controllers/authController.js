@@ -110,6 +110,7 @@ const registerStaff = async (req, res) => {
   }
 };
 
+
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;

@@ -1,9 +1,6 @@
 -- SET ROLE isys2099_group5_2024_app_role;
 -- reset database
 DROP DATABASE IF EXISTS hospital_management;
-DROP USER IF EXISTS 'group5_admin_app_user'@'localhost';
-DROP USER IF EXISTS 'group5_staff_app_user'@'localhost';
-DROP USER IF EXISTS 'group5_patient_app_user'@'localhost';
 
 -- create database
 CREATE DATABASE IF NOT EXISTS hospital_management;
