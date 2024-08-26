@@ -100,4 +100,40 @@ database.getUserByRole = async (role, email) => {
   }
 };
 
+database.checkDepartmentExists = async (departmentID) => {
+  try{
+    await db.poolPatient.query(
+      `SELECT * FROM department WHERE department_id = ?`,
+      [departmentID]
+    );
+
+    if (rows.length > 0) {
+      return true; // Department exists
+    } else {
+      return false; // Department does not exist
+    }
+  } catch (err) {
+    console.error("error: " + err.stack);
+    throw err;
+  }
+}
+
+database.checkStaffExists = async (staffId) => {
+  try {
+    const [results] = await db.poolPatient.query(
+      `SELECT * FROM staff WHERE staff_id = ?`,
+      [staffId]
+    );
+
+     if (rows.length > 0) {
+      return true; // Staff exists
+    } else {
+      return false; // Staff does not exist
+    }
+  } catch (err) {
+    console.error("error: " + err.stack);
+    throw err;
+  }
+};
+
 module.exports = database;

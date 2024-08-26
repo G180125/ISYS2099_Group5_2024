@@ -19,6 +19,10 @@ GRANT SELECT ON hospital_management.* TO 'group5_staff_app_user'@'localhost';
 GRANT INSERT, UPDATE ON hospital_management.staff TO 'group5_staff_app_user'@'localhost';
 GRANT UPDATE ON hospital_management.appointment TO 'group5_staff_app_user'@'localhost';
 GRANT INSERT, UPDATE ON hospital_management.ticket TO 'group5_staff_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.search_patient_by_name TO 'group5_staff_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.list_staff_by_department TO 'group5_staff_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.list_staff_order_by_name TO 'group5_staff_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.view_staff_schedule TO 'group5_staff_app_user'@'localhost';
 
 -- PATIENT
 -- select all tables

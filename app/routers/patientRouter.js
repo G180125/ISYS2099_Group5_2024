@@ -7,7 +7,7 @@ const checkRoles = require("../middleware/checkRoles");
 // Get all patients
 patientRouter.get(
   "/all",
-  authenticate,
+  authenticate, //email //role -> next req
   checkRoles(["admin"]),
   patientController.getAllPatients
 );

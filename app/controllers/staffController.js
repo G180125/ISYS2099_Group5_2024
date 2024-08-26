@@ -1,14 +1,15 @@
 
 const cookieParser = require("cookie-parser");
 const express = require("express");
-const db = require("../models/db.js");
+const { db, models } = require("../models");
 const moment = require('moment');
 const httpStatus = require("../utils/httpStatus.js");
 
 const app = express();
 app.use(cookieParser());
 
-const validGenders = ["female", "male", "other"];
+const validGenders = ["F", "M", "O"];
+const validJobTypes = ["D", "N", "A"];
 
 const staffController = {
   getAllStaffs: async (req, res) => {
@@ -21,8 +22,8 @@ const staffController = {
       const offset = (page - 1) * limit;
   
       let query;
-      let countQuery;
       let results;
+      let countQuery;
       let countResult;
   
       if (job_type && department) {
@@ -37,18 +38,16 @@ const staffController = {
 
         countQuery = `SELECT COUNT(*) as total FROM staff WHERE department_id = ?`;
         [countResult] = await db.poolStaff.query(countQuery, [department]);
-  
       } else if (job_type) {
-        query = `SELECT * FROM staff WHERE jobtype = ? LIMIT ? OFFSET ?`;
+        query = `SELECT * FROM staff WHERE jobtype = ? ORDER BY name ${order} LIMIT ? OFFSET ?`;
         results = await db.poolStaff.query(query, [job_type, limit, offset]);
-  
+
         countQuery = `SELECT COUNT(*) as total FROM staff WHERE jobtype = ?`;
         [countResult] = await db.poolStaff.query(countQuery, [job_type]);
-  
       } else {
-        query = `CALL list_staff_order_by_name(?)`;
+        query = `CALL list_staff_order_by_name(?, ?, ?)`;
         results = await db.poolStaff.query(query, [order, limit, offset]);
-  
+
         countQuery = `SELECT COUNT(*) as total FROM staff`;
         [countResult] = await db.poolStaff.query(countQuery);
       }
@@ -68,15 +67,20 @@ const staffController = {
   
     } catch (error) {
       console.error(error);
-      res
-        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+      res.status(500).json({ error: "Internal Server Error" });
     }
   },
   
   getStaffByEmail: async (req, res) => {
     try {
       const email = req.body.email;
+
+      if(!email || email == ""){
+        return res
+        .status(httpStatus.BAD_REQUEST().code)
+        .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
+    }
+
       const [results] = await db.poolStaff.query(
         `SELECT * FROM staff WHERE email = ?`,
         [email],
@@ -98,18 +102,35 @@ const staffController = {
   updateStaff: async (req, res) => {
     console.log(req.params);
     try {
-      const staffId = req.params.staff_id;
-      const { firstName, lastName, gender, jobType, departmentId, salary, managerId } = req.body;
+      const { email, firstName, lastName, gender, jobType, departmentId, salary, managerId } = req.body;
 
-      const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?)`;
-      const results = await db.poolAdmin.query(query, [firstName, lastName, gender, jobType, departmentId, salary, managerId]);
+      if(!email || email == ""){
+          return res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
+      }
 
-      // Check for rollback message in the result
-      const errorMessage = results[0]?.[0]?.message;
-      if (errorMessage) {
+      if (salary && salary < 0) {
+        return res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({ error: httpStatus.BAD_REQUEST("Salary must be a positive number").message });
+      }
+
+      let result = 0; 
+      let message = ''; 
+
+      const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, @result, @message)`;
+      const [rows] = await db.poolAdmin.query(query, [email, firstName, lastName, gender, jobType, departmentId, salary, managerId]);
+
+      result = rows[0][0].result;
+      message = rows[0][0].message;
+      console.log("result: " , result);
+      console.log("message: " , message);
+
+      if (result == 0) {
         res
           .status(httpStatus.BAD_REQUEST().code)
-          .json({ error: httpStatus.BAD_REQUEST(errorMessage).message });
+          .json({ error: httpStatus.BAD_REQUEST(message).message });
       } else {
         const responseData = {
           first_name: firstName,
@@ -124,7 +145,6 @@ const staffController = {
           .status(httpStatus.OK().code)
           .json(httpStatus.OK(`Staff ${staffId} updated successfully`, responseData).data);
       }
-
     } catch (error) {
       console.error(error);
       res

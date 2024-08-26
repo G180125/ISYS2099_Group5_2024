@@ -1,6 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const { db, model } = require("../models");
+const { db, models } = require("../models");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { generateToken, setCookie } = require("../utils");
 const httpStatus = require("../utils/httpStatus");
@@ -18,32 +18,30 @@ const registerPatient = async (req, res) => {
         .json({ error: httpStatus.BAD_REQUEST("Please provide email, password").message });
     }
 
-    if (await model.getPatient(email)) {
-      return res
-        .status(httpStatus.CONFLICT().code)
-        .json({ error: httpStatus.CONFLICT(`Email ${email} already exists`).message });
-    }
+    let result = 0; 
+    let message = ''; 
 
     const salt = genSaltSync(10);
     const hashedPassword = hashSync(password, salt);
 
-    const query = `CALL register_patient(?, ?, ?, ?, ?, ?, ?)`;
-    const results = await db.poolPatient.query(query, [null, null, email, hashedPassword, null, 'O', null]);
+    const query = `CALL register_patient(?, ?, ?, ?, ?, ?, ?, @result, @message)`;
+    const [rows] = await db.poolPatient.query(query, [null, null, email, hashedPassword, null, 'O', null]);
 
-    if (errorMessage) {
-      res
+    console.log(rows);
+
+    result = rows[0][0].result;
+    message = rows[0][0].message;
+    console.log("result: " , result);
+    console.log("message: " , message);
+
+    if (result == 0) {
+      return res
         .status(httpStatus.BAD_REQUEST().code)
-        .json({ error: httpStatus.BAD_REQUEST(errorMessage).message });
+        .json({ error: httpStatus.BAD_REQUEST(message).message });
     }
 
-    const errorMessage = results[0]?.[0]?.message;
-      if (errorMessage) {
-        res
-          .status(httpStatus.BAD_REQUEST().code)
-          .json({ error: httpStatus.BAD_REQUEST(errorMessage).message });
-      }
-
     req.email = email;
+    req.role = 'patient';
 
     return res
       .status(httpStatus.OK().code)
@@ -66,41 +64,37 @@ const registerStaff = async (req, res) => {
         .json({ error: httpStatus.BAD_REQUEST("Please provide email, password, and role").message });
     }
 
-    if (
-      await model.getStaff(email) ||
-      await model.getAdmin(email)
-    ) {
-      return res
-        .status(httpStatus.CONFLICT().code)
-        .json({ error: httpStatus.CONFLICT(`Email ${email} already exists`).message });
-    }
+    let result = 0; 
+    let message = ''; 
 
     const salt = genSaltSync(10);
     const hashedPassword = hashSync(password, salt);
 
     let query;
-    let results;
+    let rows;
 
     if (role === "staff") {
-      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-      results = await db.poolAdmin.query(query, [null, null, email, hashedPassword, 'O', 'D', 1, 1, 1]);
+      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message)`;
+      [rows] = await db.poolAdmin.query(query, [null, null, email, hashedPassword, 'O', 'D', 1, 1, 1]);
     } else if (role === "admin") {
-      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-      results = await db.poolAdmin.query(query, [null, null, email, hashedPassword, 'O', 'A', 1, 0, 1]);
+      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message)`;
+      [rows] = await db.poolAdmin.query(query, [null, null, email, hashedPassword, 'O', 'A', 1, 0, 1]);
     } else {
       return res
         .status(httpStatus.BAD_REQUEST().code)
         .json({ error: httpStatus.BAD_REQUEST("Invalid role provided").message });
     }
 
-    const errorMessage = results[0]?.[0]?.message;
-      if (errorMessage) {
-        res
-          .status(httpStatus.BAD_REQUEST().code)
-          .json({ error: httpStatus.BAD_REQUEST(errorMessage).message });
-      }
+    result = rows[0][0].result;
+    message = rows[0][0].message;
+    console.log("result: " , result);
+    console.log("message: " , message);
 
-    console.log(results[0].message);
+    if (result == 0) {
+      return res
+        .status(httpStatus.BAD_REQUEST().code)
+        .json({ error: httpStatus.BAD_REQUEST(message).message });
+    }
 
     req.role = role;
     req.email = email;
@@ -129,7 +123,7 @@ const login = async (req, res) => {
 
     let role, user;
 
-    user = await model.getPatient(email);
+    user = await models.getPatient(email);
     if (user) {
       role = "patient";
     } else {
@@ -147,7 +141,7 @@ const login = async (req, res) => {
     }
 
     const tokens = generateToken(email, role);
-    setCookie(res, tokens.accessToken, tokens.refreshToken, email, role);
+    setCookie(res, tokens.accessToken);
 
     req.role = role;
     req.email = email;
@@ -175,11 +169,11 @@ const loginStaff = async (req, res) => {
 
     let role, user;
 
-    user = await model.getStaff(email);
+    user = await models.getStaff(email);
     if (user) {
       role = "staff";
     } else {
-      user = await model.getAdmin(email);
+      user = await models.getAdmin(email);
       if (user) {
         role = "admin";
       } else {
@@ -221,11 +215,11 @@ const logout = async (req, res) => {
     console.log(`${req.email} logged out with role ${req.role}`);
 
     if (req.role === "patient") {
-      await model.deletePatientToken(req.email);
+      await models.deletePatientToken(req.email);
     } else if (req.role === "staff") {
-      await model.deleteStaffToken(req.email);
+      await models.deleteStaffToken(req.email);
     } else if (req.role === "admin") {
-      await model.deleteAdminToken(req.email);
+      await models.deleteAdminToken(req.email);
     } else {
       return res
         .status(httpStatus.UNAUTHORIZED().code)
