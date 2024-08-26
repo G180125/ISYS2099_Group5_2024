@@ -18,7 +18,7 @@ const authenticate = async (req, res, next) => {
     }
 
     // Verify refresh token
-    const payload = introspect(accessToken, process.env.REFRESH_TOKEN_SECRET);
+    const payload = introspect(accessToken, process.env.ACCESS_TOKEN_SECRET);
 
     if (!payload) {
       return res

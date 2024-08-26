@@ -20,6 +20,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//http://localhost:2099/hospital_management/api/v1/
 const SERVER_PORT = process.env.SERVER_PORT || 2099;
 const WHITE_CORS = `http://localhost:${SERVER_PORT}`;
 const API_PREFIX = '/hospital_management/api/v1';

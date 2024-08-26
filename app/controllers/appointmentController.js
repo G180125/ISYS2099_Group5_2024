@@ -125,7 +125,7 @@ const appointmentController = {
         error: httpStatus.INTERNAL_SERVER_ERROR.message 
       });
     }
-  }
+  },
 };
 
 module.exports = appointmentController;
