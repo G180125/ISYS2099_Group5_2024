@@ -6,9 +6,9 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const helmet = require("helmet");
-const { appointmentRoutes, authRoutes, scheduleRoutes, patientRoutes, staffRoutes} = require("./routes");
 const { errorHandler } = require("./controllers/errorController");
 const httpStatus = require("./utils/httpStatus");
+const { authRouter, patientRouter, staffRouter, scheduleRouter, appointmentRouter } = require("./router");
 const app = express();
 
 // SECURE HTTP HEADERS
@@ -48,16 +48,16 @@ app.get(`${API_PREFIX}`, (req, res) => {
 });
 
 // Routes setup with prefix
-app.use(`${API_PREFIX}/auth`, authRoutes);
-app.use(`${API_PREFIX}/patient`, patientRoutes);
-app.use(`${API_PREFIX}/staff`, staffRoutes);
-app.use(`${API_PREFIX}/schedule`, scheduleRoutes);
-app.use(`${API_PREFIX}/appointment`, appointmentRoutes);
+app.use(`${API_PREFIX}/auth`, authRouter);
+app.use(`${API_PREFIX}/patient`, patientRouter);
+app.use(`${API_PREFIX}/staff`, staffRouter);
+app.use(`${API_PREFIX}/schedule`, scheduleRouter);
+app.use(`${API_PREFIX}/appointment`, appointmentRouter);
 
 // Global error handler
 app.use(errorHandler);
 
-// Start the server
+// Start the serve
 app.listen(SERVER_PORT, () => {
   console.log(`Server is listening on port ${SERVER_PORT}`);
 });
