@@ -15,6 +15,7 @@ async function promptUser() {
   });
 }
 
+
 async function promptPassword(user) {
   return new Promise(resolve => {
     const rl = readline.createInterface({
@@ -45,6 +46,7 @@ async function promptPassword(user) {
   });
 }
 
+
 async function setValidationPolicy(connection) {
   try {
     await connection.query(`SET GLOBAL validate_password.policy = 0`);
@@ -53,6 +55,7 @@ async function setValidationPolicy(connection) {
     console.error("Failed to set validation policy: ", err);
   }
 }
+
 
 async function executeSetupScript(connection, scriptPath) {
   try {
@@ -74,6 +77,7 @@ async function executeSetupScript(connection, scriptPath) {
     console.error(`Error executing script ${scriptPath}:`, err);
   }
 }
+
 
 (async () => {
   try {

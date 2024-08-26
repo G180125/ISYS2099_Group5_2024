@@ -1,3 +1,8 @@
+-- reset user
+DROP USER IF EXISTS 'group5_admin_app_user'@'localhost';
+DROP USER IF EXISTS 'group5_staff_app_user'@'localhost';
+DROP USER IF EXISTS 'group5_patient_app_user'@'localhost';
+
 -- ADMIN
 -- all privileges
 CREATE USER 'group5_admin_app_user'@'localhost' IDENTIFIED BY 'password';
