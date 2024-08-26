@@ -4,7 +4,7 @@ const { getUserByRole } = require("../models/models");
 const httpStatus = require("../utils/httpStatus");
 
 const authenticate = async (req, res, next) => {
-  const { accessToken , email, role} = req.cookies;
+  const { accessToken } = req.cookies;
 
   console.log("\n");
   console.log("Access token: " + accessToken);
