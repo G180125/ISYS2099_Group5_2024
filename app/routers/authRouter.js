@@ -12,10 +12,11 @@ const {
 } = require("../controllers/authController");
 
 authRouter.post("/patient/new", registerPatient);
-authRouter.post("/staff/new", checkRoles(["admin"]), registerStaff);
+authRouter.post("/patient/login", login);
 
-authRouter.post("/login/patient", login);
-authRouter.post("/login/staff", loginStaff);
+authRouter.post("/staff/new", checkRoles(["admin"]), registerStaff);
+authRouter.post("/staff/login", loginStaff);
+
 authRouter.delete("/logout", authenticate, logout);
 
 module.exports = authRouter;  
