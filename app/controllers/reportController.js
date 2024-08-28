@@ -20,7 +20,7 @@ const reportController = {
         }
     
         try {
-            const [results] = await db.poolStaff.query("CALL view_patient_treatment_for_given_duration(?)", [date]);
+            const [results] = await db.poolAdmin.query("CALL view_patient_treatment_for_given_duration(?)", [date]);
             
             if (results.length === 0) {
                 return res
@@ -28,8 +28,10 @@ const reportController = {
                 .json({ error: httpStatus.NOT_FOUND("No reports found for the given date.").message });
             }
             
-            const okResponse = httpStatus.OK("Reports retrieved successfully", results);
-            res.status(okResponse.code).json(okResponse);
+            return res
+            .status(httpStatus.OK().code)
+            .json(httpStatus.OK("Reports retrieved successfully", results));
+
         } catch (error) {
             console.error(error);
             res
@@ -43,19 +45,28 @@ const reportController = {
         const { start_date, end_date } = req.query; // Assuming dates are provided as query parameters
 
         if (!start_date || !end_date) {
-            return res.status(httpStatus.BAD_REQUEST).json({ error: "Both start_date and end_date parameters are required." });
+            return res
+            .status(httpStatus.BAD_REQUEST().code)
+            .json({ error: httpStatus.BAD_REQUEST("Both start_date and end_date parameters are required.").message });
         }
 
         try {
-            const [results] = await db.query("CALL view_patient_treatment_in_given_duration(?, ?)", [start_date, end_date]);
+            const [results] = await db.poolAdmin.query("CALL view_patient_treatment_in_given_duration(?, ?)", [start_date, end_date]);
 
             if (results.length === 0) {
-                return res.status(httpStatus.NOT_FOUND).json({ message: "No reports found for the given date range." });
+                return res
+                .status(httpStatus.NOT_FOUND().code)
+                .json({ error: httpStatus.NOT_FOUND("No reports found for the given date.").message });
             }
 
-            res.status(httpStatus.OK).json(results);
+            return res
+            .status(httpStatus.OK().code)
+            .json(httpStatus.OK("Reports retrieved successfully", results));
         } catch (error) {
-            res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
+            console.error(error);
+            res
+                .status(httpStatus.INTERNAL_SERVER_ERROR.code)
+                .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
         }
     }
 };

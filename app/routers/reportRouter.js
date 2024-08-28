@@ -6,7 +6,7 @@ const checkRoles = require("../middleware/checkRoles");
 
 // get patient treatment history for a specific date
 reportRouter.get(
-  "/test1",
+  "",
   authenticate, 
   checkRoles(["admin", "staff"]), 
   reportController.viewReportForGivenDuration
@@ -14,7 +14,7 @@ reportRouter.get(
 
 // get patient treatment history within a date range
 reportRouter.get(
-  "/test2",
+  "/range_query",
   authenticate, 
   checkRoles(["admin", "staff"]), 
   reportController.viewReportInGivenDuration
