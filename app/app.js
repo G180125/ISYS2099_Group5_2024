@@ -54,6 +54,7 @@ app.use(`${API_PREFIX}/staff`, staffRouter);
 app.use(`${API_PREFIX}/schedule`, scheduleRouter);
 app.use(`${API_PREFIX}/appointment`, appointmentRouter);
 app.use(`${API_PREFIX}/treatment`, treatmentRouter);
+app.use(`${API_PREFIX}/report`, reportRouter);
 
 // Global error handler
 app.use(errorHandler);
