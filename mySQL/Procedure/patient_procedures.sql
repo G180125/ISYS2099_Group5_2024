@@ -1,32 +1,62 @@
+/*
+    OUT result:
+        0: Fail
+        1: Success
+*/
 DROP PROCEDURE IF EXISTS register_patient;
--- DELIMITER //
 CREATE PROCEDURE register_patient(
     IN p_first_name VARCHAR(100),
     IN p_last_name VARCHAR(100),
     IN p_email VARCHAR(100),
-    in p_password VARCHAR(100),
+    IN p_password VARCHAR(100),
     IN p_date_of_birth DATE,
     IN p_gender ENUM('M', 'F', 'O'),
-    IN p_allergies TEXT
+    IN p_allergies TEXT,
+    OUT result INT,
+    OUT message VARCHAR(255)
 )
 this_proc:
 BEGIN
+    DECLARE _rollback BOOL DEFAULT 0;
+    DECLARE sql_error_message VARCHAR(255);
+    
+    -- Declare the handler for SQL exceptions
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = sql_error_message;
+        ROLLBACK;
+    END;
+
     START TRANSACTION;
 
+    -- Check if the date of birth is in the future
     IF p_date_of_birth > CURDATE() THEN
+        SET result = 0;
+        SET message = 'Date of birth cannot be in the future';
         ROLLBACK;
         LEAVE this_proc;
     END IF;
 
+    -- Insert the new patient record
     INSERT INTO patient (first_name, last_name, email, password, date_of_birth, gender, allergies)
     VALUES (p_first_name, p_last_name, p_email, p_password, p_date_of_birth, p_gender, p_allergies);
 
-    COMMIT;
+    -- Final check before committing the transaction
+    IF _rollback THEN
+        SET result = 0;
+        ROLLBACK;
+    ELSE
+        SET result = 1;
+        SET message = 'Registration successful';
+        COMMIT;
+    END IF;
 
-    SELECT LAST_INSERT_ID() AS new_patient_id;
-END; -- //
--- DELIMITER ;
-
+    -- Return the result and message
+    SELECT result, message;
+END;
 
 DROP PROCEDURE IF EXISTS search_patient_by_name;
 -- DELIMITER //
@@ -45,39 +75,46 @@ END; -- //
 -- DELIMITER ;
 
 
-/*DELIMITER //
-CREATE PROCEDURE add_treatment(
-    IN p_patient_id INT,
-    IN p_treatment TEXT,
-    IN p_treatment_date DATE,
-    IN p_doctor_id INT,
+DROP PROCEDURE IF EXISTS `add_patient_treatment`;
+CREATE PROCEDURE add_patient_treatment(
+	IN t_treatment_name VARCHAR(100),
+	IN t_treatment_date DATE,
+	IN t_appointment_id INT,
+	OUT result INT,
+	OUT message VARCHAR(255)
 )
 this_proc:
-BEGIN
-    DECLARE is_doctor INT;
+BEGIN 
+	DECLARE _rollback BOOL DEFAULT 0;
+    DECLARE sql_error_message VARCHAR(255);
+    
+    -- Declare the handler for SQL exceptions
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = sql_error_message;
+        ROLLBACK;
+    END;
 
     START TRANSACTION;
+   
+	INSERT INTO treatment_record(
+		treatment_name, treatment_date, appointment_id, status
+	)
+	VALUES (
+		t_treatment_name, t_treatment_date, t_appointment_id, 'U'
+	);
+	IF _rollback THEN
+		SET result = 0;
+		ROLLBACK;
+	ELSE 
+		SET result = 1;
+		SET message = 'Add treatment successful';
+		COMMIT;
+	END IF;
 
-    SELECT COUNT(*) INTO is_doctor 
-    FROM staff 
-    WHERE staff_id = p_doctor_id AND job_type = 'D';
-
-    IF is_doctor = 0 THEN
-        ROLLBACK;
-        LEAVE this_proc;
-    END IF;
-
-    IF p_treatment_date > CURDATE() THEN
-        ROLLBACK;
-        LEAVE this_proc;
-    END IF;
-
-    INSERT INTO treatment_history (patient_id, treatment, treatment_date, doctor_id)
-    VALUES (p_patient_id, p_treatment, p_treatment_date, p_doctor_id);
-
-    COMMIT;
-END //
-DELIMITER ;*/
-
-
+	SELECT result, message;
+END;
 

@@ -1,13 +1,13 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const db = require("../models/db.js");
+const { db, models } = require("../models");
 const moment = require('moment');
 const httpStatus = require("../utils/httpStatus.js");
 
 const app = express();
 app.use(cookieParser());
 
-const validGenders = ["female", "male", "other"];
+const validGenders = ["F", "M", "O"];
 
 const patientController = {
     getAllPatients: async (req, res) => {
@@ -58,8 +58,10 @@ const patientController = {
         if (results.length === 0) {
           return res
             .status(httpStatus.NOT_FOUND().code)
-            .json({ error: httpStatus.NOT_FOUND("Patient not found").message });
+            .json({ error: httpStatus.NOT_FOUND("No patient found").message });
         }
+
+
         return res.json(results[0]);
       } catch (error) {
         console.error(error);
@@ -86,13 +88,12 @@ const patientController = {
         }
     
         const query = `CALL search_patient_by_name(?, ?, ?, ?)`;
-        const [results] = await db.poolPatient.query(query, [first_name, last_name, limit, offset]);
-    
-        const errorMessage = results[0]?.[0]?.message;
-        if (errorMessage) {
+        const [results] = await db.poolPatient.query(query, [first_name, last_name, limit, offset]); 
+
+        if (results.length === 0) {
           return res
-            .status(httpStatus.BAD_REQUEST().code)
-            .json({ error: httpStatus.BAD_REQUEST(errorMessage).message });
+            .status(httpStatus.NOT_FOUND().code)
+            .json({ error: httpStatus.NOT_FOUND("No patient found").message });
         }
     
         // Fetch total number of matching records for pagination metadata
@@ -128,6 +129,13 @@ const patientController = {
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
         }
+
+        const user = await models.getPatient(email);
+        if (!user) {
+          return res
+            .status(httpStatus.UNAUTHORIZED().code)
+            .json({ error: httpStatus.UNAUTHORIZED("No patient found").message });
+        }
   
         // Validate DOB (not after today)
         if (newDOB && !moment(newDOB, 'YYYY-MM-DD', true).isBefore(moment())) {
@@ -142,7 +150,7 @@ const patientController = {
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST("Gender must be 'female', 'male', or 'other'").message });
         }
-  
+
         // Prepare update query based on provided fields
         let updateQuery = 'UPDATE patient SET ';
         const updateFields = [];
@@ -202,6 +210,13 @@ const patientController = {
             return res
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
+        }
+
+        const user = await models.getPatient(email);
+        if (!user) {
+          return res
+            .status(httpStatus.UNAUTHORIZED().code)
+            .json({ error: httpStatus.UNAUTHORIZED("No patient found").message });
         }
 
         await db.poolAdmin.query(`DELETE FROM patient WHERE email = ?`, [

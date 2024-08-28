@@ -40,11 +40,20 @@ This project is part of the ISYS2099 course, where Group 5 has developed a compr
 
 ## Scripts
 
-- `node mySQL/init-db.js`: Initializes the MySQL database only.
-- `node app/app.js`: Starts the backend API server only.
-- `npm run start`: Runs both the database initialization and the API server.
+```bash
+node mySQL/init-db.js
+```
+Initialize the MySQL database. You have to input your root account username and password in the terminal.
+```bash
+node app/app.js
+```
+Starts the backend API server.
+```bash
+npm run start
+```
+Runs both the database initialization and the API server.
   
-   **Note**: *Run `npm run start` only once. This command resets the database, which will result in the loss of all existing data.*
+**Note**: *Run `npm run start` only once. This command resets the database, which will result in the loss of all existing data.*
 
 ## Contributors
 

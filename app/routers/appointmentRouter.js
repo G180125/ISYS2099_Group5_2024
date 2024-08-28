@@ -12,12 +12,19 @@ appointmentRouter.get(
     appointmentController.getAllAppointments
   );
   
-  // Get schedules by staff
+  // Get schedules by patient
   appointmentRouter.get(
     "/patient/all",
     authenticate,
     checkRoles(["patient", "admin"]),
     appointmentController.getAppoinmentsByPatient
+  );
+
+  appointmentRouter.put(
+    "",
+    authenticate,
+    checkRoles(["staff"]),
+    appointmentController.updateAppointment
   );
 
 module.exports = appointmentRouter;

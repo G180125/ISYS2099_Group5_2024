@@ -62,7 +62,7 @@ const appointmentController = {
   getAppoinmentsByPatient: async (req, res) => {
     try {
       const status = req.query.status;
-      const email = req.cookies.email; 
+      const email = req;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
@@ -125,7 +125,40 @@ const appointmentController = {
         error: httpStatus.INTERNAL_SERVER_ERROR.message 
       });
     }
-  }
+  },
+
+  updateAppointment: async (req, res) => {
+    try {
+      const { appointmentId, date, timeSlot } = req.body;
+
+      if(!appointmentId || !date || !timeSlot){
+        return res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
+      }
+      
+      const query = `CALL update_appointment(?,?,?, @result, @message)`;
+      const [rows] = await db.poolStaff.query(query, [appointmentId,date,timeSlot]);
+      // If there are multiple result sets, select the last one
+      const result = rows[0][0].result;
+      const message = rows[0][0].message;
+      
+      if (result == 0) {
+        return res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({ error: httpStatus.BAD_REQUEST(message).message });
+      }
+
+      return res  
+          .status(httpStatus.OK().code)
+          .json({ message: message });
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
+        error: httpStatus.INTERNAL_SERVER_ERROR.message 
+      });
+    }
+  },
 };
 
 module.exports = appointmentController;
