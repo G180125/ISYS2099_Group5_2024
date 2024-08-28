@@ -1,9 +1,9 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const { db } = require("../models");
+const mysqlClient = require("../databases/mysqlClient");
 const moment = require('moment');
 const httpStatus = require("../utils/httpStatus.js");
-const models = require("../services/mysqlService");
+const mysqlService = require("../services/mysqlService");
 
 const app = express();
 app.use(cookieParser());
@@ -18,10 +18,10 @@ const patientController = {
         const offset = (page - 1) * limit;
   
         // Query to fetch patients with pagination
-        const [results] = await db.poolAdmin.query(`SELECT * FROM patient LIMIT ? OFFSET ?`, [limit, offset]);
+        const [results] = await mysqlClient.poolAdmin.query(`SELECT * FROM patient LIMIT ? OFFSET ?`, [limit, offset]);
   
         // Optionally, fetch the total number of records for pagination metadata
-        const [countResult] = await db.poolAdmin.query(`SELECT COUNT(*) as total FROM patient`);
+        const [countResult] = await mysqlClient.poolAdmin.query(`SELECT COUNT(*) as total FROM patient`);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
   
@@ -52,7 +52,7 @@ const patientController = {
             .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
         }
 
-        const [results] = await db.poolPatient.query(
+        const [results] = await mysqlClient.poolPatient.query(
           `SELECT * FROM patient WHERE email = ?`,
           [email],
         );
@@ -89,7 +89,7 @@ const patientController = {
         }
     
         const query = `CALL search_patient_by_name(?, ?, ?, ?)`;
-        const [results] = await db.poolPatient.query(query, [first_name, last_name, limit, offset]); 
+        const [results] = await mysqlClient.poolPatient.query(query, [first_name, last_name, limit, offset]); 
 
         if (results.length === 0) {
           return res
@@ -99,7 +99,7 @@ const patientController = {
     
         // Fetch total number of matching records for pagination metadata
         const countQuery = `SELECT COUNT(*) as total FROM patient WHERE first_name = ? AND last_name = ?`;
-        const [countResult] = await db.poolPatient.query(countQuery, [first_name, last_name]);
+        const [countResult] = await mysqlClient.poolPatient.query(countQuery, [first_name, last_name]);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
     
@@ -131,7 +131,7 @@ const patientController = {
             .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
         }
 
-        const user = await models.getPatient(email);
+        const user = await mysqlService.getPatient(email);
         if (!user) {
           return res
             .status(httpStatus.UNAUTHORIZED().code)
@@ -178,7 +178,7 @@ const patientController = {
           updateQuery += updateFields.join(', ') + ' WHERE email = ?';
           updateValues.push(email);
   
-          await db.poolPatient.query(updateQuery, updateValues);
+          await mysqlClient.poolPatient.query(updateQuery, updateValues);
   
           res.json({
             message: `Patient ${email} updated successfully`,
@@ -213,14 +213,14 @@ const patientController = {
             .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
         }
 
-        const user = await models.getPatient(email);
+        const user = await mysqlService.getPatient(email);
         if (!user) {
           return res
             .status(httpStatus.UNAUTHORIZED().code)
             .json({ error: httpStatus.UNAUTHORIZED("No patient found").message });
         }
 
-        await db.poolAdmin.query(`DELETE FROM patient WHERE email = ?`, [
+        await mysqlClient.poolAdmin.query(`DELETE FROM patient WHERE email = ?`, [
           email,
         ]);
         res

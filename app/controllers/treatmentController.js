@@ -1,9 +1,8 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const { db } = require("../models");
 const moment = require('moment');
 const httpStatus = require("../utils/httpStatus.js");
-
+const mysqlClient = require("../databases/mysqlClient.js");
 
 const app = express();
 app.use(cookieParser());
@@ -32,7 +31,7 @@ const treatmentController = {
             }
 
             const query = `CALL add_patient_treatment(?,?,?, @result, @message)`;
-            const [rows] = await db.poolStaff.query(query, [treatment_name,treatment_date,appointment_id]);
+            const [rows] = await mysqlClient.poolStaff.query(query, [treatment_name,treatment_date,appointment_id]);
             const result = rows[0][0].result;
             const message = rows[0][0].message;
             console.log(rows);

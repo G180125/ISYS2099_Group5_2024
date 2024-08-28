@@ -1,6 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const db = require("../models/db.js");
+const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
 
 const app = express();
@@ -36,9 +36,9 @@ const appointmentController = {
         JOIN department D ON ST.department_id = D.department_id
         LIMIT ? OFFSET ?`;
 
-        const [results] = await db.poolAdmin.query(query, [limit, offset]);
+        const [results] = await mysqlClient.poolAdmin.query(query, [limit, offset]);
 
-        const [countResult] = await db.poolAdmin.query(`SELECT COUNT(*) as total FROM appoitment`);
+        const [countResult] = await mysqlClient.poolAdmin.query(`SELECT COUNT(*) as total FROM appoitment`);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
 
@@ -98,8 +98,8 @@ const appointmentController = {
         query += ` LIMIT ? OFFSET ?`;
       }
 
-      const [results] = await db.poolPatient.query(query, queryParams);
-      const [countResult] = await db.poolPatient.query(countQuery, countParams);
+      const [results] = await mysqlClient.poolPatient.query(query, queryParams);
+      const [countResult] = await mysqlClient.poolPatient.query(countQuery, countParams);
 
       const totalRecords = countResult[0].total;
       const totalPages = Math.ceil(totalRecords / limit);
@@ -138,7 +138,7 @@ const appointmentController = {
       }
       
       const query = `CALL update_appointment(?,?,?, @result, @message)`;
-      const [rows] = await db.poolStaff.query(query, [appointmentId,date,timeSlot]);
+      const [rows] = await mysqlClient.poolStaff.query(query, [appointmentId,date,timeSlot]);
       // If there are multiple result sets, select the last one
       const result = rows[0][0].result;
       const message = rows[0][0].message;

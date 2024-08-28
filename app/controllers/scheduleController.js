@@ -1,6 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const db = require("../models/db.js");
+const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
 
 const app = express();
@@ -14,7 +14,7 @@ const scheduleController = {
         const offset = (page - 1) * limit;
 
         // Query to fetch patients with pagination
-        const [results] = await db.poolAdmin.query(`
+        const [results] = await mysqlClient.poolAdmin.query(`
         SELECT S.staff_id, 
           S.schedule_date, 
           S.time_slot, 
@@ -30,7 +30,7 @@ const scheduleController = {
         LIMIT ? OFFSET ?`, [limit, offset]);
 
         // Optionally, fetch the total number of records for pagination metadata
-        const [countResult] = await db.poolAdmin.query(`SELECT COUNT(*) as total FROM schedule`);
+        const [countResult] = await mysqlClient.poolAdmin.query(`SELECT COUNT(*) as total FROM schedule`);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
 
@@ -59,7 +59,7 @@ const scheduleController = {
         const offset = (page - 1) * limit;
         
         const query = `CALL view_staff_schedule(?, ?, ?)`;
-        const results = await db.poolPatient.query(query, [staffId, limit, offset]);
+        const results = await mysqlClient.poolPatient.query(query, [staffId, limit, offset]);
 
         const errorMessage = results[0]?.[0]?.message;
         if (errorMessage) {

@@ -1,8 +1,8 @@
 const cookieParser = require("cookie-parser");
 const express = require("express");
-const { db } = require("../models"); 
+// const { db } = require("../models"); 
 const httpStatus = require("../utils/httpStatus.js");
-const models = require("../services/mysqlService");
+const mysqlService = require("../services/mysqlService");
 
 const app = express();
 app.use(cookieParser());
@@ -13,7 +13,7 @@ const ticketController = {
         const { email, role } = req.cookies;
         const { managerId, firstName, lastName, gender, jobType, departmentId, salary } = req.body;
 
-        if(!models.getStaffId(email)){
+        if(!mysqlService.getStaffId(email)){
             res
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST("No Staff member found to make the request").message });
