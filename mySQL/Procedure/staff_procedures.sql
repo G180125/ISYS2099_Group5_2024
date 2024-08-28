@@ -193,3 +193,116 @@ BEGIN
     ORDER BY schedule_date
     LIMIT s_limit OFFSET s_offset;
 END;
+
+
+DROP PROCEDURE IF EXISTS `update_appointment`;
+CREATE PROCEDURE update_appointment(
+    IN a_appointment_id INT,
+    IN a_update_date DATE,
+    IN a_slot_number INT,
+    OUT result INT,
+    OUT message VARCHAR(255)
+)
+this_proc:
+BEGIN 
+    DECLARE _rollback BOOL DEFAULT 0;
+    DECLARE sql_error_message VARCHAR(255);
+    DECLARE current_doctor_id INT;
+    DECLARE available_schedule_id INT;
+    DECLARE current_patient_id INT;
+
+    -- Declare the handler for SQL exceptions
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = sql_error_message;
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+    
+    -- Retrieve current doctor and patient information in a single query
+    SELECT S.staff_id, A.patient_id
+    INTO current_doctor_id, current_patient_id
+    FROM appointment A
+    JOIN schedule S ON S.schedule_id = A.schedule_id
+    WHERE A.appointment_id = a_appointment_id;
+    
+    -- Validate doctor existence
+    IF current_doctor_id IS NULL THEN
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = 'No Doctor Found!';
+        ROLLBACK;
+        SELECT result, message;
+        LEAVE this_proc;
+    END IF;
+    
+    -- Check for the doctor's availability on the updated date
+    SELECT schedule_id INTO available_schedule_id
+    FROM schedule
+    WHERE schedule_date = a_update_date
+    AND staff_id = current_doctor_id;
+
+    IF available_schedule_id IS NULL THEN
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = 'This doctor does not have a working schedule on this date';
+        ROLLBACK;
+        SELECT result, message;
+        LEAVE this_proc;
+    END IF;
+
+    -- Check for conflicting patient appointments at the specified slot number
+    IF EXISTS (
+        SELECT 1
+        FROM appointment A
+        JOIN schedule S ON S.schedule_id = A.schedule_id
+        WHERE S.schedule_date = a_update_date 
+        AND A.patient_id = current_patient_id
+        AND A.slot_number = a_slot_number
+    ) THEN
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = 'This patient has an appointment at this time';
+        ROLLBACK;
+        SELECT result, message;
+        LEAVE this_proc;
+    END IF;
+
+    -- Check for conflicting doctor appointments at the specified slot number
+    IF EXISTS (
+        SELECT 1
+        FROM appointment A
+        JOIN schedule S ON S.schedule_id = A.schedule_id
+        WHERE S.schedule_date = a_update_date 
+        AND S.staff_id = current_doctor_id
+        AND A.slot_number = a_slot_number
+    ) THEN
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = 'This doctor is busy at this time';
+        ROLLBACK;
+        SELECT result, message;
+        LEAVE this_proc;
+    END IF;
+
+    -- Lock the appointment row for update and perform the update
+    UPDATE appointment
+    SET schedule_id = available_schedule_id, slot_number = a_slot_number
+    WHERE appointment_id = a_appointment_id;
+    
+    -- Commit or rollback based on the transaction status
+    IF _rollback THEN
+        ROLLBACK;
+    ELSE 
+        COMMIT;
+        SET result = 1;
+        SET message = 'Appointment updated successfully';
+    END IF;
+
+    -- Return the result and message
+    SELECT result, message;
+END;

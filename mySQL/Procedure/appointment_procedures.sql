@@ -106,31 +106,3 @@ BEGIN
 
 END;
 
-
-/*
-DROP PROCEDURE IF EXISTS cancel_an_appointment;
-CREATE PROCEDURE cancel_an_appointment(
-    IN a_patient_id INT,
-    IN a_appointment_id INT
-)
-BEGIN
-    -- Check if the appointment exists for the given patient and appointment ID
-    IF EXISTS (
-        SELECT 1
-        FROM appointment
-        WHERE appointment_id = a_appointment_id AND patient_id = a_patient_id
-    ) THEN
-        -- If found, delete the appointment
-        DELETE FROM appointment
-        WHERE appointment_id = a_appointment_id AND patient_id = a_patient_id;
-
-        COMMIT;
-        
-        SELECT CONCAT('Appointment has been canceled.') AS message;
-    ELSE
-        -- If not found, rollback and return an error message
-        ROLLBACK;
-        SELECT CONCAT('You do not have the permission to cancel this appointment') AS message;
-    END IF;
-END;
-*/
