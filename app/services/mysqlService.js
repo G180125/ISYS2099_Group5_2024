@@ -1,4 +1,4 @@
-const db = require("./db.js");
+const db = require("../models/db.js");
 
 let database = {};
 

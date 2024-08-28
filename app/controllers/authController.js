@@ -1,6 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const { db, models } = require("../models");
+const { db } = require("../models/");
+const models = require("../services/mysqlService");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { generateToken, setCookie } = require("../utils");
 const httpStatus = require("../utils/httpStatus");

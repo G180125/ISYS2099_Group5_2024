@@ -1,4 +1,4 @@
-const model = require("../models/models");
+const model = require("../services/mysqlService");
 const httpStatus = require("../utils/httpStatus");
 
 const checkRoles = (allowedRoles) => {

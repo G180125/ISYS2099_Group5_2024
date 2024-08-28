@@ -1,5 +1,5 @@
 const db = require("./db");
-const models = require("./models");
+const models = require("../services/mysqlService");
 
 module.exports = {
   db,

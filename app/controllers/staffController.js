@@ -1,7 +1,7 @@
 
 const cookieParser = require("cookie-parser");
 const express = require("express");
-const { db, models } = require("../models");
+const { db } = require("../models");
 const moment = require('moment');
 const httpStatus = require("../utils/httpStatus.js");
 
