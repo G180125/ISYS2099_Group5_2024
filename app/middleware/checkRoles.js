@@ -20,6 +20,8 @@ const checkRoles = (allowedRoles) => {
 
         if (user) {
           console.log("Grant Permission");
+          req.email = email;
+          req.role = role;
           return next();
         }
       }

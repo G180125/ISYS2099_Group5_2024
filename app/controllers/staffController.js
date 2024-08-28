@@ -70,6 +70,27 @@ const staffController = {
       res.status(500).json({ error: "Internal Server Error" });
     }
   },
+
+  getAllDoctors: async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1;  
+      const limit = parseInt(req.query.limit) || 10; 
+      const offset = (page - 1) * limit;
+
+        const [results] = await db.poolPatient.query(`
+        SELECT S.first_name, S.last_name, D.department_name
+        FROM staff S
+        JOIN department D ON S.department_id = D.department_id
+        WHERE S.job_type = 'D'`);
+        
+        res
+        .status(httpStatus.OK().code)
+        .json(results);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+},
   
   getStaffByEmail: async (req, res) => {
     try {
