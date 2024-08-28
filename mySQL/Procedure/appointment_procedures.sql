@@ -106,3 +106,65 @@ BEGIN
 
 END;
 
+
+
+DROP PROCEDURE IF EXISTS `cancel_appointment`;
+
+CREATE PROCEDURE cancel_appointment(
+    IN a_appointment_id INT,
+    IN a_patient_id INT,
+    OUT result INT,
+    OUT message VARCHAR(255)
+)
+this_proc:
+BEGIN
+    DECLARE _rollback BOOL DEFAULT 0;
+    DECLARE sql_error_message VARCHAR(255);
+
+    -- Declare the handler for SQL exceptions
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = sql_error_message;
+        ROLLBACK;
+        SELECT result, message;
+    END;
+
+    START TRANSACTION;
+    
+    -- Check if the appointment exists, belongs to the patient, and is not already canceled
+    IF NOT EXISTS (
+        SELECT 1
+        FROM appointment A
+        WHERE A.appointment_id = a_appointment_id 
+        AND A.patient_id = a_patient_id
+        AND A.status <> 'C'
+        FOR UPDATE
+    ) THEN
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = 'The appointment is not found, already canceled, or does not belong to the patient';
+        ROLLBACK;
+        SELECT result, message;
+        LEAVE this_proc;
+    END IF;
+   
+    -- Update the appointment status to 'C' (canceled)
+    UPDATE appointment
+    SET status = 'C'
+    WHERE appointment_id = a_appointment_id;
+   
+    -- Commit or rollback based on the transaction status
+    IF _rollback THEN
+        ROLLBACK;
+    ELSE 
+        COMMIT;
+        SET result = 1;
+        SET message = 'Appointment canceled successfully';
+    END IF;
+
+    -- Return the result and message
+    SELECT result, message;
+END;

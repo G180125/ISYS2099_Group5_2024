@@ -159,6 +159,39 @@ const appointmentController = {
       });
     }
   },
+  
+  cancelAppointment: async (req, res) => {
+    try {
+      const { appointment_id, patient_id} = req.body;
+
+      if(!appointment_id || !patient_id){
+        return res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
+      }
+      
+      const query = `CALL cancel_appointment(?,?, @result, @message)`;
+      const [rows] = await db.poolPatient.query(query, [appointment_id,patient_id]);
+      // If there are multiple result sets, select the last one
+      const result = rows[0][0].result;
+      const message = rows[0][0].message;
+      
+      if (result == 0) {
+        return res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({ error: httpStatus.BAD_REQUEST(message).message });
+      }
+
+      return res  
+          .status(httpStatus.OK().code)
+          .json({ message: message });
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
+        error: httpStatus.INTERNAL_SERVER_ERROR.message 
+      });
+    }
+  }
 };
 
 module.exports = appointmentController;
