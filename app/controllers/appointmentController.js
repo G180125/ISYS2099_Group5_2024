@@ -159,8 +159,8 @@ const appointmentController = {
       });
     }
   },
-  
-  cancelAppointment: async (req, res) => {
+
+  cancelAppointment: async (req, res, next) => {
     try {
       const { appointment_id, patient_id} = req.body;
 
@@ -177,19 +177,15 @@ const appointmentController = {
       const message = rows[0][0].message;
       
       if (result == 0) {
-        return res
-          .status(httpStatus.BAD_REQUEST().code)
-          .json({ error: httpStatus.BAD_REQUEST(message).message });
+        throw new Error(message);
       }
 
       return res  
           .status(httpStatus.OK().code)
           .json({ message: message });
     } catch (error) {
-      console.error('Error fetching appointments:', error);
-      res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-        error: httpStatus.INTERNAL_SERVER_ERROR.message 
-      });
+      console.log('Error fetching appointments:', error);
+      next(error);
     }
   }
 };
