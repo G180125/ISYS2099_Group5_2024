@@ -9,6 +9,7 @@ const helmet = require("helmet");
 const { errorHandler } = require("./controllers/errorController");
 const httpStatus = require("./utils/httpStatus");
 const { authRouter, patientRouter, staffRouter, scheduleRouter, appointmentRouter,treatmentRouter } = require("./routers");
+const fileRouter = require("./routers/fileRouter");
 const app = express();
 
 // SECURE HTTP HEADERS
@@ -54,6 +55,7 @@ app.use(`${API_PREFIX}/staff`, staffRouter);
 app.use(`${API_PREFIX}/schedule`, scheduleRouter);
 app.use(`${API_PREFIX}/appointment`, appointmentRouter);
 app.use(`${API_PREFIX}/treatment`, treatmentRouter);
+app.use(`${API_PREFIX}/files`, fileRouter);
 
 // Global error handler
 app.use(errorHandler);

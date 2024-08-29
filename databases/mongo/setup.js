@@ -12,7 +12,7 @@ const connParams = {
     }
 };
 const buckets = [
-    process.env.MONGO_BUCKET_PATIENT,
+    // process.env.MONGO_BUCKET_PATIENT,
     process.env.MONGO_BUCKET_STAFF,
     process.env.MONGO_BUCKET_TREATMENT
 ];

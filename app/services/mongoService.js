@@ -1,0 +1,51 @@
+const { GridFSBucket } = require("mongodb");
+const mongoClient = require("../databases/mongoClient");
+const { Readable } = require("stream");
+
+const dbName = process.env.MONGO_DB_NAME;
+
+const mongoService = {
+    uploadFile: async (file, dirTarget) => {
+        try {
+            await mongoClient.connect();
+            const db = mongoClient.db(dbName);
+            
+            const bucketName =
+                dirTarget == "staff"
+                    ? process.env.MONGO_BUCKET_STAFF
+                    : process.env.MONGO_BUCKET_TREATMENT;
+            const fileName = `${Date.now()}-${file.originalname}`;
+            const metadata = {
+                id: "sql id",
+                type: "my type",
+            };
+
+            let bucket = new GridFSBucket(db, {
+                bucketName: bucketName,
+            });
+
+            const promise = new Promise((resolve, reject) => {
+                let upLoadStream = bucket.openUploadStream(fileName, {
+                    metadata: metadata,
+                });
+
+                Readable.from(file.buffer)
+                    .pipe(upLoadStream)
+                    .on("finish", () => {
+                        resolve(true);
+                    })
+                    .on("error", (err) => {
+                        reject(err);
+                    });
+            });
+
+            return await promise;
+        } catch (err) {
+            throw err;
+        } finally {
+            await mongoClient.close();
+        }
+    },
+};
+
+module.exports = mongoService;
