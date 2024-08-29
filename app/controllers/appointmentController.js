@@ -25,15 +25,36 @@ const appointmentController = {
         const offset = (page - 1) * limit;
 
         const query = 
-        `SELECT P.first_name AS patient_first_name, P.last_name AS patient_last_name, 
-            S.schedule_date, S.time_slot, ST.first_name AS staff_first_name, 
-            ST.last_name AS staff_last_name, ST.email AS staff_email, 
-            ST.gender AS staff_gender, ST.job_type, D.department_name 
-        FROM appointment A
-        JOIN patient P ON A.patient_id = P.patient_id
-        JOIN schedule S ON A.schedule_id = S.schedule_id
-        JOIN staff ST ON S.staff_id = ST.staff_id
-        JOIN department D ON ST.department_id = D.department_id
+        `SELECT 
+        A.appointment_id, 
+        S.schedule_date, 
+        A.slot_number, 
+        ST.first_name AS staff_first_name, 
+        ST.last_name AS staff_last_name,
+        ST.gender AS staff_gender, 
+        ST.job_type, 
+        D.department_name,
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id', T.treatment_id,
+                'name', T.treatment_name,
+                'date', T.treatment_date
+            )
+        ) AS treatments
+        FROM 
+            appointment A
+        JOIN 
+            patient P ON A.patient_id = P.patient_id
+        JOIN 
+            schedule S ON A.schedule_id = S.schedule_id
+        JOIN 
+            staff ST ON S.staff_id = ST.staff_id
+        JOIN 
+            department D ON ST.department_id = D.department_id
+        LEFT JOIN 
+            treatment_record T ON A.appointment_id = T.appointment_id
+        GROUP BY 
+            A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
         LIMIT ? OFFSET ?`;
 
         const [results] = await mysqlClient.poolAdmin.query(query, [limit, offset]);
@@ -69,35 +90,62 @@ const appointmentController = {
 
       console.log(email);
 
+      // Corrected SQL Query
       let query = `
-        SELECT P.first_name AS patient_first_name, P.last_name AS patient_last_name, 
-               S.schedule_date, S.time_slot, ST.first_name AS staff_first_name, 
-               ST.last_name AS staff_last_name, ST.email AS staff_email, 
-               ST.gender AS staff_gender, ST.job_type, D.department_name 
-        FROM appointment A
-        JOIN patient P ON A.patient_id = P.patient_id
-        JOIN schedule S ON A.schedule_id = S.schedule_id
-        JOIN staff ST ON S.staff_id = ST.staff_id
-        JOIN department D ON ST.department_id = D.department_id
-        WHERE P.email = ?`;
+      SELECT 
+      A.appointment_id, 
+      S.schedule_date, 
+      A.slot_number, 
+      ST.first_name AS staff_first_name, 
+      ST.last_name AS staff_last_name,
+      ST.gender AS staff_gender, 
+      ST.job_type, 
+      D.department_name,
+      JSON_ARRAYAGG(
+          JSON_OBJECT(
+              'id', T.treatment_id,
+              'name', T.treatment_name,
+              'date', T.treatment_date
+          )
+      ) AS treatments
+      FROM 
+          appointment A
+      JOIN 
+          patient P ON A.patient_id = P.patient_id
+      JOIN 
+          schedule S ON A.schedule_id = S.schedule_id
+      JOIN 
+          staff ST ON S.staff_id = ST.staff_id
+      JOIN 
+          department D ON ST.department_id = D.department_id
+      LEFT JOIN 
+          treatment_record T ON A.appointment_id = T.appointment_id
+      WHERE 
+          P.email = ?
+      GROUP BY 
+          A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
+      `;
 
-      let countQuery = `
-        SELECT COUNT(*) as total
+      let countQuery = 
+        `SELECT COUNT(*) as total
         FROM appointment A
         JOIN patient P ON A.patient_id = P.patient_id
         WHERE P.email = ?`;
 
       let queryParams = [email, limit, offset];
       let countParams = [email];
+  
 
+      // Append LIMIT and OFFSET based on the condition
       if (status) {
-        query += ` AND A.status = ? LIMIT ? OFFSET ?`;
-        queryParams = [email, status, limit, offset];
+      query += ` AND A.status = ? LIMIT ? OFFSET ?`;
+      queryParams = [email, status, limit, offset];
 
-        countQuery += ` AND A.status = ?`;
-        countParams = [email, status];
+      countQuery += ` AND A.status = ?`;
+      countParams = [email, status];
       } else {
-        query += ` LIMIT ? OFFSET ?`;
+      query += ` LIMIT ? OFFSET ?`;
+      queryParams = [email, limit, offset];
       }
 
       const [results] = await mysqlClient.poolPatient.query(query, queryParams);
@@ -106,14 +154,8 @@ const appointmentController = {
       const totalRecords = countResult[0].total;
       const totalPages = Math.ceil(totalRecords / limit);
 
-      // Convert the time_slot numbers to their corresponding time ranges
-      const resultsWithTimeSlots = results.map(result => ({
-        ...result,
-        time_slot: timeSlotMap[result.time_slot]
-      }));
-
       res.json({
-        results: resultsWithTimeSlots,
+        results: results,
         pagination: {
           totalRecords,
           totalPages,
