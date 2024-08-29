@@ -20,11 +20,25 @@ appointmentRouter.get(
     appointmentController.getAppoinmentsByPatient
   );
 
+  appointmentRouter.post(
+    "/new",
+    authenticate,
+    checkRoles(["patient"]),
+    appointmentController.bookAppointment
+  );
+
   appointmentRouter.put(
     "",
     authenticate,
     checkRoles(["staff"]),
     appointmentController.updateAppointment
+  );
+  
+  appointmentRouter.put(
+    "/cancel",
+    authenticate,
+    checkRoles(["patient"]),
+    appointmentController.cancelAppointment
   );
 
 module.exports = appointmentRouter;

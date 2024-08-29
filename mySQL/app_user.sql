@@ -25,6 +25,8 @@ GRANT EXECUTE ON PROCEDURE hospital_management.list_staff_order_by_name TO 'grou
 GRANT EXECUTE ON PROCEDURE hospital_management.view_staff_schedule TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.add_patient_treatment TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.update_appointment TO 'group5_staff_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.view_patient_treatment_for_given_duration_by_email TO 'group5_staff_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.view_patient_treatment_in_given_duration TO 'group5_staff_app_user'@'localhost';
 
 -- PATIENT
 -- select all tables
@@ -39,6 +41,8 @@ GRANT EXECUTE ON PROCEDURE hospital_management.search_patient_by_name TO 'group5
 GRANT EXECUTE ON PROCEDURE hospital_management.list_staff_by_department TO 'group5_patient_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.list_staff_order_by_name TO 'group5_patient_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.view_staff_schedule TO 'group5_patient_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.book_an_appointment TO 'group5_patient_app_user'@'localhost';
 
+GRANT EXECUTE ON PROCEDURE hospital_management.cancel_appointment TO 'group5_patient_app_user'@'localhost';
 
 

@@ -4,6 +4,14 @@ const treatmentController = require("../controllers/treatmentController");
 const { authenticate } = require("../middleware/authenticate");
 const checkRoles = require("../middleware/checkRoles");
 
+// Get treatment by patient
+// treatmentRouter.get(
+//     "/patient/all",
+//     authenticate,
+//     checkRoles(["patient", "admin"]),
+//     treatmentController.getAppoinmentsByPatient
+// );
+
 treatmentRouter.post(
     "/new",
     authenticate,

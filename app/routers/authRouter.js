@@ -11,7 +11,7 @@ const {
   logout,
 } = require("../controllers/authController");
 
-authRouter.post("/staff/new", checkRoles(["admin"]), registerStaff);
+authRouter.post("/staff/new", authenticate, checkRoles(["admin"]), registerStaff);
 authRouter.post("/staff/login", loginStaff);
 
 authRouter.post("/patient/new", registerPatient);

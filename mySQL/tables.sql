@@ -99,11 +99,11 @@ CREATE TABLE IF NOT EXISTS ticket
 
 -- Treatment Record table 
 CREATE TABLE IF NOT EXISTS treatment_record (
-    history_id          INT AUTO_INCREMENT,
+    treatment_id        INT AUTO_INCREMENT,
     treatment_name      VARCHAR(100),
     treatment_date      DATE,
     appointment_id      INT,
     status              ENUM('U', 'F'),
-    CONSTRAINT treatment_history_pk PRIMARY KEY (history_id),
+    CONSTRAINT treatment_history_pk PRIMARY KEY (treatment_id),
     CONSTRAINT treatment_history_patient_fk FOREIGN KEY (appointment_id) REFERENCES appointment(appointment_id)
 ) ENGINE = InnoDB;
