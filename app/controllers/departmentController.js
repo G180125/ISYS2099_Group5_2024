@@ -1,9 +1,7 @@
 
 const cookieParser = require("cookie-parser");
 const express = require("express");
-// const { db: mysqlClient, models } = require("../models");
 const mysqlClient = require("../databases/mysqlClient");
-const moment = require('moment');
 const httpStatus = require("../utils/httpStatus.js");
 
 const app = express();

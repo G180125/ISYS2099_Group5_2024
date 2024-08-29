@@ -43,7 +43,7 @@ BEGIN
     DECLARE _rollback BOOL DEFAULT 0;
     DECLARE sql_error_message VARCHAR(255);
     DECLARE available_schedule_id INT;
-    
+
     -- Declare the handler for SQL exceptions
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
     BEGIN
@@ -106,18 +106,19 @@ BEGIN
     END IF;
 
     -- If no conflicts, insert the new appointment
-    INSERT INTO appointment (patient_id, schedule_id, start_time, end_time, purpose)
-    VALUES (a_patient_id, v_schedule_id, a_appointment_time, v_appointment_end_time, a_purpose);
+    INSERT INTO appointment (patient_id, schedule_id, slot_number, purpose, status)
+    VALUES (a_patient_id, available_schedule_id, a_slot_number, a_purpose, 'U');
 
     IF _rollback THEN
         SET result = 0;
-        ROLLBACK;
+        ROLLBACK;   
     ELSE
         SET result = 1;
         SET message = 'Appointment booked successfully.';
         COMMIT;
     END IF;
 
+    SELECT result, message;
 END;
 
 
