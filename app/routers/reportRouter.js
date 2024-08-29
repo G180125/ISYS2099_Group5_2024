@@ -6,18 +6,34 @@ const checkRoles = require("../middleware/checkRoles");
 
 // get patient treatment history for a specific date
 reportRouter.get(
-  "",
+  "/range_query/patient",
   authenticate, 
   checkRoles(["admin", "staff"]), 
-  reportController.viewReportForGivenDuration
+  reportController.viewPatientTreatmentForGivenDuration
 );
 
-// get patient treatment history within a date range
+// get all patient treatment history within a date range
 reportRouter.get(
-  "/range_query",
+  "/range_query/patient/all",
   authenticate, 
   checkRoles(["admin", "staff"]), 
-  reportController.viewReportInGivenDuration
+  reportController.viewAllPatientTreatmentInGivenDuration
+);
+
+//get doctor work for given duration
+reportRouter.get(
+  "/range_query/doctor",
+  authenticate, 
+  checkRoles(["admin", "staff"]), 
+  reportController.viewDoctorWorkForGivenDuration
+);
+
+//get doctor work for given duration
+reportRouter.get(
+  "/range_query/doctor/all",
+  authenticate, 
+  checkRoles(["admin", "staff"]), 
+  reportController.viewAllDoctorWorkInGivenDuration
 );
 
 module.exports = reportRouter;
