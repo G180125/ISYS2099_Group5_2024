@@ -1,8 +1,7 @@
 
 const cookieParser = require("cookie-parser");
 const express = require("express");
-const { db, models } = require("../models");
-const moment = require('moment');
+const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
 
 const app = express();
@@ -11,7 +10,7 @@ app.use(cookieParser());
 const departmentController = {
     getAllDepartments: async (req, res) => {
         try {
-            const [results] = await db.poolPatient.query(`
+            const [results] = await mysqlClient.poolPatient.query(`
             SELECT department_name
             FROM department`);
 
@@ -36,7 +35,7 @@ const departmentController = {
             }
 
             // Execute query to fetch doctors by department name
-            const [results] = await db.poolPatient.query(
+            const [results] = await mysqlClient.poolPatient.query(
             `
             SELECT S.first_name, S.last_name, D.department_name
             FROM staff S

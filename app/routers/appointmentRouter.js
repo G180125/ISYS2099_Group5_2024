@@ -20,6 +20,13 @@ appointmentRouter.get(
     appointmentController.getAppoinmentsByPatient
   );
 
+  appointmentRouter.post(
+    "/new",
+    authenticate,
+    checkRoles(["patient"]),
+    appointmentController.bookAppointment
+  );
+
   appointmentRouter.put(
     "",
     authenticate,

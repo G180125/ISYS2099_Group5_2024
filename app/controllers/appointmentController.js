@@ -131,16 +131,17 @@ const appointmentController = {
 
   bookAppointment: async (req, res) => {
     try {
-      const { appointmentId, date, timeSlot } = req.body;
+      const { patientID, doctorID, date, slotNumber, purpose } = req.body;
 
-      if(!appointmentId || !date || !timeSlot){
+      if(!patientID || !doctorID || !date || !slotNumber){
         return res
           .status(httpStatus.BAD_REQUEST().code)
           .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
       }
       
-      const query = `CALL update_appointment(?,?,?, @result, @message)`;
-      const [rows] = await db.poolStaff.query(query, [appointmentId,date,timeSlot]);
+      const query = `CALL book_an_appointment(?,?,?,?,?, @result, @message)`;
+      const [rows] = await mysqlClient.poolPatient.query(query, [patientID, doctorID, date, slotNumber, purpose]);
+
       // If there are multiple result sets, select the last one
       const result = rows[0][0].result;
       const message = rows[0][0].message;

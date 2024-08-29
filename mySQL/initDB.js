@@ -110,6 +110,7 @@ async function executeSetupScript(connection, scriptPath) {
       scripts = [
         "mySQL/tables.sql",
         "mySQL/index.sql",
+        "mySQL/Procedure/appointment_procedures.sql",
         "mySQL/Procedure/patient_procedures.sql",
         "mySQL/Procedure/staff_procedures.sql",
         "mySQL/app_user.sql",
