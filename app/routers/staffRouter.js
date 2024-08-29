@@ -12,6 +12,11 @@ staffRouter.get(
     staffController.getAllStaffs
 );
 
+staffRouter.get(
+  "/doctor",
+  staffController.getAllDoctors
+);
+
 // Get staff by email
 staffRouter.get(
     "",

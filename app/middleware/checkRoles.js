@@ -1,4 +1,4 @@
-const model = require("../models/models");
+const model = require("../services/mysqlService");
 const httpStatus = require("../utils/httpStatus");
 
 const checkRoles = (allowedRoles) => {
@@ -20,6 +20,8 @@ const checkRoles = (allowedRoles) => {
 
         if (user) {
           console.log("Grant Permission");
+          req.email = email;
+          req.role = role;
           return next();
         }
       }

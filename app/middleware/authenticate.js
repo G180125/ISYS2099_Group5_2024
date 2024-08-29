@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const { setCookie, introspect } = require("../utils");
-const { getUserByRole } = require("../models/models");
+const { getUserByRole } = require("../services/mysqlService");
 const httpStatus = require("../utils/httpStatus");
 
 const authenticate = async (req, res, next) => {

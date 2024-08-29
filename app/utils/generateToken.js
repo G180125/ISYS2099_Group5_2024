@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const jwt = require("jsonwebtoken");
-const db = require("../models/db.js");
+const db = require("../databases/mysqlClient");
 
 const generateToken = (email, role) => {
   try {
