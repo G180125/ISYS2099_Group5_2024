@@ -5,7 +5,13 @@ const { StatusCodes } = require("http-status-codes");
 const fileController = require("../controllers/fileController");
 const fileRouter = express.Router();
 
-// use multi-part form
+/* 
+use multi-part form
+{
+    fileTarget : <insert file>
+    dirTarget: staff / treatment
+}
+*/
 fileRouter.post(
     "/upload",
     fileHandler.single("fileTarget"),
