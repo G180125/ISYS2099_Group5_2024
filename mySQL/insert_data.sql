@@ -218,3 +218,25 @@ INSERT INTO appointment (appointment_id, patient_id, schedule_id, slot_number, p
     (18, 18, 47, 1, 'Consultation', 'U'),
     (19, 19, 14, 4, 'Consultation', 'U'),
     (20, 20, 30, 5, 'Consultation', 'U');
+
+INSERT INTO treatment_record (treatment_id, treatment_name, treatment_date, appointment_id, status) VALUES
+    (1, 'X-ray', '2024-09-02', 1, 'U'),
+    (2, 'Endoscopy', '2024-09-04', 2, 'U'),
+    (3, 'Colonoscopy', '2024-09-05', 3, 'U'),
+    (4, 'X-ray', '2024-09-07', 4, 'U'),
+    (5, 'X-ray', '2024-09-10', 5, 'U'),
+    (6, 'Allergy Test', '2024-09-03', 6, 'U'),
+    (7, 'CT Scan', '2024-09-07', 7, 'U'),
+    (8, 'Ultrasound', '2024-09-09', 8, 'U'),
+    (9, 'Mammography', '2024-09-02', 7, 'U'),
+    (10, 'Colonoscopy', '2024-09-04', 6, 'U'),
+    (11, 'Colonoscopy', '2024-09-01', 1, 'U'),
+    (12, 'MRI Scan', '2024-09-01', 2, 'U'),
+    (13, 'Blood Test', '2024-09-06', 5, 'U'),
+    (14, 'Endoscopy', '2024-09-10', 4, 'U'),
+    (15, 'Allergy Test', '2024-09-04', 2, 'U'),
+    (16, 'CT Scan', '2024-09-07', 9, 'U'),
+    (17, 'MRI Scan', '2024-09-01', 7, 'U'),
+    (18, 'CT Scan', '2024-09-06', 5, 'U'),
+    (19, 'MRI Scan', '2024-09-08', 1, 'U'),
+    (20, 'Allergy Test', '2024-09-08', 2, 'U');
