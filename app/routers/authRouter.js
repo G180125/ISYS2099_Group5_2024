@@ -11,11 +11,12 @@ const {
   logout,
 } = require("../controllers/authController");
 
-authRouter.post("/patient/new", registerPatient);
-authRouter.post("/staff/new", checkRoles(["admin"]), registerStaff);
+authRouter.post("/staff/new", authenticate, checkRoles(["admin"]), registerStaff);
+authRouter.post("/staff/login", loginStaff);
 
-authRouter.post("/login/patient", login);
-authRouter.post("/login/staff", loginStaff);
+authRouter.post("/patient/new", registerPatient);
+authRouter.post("/patient/login", login);
+
 authRouter.delete("/logout", authenticate, logout);
 
-module.exports = authRouter;   
+module.exports = authRouter;
