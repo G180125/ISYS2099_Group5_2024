@@ -41,5 +41,6 @@ GRANT EXECUTE ON PROCEDURE hospital_management.list_staff_order_by_name TO 'grou
 GRANT EXECUTE ON PROCEDURE hospital_management.view_staff_schedule TO 'group5_patient_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.book_an_appointment TO 'group5_patient_app_user'@'localhost';
 
+GRANT EXECUTE ON PROCEDURE hospital_management.cancel_appointment TO 'group5_patient_app_user'@'localhost';
 
 
