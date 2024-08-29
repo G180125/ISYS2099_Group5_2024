@@ -20,7 +20,8 @@ const registerPatient = async (req, res) => {
     }
 
     let result = 0; 
-    let message = ''; 
+    let message = '';
+    let new_patient_id = 0; 
 
     const salt = genSaltSync(10);
     const hashedPassword = hashSync(password, salt);
@@ -32,8 +33,7 @@ const registerPatient = async (req, res) => {
 
     result = rows[0][0].result;
     message = rows[0][0].message;
-    console.log("result: " , result);
-    console.log("message: " , message);
+    newPatientId = rows[0][0].new_patient_id;
 
     if (result == 0) {
       return res
@@ -41,12 +41,12 @@ const registerPatient = async (req, res) => {
         .json({ error: httpStatus.BAD_REQUEST(message).message });
     }
 
-    req.email = email;
+    req.id = newPatientId;
     req.role = 'patient';
 
     return res
       .status(httpStatus.OK().code)
-      .json({ message: `User patient created with email: ${email}` });
+      .json({ message: `User patient created with ID: ${newPatientId}` });
   } catch (err) {
     console.error("error: " + err.stack);
     return res
@@ -67,6 +67,7 @@ const registerStaff = async (req, res) => {
 
     let result = 0; 
     let message = ''; 
+    let newStaffId = 0;
 
     const salt = genSaltSync(10);
     const hashedPassword = hashSync(password, salt);
@@ -88,8 +89,7 @@ const registerStaff = async (req, res) => {
 
     result = rows[0][0].result;
     message = rows[0][0].message;
-    console.log("result: " , result);
-    console.log("message: " , message);
+    newStaffId = rows[0][0].new_staff_id;
 
     if (result == 0) {
       return res
@@ -98,11 +98,11 @@ const registerStaff = async (req, res) => {
     }
 
     req.role = role;
-    req.email = email;
+    req.id = newStaffId;
 
     return res
       .status(httpStatus.OK().code)
-      .json({ message: `User ${role} created with email: ${email}` });
+      .json({ message: `User ${role} created with id: ${newStaffId}` });
   } catch (err) {
     console.error("error: " + err.stack);
     return res
@@ -124,7 +124,7 @@ const login = async (req, res) => {
 
     let role, user;
 
-    user = await models.getPatient(email);
+    user = await models.getPatientByEmail(email);
     if (user) {
       role = "patient";
     } else {
@@ -141,11 +141,11 @@ const login = async (req, res) => {
         .json({ error: httpStatus.UNAUTHORIZED("Invalid password").message });
     }
 
-    const tokens = generateToken(email, role);
+    const tokens = generateToken(user.patient_id, role);
     setCookie(res, tokens.accessToken);
 
     req.role = role;
-    req.email = email;
+    req.id = user.patient_id;
 
     return res
       .status(httpStatus.OK().code)
@@ -170,11 +170,11 @@ const loginStaff = async (req, res) => {
 
     let role, user;
 
-    user = await models.getStaff(email);
+    user = await models.getStaffByEmail(email);
     if (user) {
       role = "staff";
     } else {
-      user = await models.getAdmin(email);
+      user = await models.getAdminByEmail(email);
       if (user) {
         role = "admin";
       } else {
@@ -194,11 +194,11 @@ const loginStaff = async (req, res) => {
         .json({ error: httpStatus.UNAUTHORIZED("Invalid password").message });
     }
 
-    const tokens = generateToken(email, role);
+    const tokens = generateToken(user.staff_id, role);
     setCookie(res, tokens.accessToken, tokens.refreshToken, email, role);
 
     req.role = role;
-    req.email = email;
+    req.id = user.staff_id;
 
     return res
       .status(httpStatus.OK().code)
@@ -213,14 +213,12 @@ const loginStaff = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    console.log(`${req.email} logged out with role ${req.role}`);
-
     if (req.role === "patient") {
-      await models.deletePatientToken(req.email);
+      await models.deletePatientToken(req.id);
     } else if (req.role === "staff") {
-      await models.deleteStaffToken(req.email);
+      await models.deleteStaffToken(req.id);
     } else if (req.role === "admin") {
-      await models.deleteAdminToken(req.email);
+      await models.deleteAdminToken(req.id);
     } else {
       return res
         .status(httpStatus.UNAUTHORIZED().code)
@@ -232,14 +230,9 @@ const logout = async (req, res) => {
       expires: new Date(0),
     });
 
-    res.cookie("refreshToken", "", {
-      httpOnly: true,
-      expires: new Date(0),
-    });
-
     return res
       .status(httpStatus.OK().code)
-      .json({ message: `User ${req.email} logged out` });
+      .json({ message: `User logged out` });
   } catch (err) {
     console.error("error: " + err.stack);
     return res

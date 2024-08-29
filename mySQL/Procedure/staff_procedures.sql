@@ -16,7 +16,8 @@ CREATE PROCEDURE add_new_staff (
     IN s_salary DECIMAL(10, 2),
     IN s_manager_id INT,
     OUT result INT,
-    OUT message VARCHAR(255)
+    OUT message VARCHAR(255),
+    OUT new_staff_id INT
 )
 this_proc:
 BEGIN
@@ -46,19 +47,20 @@ BEGIN
     -- Insert the new staff record into the staff table
     INSERT INTO staff (first_name, last_name, email, password, gender, job_type, department_id, salary, manager_id)
     VALUES (s_first_name, s_last_name, s_email, s_password, s_gender, s_job_type, s_department_id, s_salary, s_manager_id);
-    
+
     -- Final check before committing the transaction
     IF _rollback THEN
         SET result = 0;
         ROLLBACK;
     ELSE
         SET result = 1;
+        SET new_staff_id = LAST_INSERT_ID(); 
         SET message = 'Registration successful';
         COMMIT;
     END IF;
 
     -- Return the result and message
-    SELECT result, message;
+    SELECT result, message, new_staff_id;
 END;
 
 
@@ -105,7 +107,7 @@ END $$
 DROP PROCEDURE IF EXISTS update_staff;
 -- DELIMITER //
 CREATE PROCEDURE update_staff(
-    IN s_email VARCHAR(255),
+    IN s_id VARCHAR(255),
     IN s_first_name VARCHAR(100),
     IN s_last_name VARCHAR(100),
     IN s_gender ENUM ('M', 'F', 'O'),
@@ -163,7 +165,7 @@ BEGIN
         department_id = s_department_id,
         salary = s_salary,
         manager_id = s_manager_id
-    WHERE email = s_email;
+    WHERE staff_id = s_id;
 
    IF _rollback THEN
         SET result = 0;

@@ -10,10 +10,11 @@ app.use(cookieParser());
 const ticketController = {
     createTicket: async (req, res) => {
         try {
-        const { email, role } = req.cookies;
+        const id = req.id;
+        const role = req.role;
         const { managerId, firstName, lastName, gender, jobType, departmentId, salary } = req.body;
 
-        if(!mysqlService.getStaffId(email)){
+        if(!mysqlService.getStaffByID(id)){
             res
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST("No Staff member found to make the request").message });

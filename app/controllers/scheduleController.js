@@ -85,12 +85,6 @@ const scheduleController = {
           .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
       }
     },
-
-    updateSchedule: async (req, res) => {
-
-    },
-
-
 }
 
 module.exports = scheduleController;

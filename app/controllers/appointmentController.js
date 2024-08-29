@@ -80,15 +80,15 @@ const appointmentController = {
       }
   },
 
-  getAppoinmentsByPatient: async (req, res) => {
+  getMyAppoinments: async (req, res) => {
     try {
       const status = req.query.status;
-      const email = req.email;
+      const id = req.id;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
 
-      console.log(email);
+      console.log(id);
 
       // Corrected SQL Query
       let query = `
@@ -121,7 +121,7 @@ const appointmentController = {
       LEFT JOIN 
           treatment_record T ON A.appointment_id = T.appointment_id
       WHERE 
-          P.email = ?
+          P.patient_id = ?
       GROUP BY 
           A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
       `;
@@ -132,20 +132,111 @@ const appointmentController = {
         JOIN patient P ON A.patient_id = P.patient_id
         WHERE P.email = ?`;
 
-      let queryParams = [email, limit, offset];
-      let countParams = [email];
+      let queryParams = [id, limit, offset];
+      let countParams = [id];
   
 
       // Append LIMIT and OFFSET based on the condition
       if (status) {
       query += ` AND A.status = ? LIMIT ? OFFSET ?`;
-      queryParams = [email, status, limit, offset];
+      queryParams = [id, status, limit, offset];
 
       countQuery += ` AND A.status = ?`;
-      countParams = [email, status];
+      countParams = [id, status];
       } else {
       query += ` LIMIT ? OFFSET ?`;
-      queryParams = [email, limit, offset];
+      queryParams = [id, limit, offset];
+      }
+
+      const [results] = await mysqlClient.poolPatient.query(query, queryParams);
+      const [countResult] = await mysqlClient.poolPatient.query(countQuery, countParams);
+
+      const totalRecords = countResult[0].total;
+      const totalPages = Math.ceil(totalRecords / limit);
+
+      res.json({
+        results: results,
+        pagination: {
+          totalRecords,
+          totalPages,
+          currentPage: page,
+          pageSize: limit,
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
+        error: httpStatus.INTERNAL_SERVER_ERROR.message 
+      });
+    }
+  },
+
+  getAppointmentsByPatient: async (req, res) => {
+    try {
+      const status = req.query.status;
+      const id = req.body.id;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
+      console.log(id);
+
+      // Corrected SQL Query
+      let query = `
+      SELECT 
+      A.appointment_id, 
+      S.schedule_date, 
+      A.slot_number, 
+      ST.first_name AS staff_first_name, 
+      ST.last_name AS staff_last_name,
+      ST.gender AS staff_gender, 
+      ST.job_type, 
+      D.department_name,
+      JSON_ARRAYAGG(
+          JSON_OBJECT(
+              'id', T.treatment_id,
+              'name', T.treatment_name,
+              'date', T.treatment_date
+          )
+      ) AS treatments
+      FROM 
+          appointment A
+      JOIN 
+          patient P ON A.patient_id = P.patient_id
+      JOIN 
+          schedule S ON A.schedule_id = S.schedule_id
+      JOIN 
+          staff ST ON S.staff_id = ST.staff_id
+      JOIN 
+          department D ON ST.department_id = D.department_id
+      LEFT JOIN 
+          treatment_record T ON A.appointment_id = T.appointment_id
+      WHERE 
+          P.patient_id = ?
+      GROUP BY 
+          A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
+      `;
+
+      let countQuery = 
+        `SELECT COUNT(*) as total
+        FROM appointment A
+        JOIN patient P ON A.patient_id = P.patient_id
+        WHERE P.email = ?`;
+
+      let queryParams = [id, limit, offset];
+      let countParams = [id];
+  
+
+      // Append LIMIT and OFFSET based on the condition
+      if (status) {
+      query += ` AND A.status = ? LIMIT ? OFFSET ?`;
+      queryParams = [id, status, limit, offset];
+
+      countQuery += ` AND A.status = ?`;
+      countParams = [id, status];
+      } else {
+      query += ` LIMIT ? OFFSET ?`;
+      queryParams = [id, limit, offset];
       }
 
       const [results] = await mysqlClient.poolPatient.query(query, queryParams);
@@ -240,7 +331,8 @@ const appointmentController = {
 
   cancelAppointment: async (req, res, next) => {
     try {
-      const { appointment_id, patient_id} = req.body;
+      const patient_id = req.id;
+      const appointment_id = req.body;
 
       if(!appointment_id || !patient_id){
         return res
