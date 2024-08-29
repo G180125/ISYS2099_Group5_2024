@@ -11,4 +11,7 @@ fileRouter.post(
     fileController.uploadFile
 );
 
+// use raw data / url-encoded form
+fileRouter.get("/meta", fileController.getFileMeta);
+
 module.exports = fileRouter;
