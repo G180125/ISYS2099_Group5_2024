@@ -6,7 +6,8 @@
   "scripts": {
     "init-db": "node mySQL/initDB.js",
     "app": "node app/app.js",
-    "start": "npm-run-all init-db app"
+    "start": "npm-run-all init-db app",
+    "init-mongo": "node databases/mongo/setup.js"
   },
   "repository": {
     "type": "git",
