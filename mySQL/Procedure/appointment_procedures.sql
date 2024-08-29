@@ -28,24 +28,21 @@ BEGIN
         st.job_type = 'D';
 END;
 
-
 DROP PROCEDURE IF EXISTS book_an_appointment;
 CREATE PROCEDURE book_an_appointment(
     IN a_patient_id INT,
     IN a_doctor_id INT,
-    IN a_appointment_date DATE,
-    IN a_appointment_time TIME,
+    IN a_date DATE,
+    IN a_slot_number INT,
     IN a_purpose TEXT,
     OUT result INT,
     OUT message VARCHAR(255)
 )
 this_proc:
 BEGIN
-    DECLARE v_schedule_id INT;
-    DECLARE v_appointment_end_time TIME;
-
     DECLARE _rollback BOOL DEFAULT 0;
     DECLARE sql_error_message VARCHAR(255);
+    DECLARE available_schedule_id INT;
     
     -- Declare the handler for SQL exceptions
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
@@ -57,37 +54,54 @@ BEGIN
         ROLLBACK;
     END;
 
-    -- Calculate appointment end time assuming a 1-hour duration (adjust as needed)
-    SET v_appointment_end_time = ADDTIME(a_appointment_time, '01:00:00');
-
     START TRANSACTION;
 
-    -- Check if the doctor has a working schedule on the specified date and lock the row
-    SELECT s.schedule_id INTO v_schedule_id
-    FROM schedule s
-    WHERE s.staff_id = a_doctor_id AND s.schedule_date = a_appointment_date
-    FOR UPDATE;
+    -- Check for the doctor's availability on the updated date
+    SELECT schedule_id INTO available_schedule_id
+    FROM schedule
+    WHERE schedule_date = a_date
+    AND staff_id = a_doctor_id;
 
-    -- If the doctor doesn't have a schedule for that day, rollback and exit
-    IF v_schedule_id IS NULL THEN
+    IF available_schedule_id IS NULL THEN
+        SET _rollback = 1;
         SET result = 0;
-        SET message = CONCAT('This doctor does not have a working schedule on ', a_appointment_date, '.');
+        SET message = 'This doctor does not have a working schedule on this date';
         ROLLBACK;
+        SELECT result, message;
         LEAVE this_proc;
     END IF;
 
-    -- Check for any appointment conflicts and lock the rows if found
+    -- Check for conflicting patient appointments at the specified slot number
     IF EXISTS (
         SELECT 1
-        FROM appointment a
-        WHERE a.schedule_id = v_schedule_id
-        AND a_appointment_time < a.end_time
-        AND v_appointment_end_time > a.start_time
-        FOR UPDATE
+        FROM appointment A
+        JOIN schedule S ON S.schedule_id = A.schedule_id
+        WHERE S.schedule_date = a_date 
+        AND A.patient_id = a_patient_id
+        AND A.slot_number = a_slot_number
     ) THEN
+        SET _rollback = 1;
         SET result = 0;
-        SET message = CONCAT('This doctor is busy at ', a_appointment_time, '.');
+        SET message = 'This patient has an appointment at this time';
         ROLLBACK;
+        SELECT result, message;
+        LEAVE this_proc;
+    END IF;
+
+    -- Check for conflicting doctor appointments at the specified slot number
+    IF EXISTS (
+        SELECT 1
+        FROM appointment A
+        JOIN schedule S ON S.schedule_id = A.schedule_id
+        WHERE S.schedule_date = a_date 
+        AND S.staff_id = a_doctor_id
+        AND A.slot_number = a_slot_number
+    ) THEN
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = 'This doctor is busy at this time';
+        ROLLBACK;
+        SELECT result, message;
         LEAVE this_proc;
     END IF;
 
@@ -105,4 +119,6 @@ BEGIN
     END IF;
 
 END;
+
+
 

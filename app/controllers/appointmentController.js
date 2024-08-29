@@ -1,6 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const db = require("../models/db.js");
+const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
 
 const app = express();
@@ -36,9 +36,9 @@ const appointmentController = {
         JOIN department D ON ST.department_id = D.department_id
         LIMIT ? OFFSET ?`;
 
-        const [results] = await db.poolAdmin.query(query, [limit, offset]);
+        const [results] = await mysqlClient.poolAdmin.query(query, [limit, offset]);
 
-        const [countResult] = await db.poolAdmin.query(`SELECT COUNT(*) as total FROM appoitment`);
+        const [countResult] = await mysqlClient.poolAdmin.query(`SELECT COUNT(*) as total FROM appoitment`);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
 
@@ -62,10 +62,12 @@ const appointmentController = {
   getAppoinmentsByPatient: async (req, res) => {
     try {
       const status = req.query.status;
-      const email = req;
+      const email = req.email;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
+
+      console.log(email);
 
       let query = `
         SELECT P.first_name AS patient_first_name, P.last_name AS patient_last_name, 
@@ -98,8 +100,8 @@ const appointmentController = {
         query += ` LIMIT ? OFFSET ?`;
       }
 
-      const [results] = await db.poolPatient.query(query, queryParams);
-      const [countResult] = await db.poolPatient.query(countQuery, countParams);
+      const [results] = await mysqlClient.poolPatient.query(query, queryParams);
+      const [countResult] = await mysqlClient.poolPatient.query(countQuery, countParams);
 
       const totalRecords = countResult[0].total;
       const totalPages = Math.ceil(totalRecords / limit);
@@ -127,7 +129,7 @@ const appointmentController = {
     }
   },
 
-  updateAppointment: async (req, res) => {
+  bookAppointment: async (req, res) => {
     try {
       const { appointmentId, date, timeSlot } = req.body;
 
@@ -139,6 +141,39 @@ const appointmentController = {
       
       const query = `CALL update_appointment(?,?,?, @result, @message)`;
       const [rows] = await db.poolStaff.query(query, [appointmentId,date,timeSlot]);
+      // If there are multiple result sets, select the last one
+      const result = rows[0][0].result;
+      const message = rows[0][0].message;
+      
+      if (result == 0) {
+        return res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({ error: httpStatus.BAD_REQUEST(message).message });
+      }
+
+      return res  
+          .status(httpStatus.OK().code)
+          .json({ message: message });
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
+        error: httpStatus.INTERNAL_SERVER_ERROR.message 
+      });
+    }
+  },
+
+  updateAppointment: async (req, res) => {
+    try {
+      const { appointmentId, date, timeSlot } = req.body;
+
+      if(!appointmentId || !date || !timeSlot){
+        return res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
+      }
+      
+      const query = `CALL update_appointment(?,?,?, @result, @message)`;
+      const [rows] = await mysqlClient.poolStaff.query(query, [appointmentId,date,timeSlot]);
       // If there are multiple result sets, select the last one
       const result = rows[0][0].result;
       const message = rows[0][0].message;

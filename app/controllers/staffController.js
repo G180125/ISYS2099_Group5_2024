@@ -1,7 +1,7 @@
 
 const cookieParser = require("cookie-parser");
 const express = require("express");
-const { db, models } = require("../models");
+const mysqlClient = require("../databases/mysqlClient");
 const moment = require('moment');
 const httpStatus = require("../utils/httpStatus.js");
 
@@ -28,28 +28,28 @@ const staffController = {
   
       if (job_type && department) {
         query = `CALL list_staff_by_department_and_jobtype(?, ?, ?, ?)`;
-        results = await db.poolStaff.query(query, [department, job_type, limit, offset]);
+        results = await mysqlClient.poolStaff.query(query, [department, job_type, limit, offset]);
 
         countQuery = `SELECT COUNT(*) as total FROM staff WHERE department_id = ? AND jobtype = ?`;
-        [countResult] = await db.poolStaff.query(countQuery, [department, job_type]);
+        [countResult] = await mysqlClient.poolStaff.query(countQuery, [department, job_type]);
       } else if (department) {
         query = `CALL list_staff_by_department(?, ?, ?, ?)`;
-        results = await db.poolStaff.query(query, [department, null, limit, offset]);
+        results = await mysqlClient.poolStaff.query(query, [department, null, limit, offset]);
 
         countQuery = `SELECT COUNT(*) as total FROM staff WHERE department_id = ?`;
-        [countResult] = await db.poolStaff.query(countQuery, [department]);
+        [countResult] = await mysqlClient.poolStaff.query(countQuery, [department]);
       } else if (job_type) {
         query = `SELECT * FROM staff WHERE jobtype = ? ORDER BY name ${order} LIMIT ? OFFSET ?`;
-        results = await db.poolStaff.query(query, [job_type, limit, offset]);
+        results = await mysqlClient.poolStaff.query(query, [job_type, limit, offset]);
 
         countQuery = `SELECT COUNT(*) as total FROM staff WHERE jobtype = ?`;
-        [countResult] = await db.poolStaff.query(countQuery, [job_type]);
+        [countResult] = await mysqlClient.poolStaff.query(countQuery, [job_type]);
       } else {
         query = `CALL list_staff_order_by_name(?, ?, ?)`;
-        results = await db.poolStaff.query(query, [order, limit, offset]);
+        results = await mysqlClient.poolStaff.query(query, [order, limit, offset]);
 
         countQuery = `SELECT COUNT(*) as total FROM staff`;
-        [countResult] = await db.poolStaff.query(countQuery);
+        [countResult] = await mysqlClient.poolStaff.query(countQuery);
       }
   
       const totalRecords = countResult[0].total;
@@ -70,6 +70,27 @@ const staffController = {
       res.status(500).json({ error: "Internal Server Error" });
     }
   },
+
+  getAllDoctors: async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1;  
+      const limit = parseInt(req.query.limit) || 10; 
+      const offset = (page - 1) * limit;
+
+        const [results] = await db.poolPatient.query(`
+        SELECT S.first_name, S.last_name, D.department_name
+        FROM staff S
+        JOIN department D ON S.department_id = D.department_id
+        WHERE S.job_type = 'D'`);
+        
+        res
+        .status(httpStatus.OK().code)
+        .json(results);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+},
   
   getStaffByEmail: async (req, res) => {
     try {
@@ -81,7 +102,7 @@ const staffController = {
         .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
     }
 
-      const [results] = await db.poolStaff.query(
+      const [results] = await mysqlClient.poolStaff.query(
         `SELECT * FROM staff WHERE email = ?`,
         [email],
       );
@@ -120,7 +141,7 @@ const staffController = {
       let message = ''; 
 
       const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, @result, @message)`;
-      const [rows] = await db.poolAdmin.query(query, [email, firstName, lastName, gender, jobType, departmentId, salary, managerId]);
+      const [rows] = await mysqlClient.poolAdmin.query(query, [email, firstName, lastName, gender, jobType, departmentId, salary, managerId]);
 
       result = rows[0][0].result;
       message = rows[0][0].message;
@@ -156,7 +177,7 @@ const staffController = {
   deleteStaffByEmail: async (req, res) => {
     try {
       const email = req.body.email;
-      await db.poolAdmin.query(`DELETE FROM staff WHERE email = ?`, [
+      await mysqlClient.poolAdmin.query(`DELETE FROM staff WHERE email = ?`, [
         email,
       ]);
       res

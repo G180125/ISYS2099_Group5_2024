@@ -1,6 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const { db, models } = require("../models");
+const mysqlClient = require("../databases/mysqlClient");
+const models = require("../services/mysqlService");
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { generateToken, setCookie } = require("../utils");
 const httpStatus = require("../utils/httpStatus");
@@ -25,7 +26,7 @@ const registerPatient = async (req, res) => {
     const hashedPassword = hashSync(password, salt);
 
     const query = `CALL register_patient(?, ?, ?, ?, ?, ?, ?, @result, @message)`;
-    const [rows] = await db.poolPatient.query(query, [null, null, email, hashedPassword, null, 'O', null]);
+    const [rows] = await mysqlClient.poolPatient.query(query, [null, null, email, hashedPassword, null, 'O', null]);
 
     console.log(rows);
 
@@ -75,10 +76,10 @@ const registerStaff = async (req, res) => {
 
     if (role === "staff") {
       query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message)`;
-      [rows] = await db.poolAdmin.query(query, [null, null, email, hashedPassword, 'O', 'D', 1, 1, 1]);
+      [rows] = await mysqlClient.poolAdmin.query(query, [null, null, email, hashedPassword, 'O', 'D', 1, 1, 1]);
     } else if (role === "admin") {
       query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message)`;
-      [rows] = await db.poolAdmin.query(query, [null, null, email, hashedPassword, 'O', 'A', 1, 0, 1]);
+      [rows] = await mysqlClient.poolAdmin.query(query, [null, null, email, hashedPassword, 'O', 'A', 1, 0, 1]);
     } else {
       return res
         .status(httpStatus.BAD_REQUEST().code)
