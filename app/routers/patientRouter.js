@@ -30,7 +30,7 @@ patientRouter.get(
 
 // Update a patient
 patientRouter.put(
-  "/patient",
+  "",
   authenticate,
   checkRoles(["patient"]),
   patientController.updatePatient
@@ -38,7 +38,7 @@ patientRouter.put(
 
 // Delete a patient
 patientRouter.delete(
-  "/patient",
+  "",
   authenticate,
   checkRoles(["admin"]),
   patientController.deletePatientByEmail
