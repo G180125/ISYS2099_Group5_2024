@@ -34,14 +34,22 @@ const fileController = {
         });
     },
 
-    // getFileMeta : async (req, res, next) => {
-    //     // get all metadata
-    //     // const arr = await dbGetFileInfos();
-
-    //     return res.status(StatusCodes.ACCEPTED).json({
-    //         message: arr,
-    //     });
-    // };
+    getOneFile : async (req, res, next) => {
+        const fileTarget = req.body.fileTarget;
+        const dirTarget = req.body.dirTarget;
+    
+        try {
+            const fileBuffer = await mongoService.getOneFile(fileTarget, dirTarget);
+    
+            const b64 = Buffer.from(fileBuffer).toString("base64");
+            const mimeType = "image/jpg";
+            const image = `<img src="data:${mimeType};base64,${b64}" />`;
+    
+            res.send(image);
+        } catch (err) {
+            next(err);
+        }
+    }
 };
 
 module.exports = fileController;

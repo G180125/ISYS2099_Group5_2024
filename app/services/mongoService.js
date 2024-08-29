@@ -5,7 +5,7 @@ const { Readable } = require("stream");
 const dbName = process.env.MONGO_DB_NAME;
 
 const mongoService = {
-    uploadFile : async (file, dirTarget) => {
+    uploadFile: async (file, dirTarget) => {
         try {
             await mongoClient.connect();
             const db = mongoClient.db(dbName);
@@ -63,6 +63,44 @@ const mongoService = {
 
             const cursor = bucket.find(filters);
             return await cursor.toArray();
+        } catch (err) {
+            throw err;
+        } finally {
+            await mongoClient.close();
+        }
+    },
+
+    getOneFile: async (fileTarget, dirTarget) => {
+        try {
+            await mongoClient.connect();
+            const db = mongoClient.db(dbName);
+            const bucketName =
+                dirTarget == "staff"
+                    ? process.env.MONGO_BUCKET_STAFF
+                    : process.env.MONGO_BUCKET_TREATMENT;
+
+            let bucket = new GridFSBucket(db, {
+                bucketName: bucketName,
+            });
+
+            const promise = new Promise((resolve, reject) => {
+                const _buffer = [];
+                bucket
+                    .openDownloadStreamByName(fileTarget)
+                    .on("data", (chunk) => {
+                        _buffer.push(chunk);
+                    })
+                    .on("end", () => {
+                        // const file = Buffer.concat(_buffer);
+                        // console.log("File Downloaded!");
+                        resolve(Buffer.concat(_buffer));
+                    })
+                    .on("error", (err) => {
+                        reject(err);
+                    });
+            });
+
+            return await promise;
         } catch (err) {
             throw err;
         } finally {
