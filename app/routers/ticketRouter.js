@@ -1,15 +1,15 @@
 const express = require("express");
-const appointmentRouter = express.Router();
+const ticketRouter = express.Router();
 const appointmentController = require("../controllers/ticketController");
 const { authenticate } = require("../middleware/authenticate");
 const checkRoles = require("../middleware/checkRoles");
 
-// Get all schedules
-ticketRouter.get(
-    "",
+// Create a ticket
+ticketRouter.post(
+    "/new",
     authenticate,
     checkRoles(["staff"]),
     appointmentController.createTicket
 );
   
-module.exports = appointmentRouter;
+module.exports = ticketRouter;
