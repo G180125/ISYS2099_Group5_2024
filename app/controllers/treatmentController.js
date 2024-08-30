@@ -10,10 +10,10 @@ app.use(cookieParser());
 const treatment_list = ["hormone therapy", "chemotherapy"]
 
 const treatmentController = {
-    getTreatmentsByPatient: async (req, res) => {
+    getMyTreatments: async (req, res) => {
         try{
             const status = req.query.status;
-            const email = req;
+            const id = req.id;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
             const offset = (page - 1) * limit;
@@ -29,7 +29,7 @@ const treatmentController = {
                 JOIN schedule S ON A.schedule_id = S.schedule_id
                 JOIN staff ST ON S.staff_id = ST.staff_id
                 JOIN department D ON ST.department_id = D.department_id
-                WHERE P.email = ?`;
+                WHERE P.patient_id = ?`;
 
             let countQuery = `
                 SELECT COUNT(*) as total
@@ -37,15 +37,15 @@ const treatmentController = {
                 JOIN patient P ON A.patient_id = P.patient_id
                 WHERE P.email = ?`;
 
-            let queryParams = [email, limit, offset];
-            let countParams = [email];
+            let queryParams = [id, limit, offset];
+            let countParams = [id];
 
             if (status) {
                 query += ` AND A.status = ? LIMIT ? OFFSET ?`;
-                queryParams = [email, status, limit, offset];
+                queryParams = [id, status, limit, offset];
 
                 countQuery += ` AND A.status = ?`;
-                countParams = [email, status];
+                countParams = [id, status];
             } else {
                 query += ` LIMIT ? OFFSET ?`;
             }
@@ -71,6 +71,106 @@ const treatmentController = {
                 pageSize: limit,
                 }
             });
+            } catch (error) {
+            console.error('Error fetching appointments:', error);
+            res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
+                error: httpStatus.INTERNAL_SERVER_ERROR.message 
+            });
+        }
+    },
+
+    getTreatmentsByPatient: async (req, res) => {
+        try{
+            const status = req.query.status;
+            const id = req.body.id;
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const offset = (page - 1) * limit;
+
+            let query = `
+                SELECT  P.first_name AS patient_first_name, P.last_name AS patient_last_name, 
+                        T.treatment_name, T.treatment_date, ST.first_name AS staff_first_name, 
+                        ST.last_name AS staff_last_name, ST.email AS staff_email, 
+                        ST.job_type, D.department_name
+                FROM treatment_record T
+                JOIN appointment A ON T.appointment_id = A.appointment_id
+                JOIN patient P ON A.patient_id = P.patient_id
+                JOIN schedule S ON A.schedule_id = S.schedule_id
+                JOIN staff ST ON S.staff_id = ST.staff_id
+                JOIN department D ON ST.department_id = D.department_id
+                WHERE P.patient_id = ?`;
+
+            let countQuery = `
+                SELECT COUNT(*) as total
+                FROM appointment A
+                JOIN patient P ON A.patient_id = P.patient_id
+                WHERE P.email = ?`;
+
+            let queryParams = [id, limit, offset];
+            let countParams = [id];
+
+            if (status) {
+                query += ` AND A.status = ? LIMIT ? OFFSET ?`;
+                queryParams = [id, status, limit, offset];
+
+                countQuery += ` AND A.status = ?`;
+                countParams = [id, status];
+            } else {
+                query += ` LIMIT ? OFFSET ?`;
+            }
+
+            const [results] = await db.poolPatient.query(query, queryParams);
+            const [countResult] = await db.poolPatient.query(countQuery, countParams);
+
+            const totalRecords = countResult[0].total;
+            const totalPages = Math.ceil(totalRecords / limit);
+
+            // Convert the time_slot numbers to their corresponding time ranges
+            const resultsWithTimeSlots = results.map(result => ({
+                ...result,
+                time_slot: timeSlotMap[result.time_slot]
+            }));
+
+            res.json({
+                results: resultsWithTimeSlots,
+                pagination: {
+                totalRecords,
+                totalPages,
+                currentPage: page,
+                pageSize: limit,
+                }
+            });
+            } catch (error) {
+            console.error('Error fetching appointments:', error);
+            res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
+                error: httpStatus.INTERNAL_SERVER_ERROR.message 
+            });
+        }
+    },
+
+    getTreatmentById: async (req, res) => {
+        try{
+            const status = req.query.status;
+            const treatmentId = req.body.treatmentId;
+
+            let query = `
+                SELECT  T.treatment_name, T.treatment_date, ST.first_name AS staff_first_name, 
+                        ST.last_name AS staff_last_name, 
+                        P.first_name AS patient_first_name, P.last_name AS patient_last_name,
+                        ST.job_type, D.department_name
+                FROM treatment_reord T
+                JOIN appointment A ON T.appointment_id = A.appointment_id
+                JOIN patient P ON A.patient_id = P.patient_id
+                JOIN schedule S ON A.schedule_id = S.schedule_id
+                JOIN staff ST ON S.staff_id = ST.staff_id
+                JOIN department D ON ST.department_id = D.department_id
+                WHERE T.treatment_id = ?`;
+
+            const [result] = await db.poolPatient.query(query, [treatmentId]);
+
+            return res 
+                    .status(httpStatus.OK().code)
+                    .json({ result: result });
             } catch (error) {
             console.error('Error fetching appointments:', error);
             res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 

@@ -17,12 +17,20 @@ staffRouter.get(
   staffController.getAllDoctors
 );
 
-// Get staff by email
+//get my info
 staffRouter.get(
-    "",
+  "/my",
+  authenticate,
+  checkRoles(["staff", "admin"]),
+  staffController.getMyInfo
+);
+
+// Get staff by id
+staffRouter.get(
+    "/id",
     authenticate,
     checkRoles(["patient", "admin", "staff"]),
-    staffController.getStaffByEmail
+    staffController.getStaffById
 );
 
 // Update staff 

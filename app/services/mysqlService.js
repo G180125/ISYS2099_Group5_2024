@@ -2,7 +2,7 @@ const db = require("../databases/mysqlClient");
 
 let database = {};
 
-database.getPatient = async (email) => {
+database.getPatientByEmail = async (email) => {
   try {
     const [results] = await db.poolPatient.query(
       `SELECT * FROM patient WHERE email = ?`,
@@ -15,11 +15,24 @@ database.getPatient = async (email) => {
   }
 };
 
-database.deletePatientToken = async (email) => {
+database.getPatientByID = async (id) => {
+  try {
+    const [results] = await db.poolPatient.query(
+      `SELECT * FROM patient WHERE patient_id = ?`,
+      [id]
+    );
+    return results[0];
+  } catch (err) {
+    console.error("error: " + err.stack);
+    throw err;
+  }
+};
+
+database.deletePatientToken = async (id) => {
   try {
     await db.poolPatient.query(
-      `UPDATE patient SET access_token = NULL WHERE email = ?`,
-      [email]
+      `UPDATE patient SET access_token = NULL WHERE patient_id = ?`,
+      [id]
     );
   } catch (err) {
     console.error("error: " + err.stack);
@@ -27,7 +40,7 @@ database.deletePatientToken = async (email) => {
   }
 };
 
-database.getStaff = async (email) => {
+database.getStaffByEmail = async (email) => {
   try {
     const [results] = await db.poolStaff.query(
       `SELECT * FROM staff WHERE email = ? AND job_type <> 'A'`,
@@ -40,24 +53,25 @@ database.getStaff = async (email) => {
   }
 };
 
-database.getStaffId = async (email) => {
+database.getStaffByID = async (id) => {
   try {
     const [results] = await db.poolStaff.query(
-      `SELECT staff_id FROM staff WHERE email = ?`,
-      [email]
+      `SELECT * FROM staff WHERE staff_id = ? AND job_type <> 'A'`,
+      [id]
     );
-    return results.length > 0 ? results[0].staff_id : null;
-  } catch (error) {
-    console.error('Error fetching staff ID by email:', error);
-    throw error;
+    return results[0];
+  } catch (err) {
+    console.error("error: " + err.stack);
+    throw err;
   }
 };
 
-database.deleteStaffToken = async (email) => {
+
+database.deleteStaffToken = async (id) => {
   try {
     await db.poolStaff.query(
-      `UPDATE staff SET access_token = NULL WHERE email = ? AND job_type <> 'A'`,
-      [email]
+      `UPDATE staff SET access_token = NULL WHERE staff_id = ? AND job_type <> 'A'`,
+      [id]
     );
   } catch (err) {
     console.error("error: " + err.stack);
@@ -65,7 +79,7 @@ database.deleteStaffToken = async (email) => {
   }
 };
 
-database.getAdmin = async (email) => {
+database.getAdminByEmail = async (email) => {
   try {
     const [results] = await db.poolAdmin.query(
       `SELECT * FROM staff WHERE email = ? AND job_type='A'`,
@@ -78,11 +92,24 @@ database.getAdmin = async (email) => {
   }
 };
 
-database.deleteAdminToken = async (email) => {
+database.getAdminByID = async (id) => {
+  try {
+    const [results] = await db.poolAdmin.query(
+      `SELECT * FROM staff WHERE staff_id = ? AND job_type='A'`,
+      [id]
+    );
+    return results[0];
+  } catch (err) {
+    console.error("error: " + err.stack);
+    throw err;
+  }
+};
+
+database.deleteAdminToken = async (id) => {
   try {
     await db.poolAdmin.query(
-      `UPDATE staff SET access_token = NULL WHERE email = ? AND job_type='A'`,
-      [email]
+      `UPDATE staff SET access_token = NULL WHERE staff_id = ? AND job_type='A'`,
+      [id]
     );
   } catch (err) {
     console.error("error: " + err.stack);
@@ -90,49 +117,13 @@ database.deleteAdminToken = async (email) => {
   }
 };
 
-database.getUserByRole = async (role, email) => {
+database.getUserByRole = async (role, id) => {
   if (role === "patient") {
-    return database.getPatient(email);
+    return database.getPatientByID(id);
   } else if (role === "staff") {
-    return database.getStaff(email);
+    return database.getStaffByID(id);
   } else if (role === "admin") {
-    return database.getAdmin(email);
-  }
-};
-
-database.checkDepartmentExists = async (departmentID) => {
-  try{
-    await db.poolPatient.query(
-      `SELECT * FROM department WHERE department_id = ?`,
-      [departmentID]
-    );
-
-    if (rows.length > 0) {
-      return true; // Department exists
-    } else {
-      return false; // Department does not exist
-    }
-  } catch (err) {
-    console.error("error: " + err.stack);
-    throw err;
-  }
-}
-
-database.checkStaffExists = async (staffId) => {
-  try {
-    const [results] = await db.poolPatient.query(
-      `SELECT * FROM staff WHERE staff_id = ?`,
-      [staffId]
-    );
-
-     if (rows.length > 0) {
-      return true; // Staff exists
-    } else {
-      return false; // Staff does not exist
-    }
-  } catch (err) {
-    console.error("error: " + err.stack);
-    throw err;
+    return database.getAdminByID(id);
   }
 };
 
