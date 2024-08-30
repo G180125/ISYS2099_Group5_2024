@@ -41,31 +41,32 @@ This project is part of the ISYS2099 course, where Group 5 has developed a compr
 ## Scripts
 
 ```bash
-node mySQL/init-db.js
+# cloning the project
+git clone https://github.com/G180125/ISYS2099_Group5_2024.git
+
+# change into project folder
+cd ISYS2099_Group5_2024
+
+# instal packages
+npm install
+
+# init database (MySQL + MongoDB)
+npm run init-db
+
+# run server
+npm run app
 ```
-Initialize the MySQL database. You have to input your root account username and password in the terminal.
-```bash
-node app/app.js
-```
-Starts the backend API server.
-```bash
-npm run start
-```
-Runs both the database initialization and the API server.
-  
-**Note**: *Run `npm run start` only once. This command resets the database, which will result in the loss of all existing data.*
 
 ## Contributors
 
 | Name                  | Email                      | Score |
 |-----------------------|----------------------------|-------|
-| Dat Pham Xuan         | s3927188@rmit.edu.vn       | 5     |
-| Long Nguyen Vi Phi    | s3904632@rmit.edu.vn       | 5     |
-| Huan Nguyen Dang      | s3927467@rmit.edu.vn       | 5     |
-| Nhan Truong Vo Thien  | s3929215@rmit.edu.vn       | 5     |
-| Pavel Potemkin        | s3963284@rmit.edu.vn       | 5     |
+| Dat Pham Xuan         | s3927188@rmit.edu.vn       | 7     |
+| Long Nguyen Vi Phi    | s3904632@rmit.edu.vn       | 7     |
+| Huan Nguyen Dang      | s3927467@rmit.edu.vn       | 7     |
+| Nhan Truong Vo Thien  | s3929215@rmit.edu.vn       | 7     |
+| Pavel Potemkin        | s3963284@rmit.edu.vn       | 7     |
 
 ## Video Demo:
 
-## License
 
