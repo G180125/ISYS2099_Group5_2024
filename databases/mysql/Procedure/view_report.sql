@@ -116,8 +116,118 @@ BEGIN
 	SELECT result, message;
 END;
 
+-- View the work of a doctor in a given duration
+DROP PROCEDURE IF EXISTS view_doctor_work_for_given_duration_by_email;
+CREATE PROCEDURE view_doctor_work_for_given_duration_by_email(
+    IN start_date DATE,
+    IN end_date DATE,
+    IN email VARCHAR(100),
+    OUT result INT,
+    OUT message VARCHAR(255)
+)
+this_proc:
+BEGIN
+		DECLARE _rollback BOOL DEFAULT 0;
+			DECLARE sql_error_message VARCHAR(255);
+
+			-- Declare the handler for SQL exceptions
+			DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+			BEGIN
+				GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
+				SET _rollback = 1;
+				SET result = 0;
+				SET message = sql_error_message;
+				ROLLBACK;
+				SELECT result, message;
+			END;
+
+			START TRANSACTION;
+	IF NOT EXISTS
+		(SELECT S.first_name, S.last_name, S.email, SC.schedule_date, A.slot_number
+		FROM staff S
+		JOIN schedule SC
+		ON S.staff_id = SC.staff_id
+		JOIN appointment A
+		ON SC.schedule_id = A.schedule_id
+		WHERE SC.schedule_date BETWEEN start_date AND end_date
+		AND email = S.email)
+    THEN 
+		SET result = 0;
+        SET message = 'No data found';
+        ROLLBACK;
+        SELECT result, message;
+        LEAVE this_proc;
+	END IF;
+    
+    -- Commit or rollback based on the transaction status
+    IF _rollback THEN
+		SET result = 0;
+        ROLLBACK;
+    ELSE 
+        COMMIT;
+        SET result = 1;
+        SET message = 'View sucessfully';
+    END IF;
+
+    -- Return the result and message
+	SELECT result, message;
+END;
+
+
+-- View the work of all doctors in a given duration
+DROP PROCEDURE IF EXISTS view_doctor_work_in_given_duration;
+CREATE PROCEDURE view_doctor_work_in_given_duration(
+    IN start_date DATE,
+    IN end_date DATE,
+    OUT result INT,
+    OUT message VARCHAR(255)
+)
+this_proc:
+BEGIN
+		DECLARE _rollback BOOL DEFAULT 0;
+			DECLARE sql_error_message VARCHAR(255);
+
+			-- Declare the handler for SQL exceptions
+			DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+			BEGIN
+				GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
+				SET _rollback = 1;
+				SET result = 0;
+				SET message = sql_error_message;
+				ROLLBACK;
+				SELECT result, message;
+			END;
+
+			START TRANSACTION;
+	IF NOT EXISTS
+		(SELECT S.first_name, S.last_name, S.email, SC.schedule_date, A.slot_number
+		FROM staff S
+		JOIN schedule SC
+		ON S.staff_id = SC.staff_id
+		JOIN appointment A
+		ON SC.schedule_id = A.schedule_id
+		WHERE SC.schedule_date BETWEEN start_date AND end_date)
+    THEN 
+		SET result = 0;
+        SET message = 'No data found';
+        ROLLBACK;
+        SELECT result, message;
+        LEAVE this_proc;
+	END IF;
+    
+    -- Commit or rollback based on the transaction status
+    IF _rollback THEN
+		SET result = 0;
+        ROLLBACK;
+    ELSE 
+        COMMIT;
+        SET result = 1;
+        SET message = 'View sucessfully';
+    END IF;
+
+    -- Return the result and message
+	SELECT result, message;
+END;
 
 
 -- View job change history of a staff (need relation)
--- View the work of a doctor in a given duration (need relation)
--- View the work of all doctors in a given duration (need relation)

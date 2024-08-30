@@ -27,6 +27,8 @@ GRANT EXECUTE ON PROCEDURE hospital_management.add_patient_treatment TO 'group5_
 GRANT EXECUTE ON PROCEDURE hospital_management.update_appointment TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.view_patient_treatment_for_given_duration_by_email TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.view_patient_treatment_in_given_duration TO 'group5_staff_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.view_doctor_work_for_given_duration_by_email TO 'group5_staff_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.view_doctor_work_in_given_duration TO 'group5_staff_app_user'@'localhost';
 
 -- PATIENT
 -- select all tables
