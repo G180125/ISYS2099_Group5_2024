@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS appointment
 
 CREATE TABLE IF NOT EXISTS ticket
 (
-    ticket_id      INT,
+    ticket_id      INT AUTO_INCREMENT,
     first_name     VARCHAR(100),
     last_name      VARCHAR(100),
     gender         ENUM('M', 'F', 'O'), 
