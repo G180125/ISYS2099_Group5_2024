@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS ticket
     manager_id     INT,
     creator        INT NOT NULL,
     created_date   DATE NOT NULL,
-    handled_by     INT NOT NULL,
+    handled_by     INT,
     status         ENUM('P', 'A', 'R'),
     note           TEXT,
     CONSTRAINT ticket_pk PRIMARY KEY (ticket_id),
