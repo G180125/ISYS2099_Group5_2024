@@ -106,16 +106,27 @@ async function executeSetupScript(connection, scriptPath) {
 
     // Execute SQL setup scripts
     let scripts;
+    const pathPrefix = 'databases/mysql';
     if (process.argv.length === 2) {
       scripts = [
-        "mySQL/tables.sql",
-        "mySQL/index.sql",
-        "mySQL/Procedure/appointment_procedures.sql",
-        "mySQL/Procedure/patient_procedures.sql",
-        "mySQL/Procedure/view_report.sql",
-        "mySQL/Procedure/staff_procedures.sql",
-        "mySQL/app_user.sql",
-        "mySQL/insert_data.sql",
+        `${pathPrefix}/tables.sql`,
+        `${pathPrefix}/index.sql`,
+        `${pathPrefix}/Procedure/appointment_procedures.sql`,
+        `${pathPrefix}/Procedure/patient_procedures.sql`,
+        `${pathPrefix}/Procedure/view_report.sql`,
+        `${pathPrefix}/Procedure/staff_procedures.sql`,
+        `${pathPrefix}/app_user.sql`,
+        `${pathPrefix}/insert_data.sql`,
+        // `${pathPrefix}/tables.sql`,
+        
+        // "mySQL/tables.sql",
+        // "mySQL/index.sql",
+        // "mySQL/Procedure/appointment_procedures.sql",
+        // "mySQL/Procedure/patient_procedures.sql",
+        // "mySQL/Procedure/view_report.sql",
+        // "mySQL/Procedure/staff_procedures.sql",
+        // "mySQL/app_user.sql",
+        // "mySQL/insert_data.sql",
       ];
     } 
 
