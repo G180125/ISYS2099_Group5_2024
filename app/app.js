@@ -57,6 +57,7 @@ app.use(`${API_PREFIX}/treatment`, treatmentRouter);
 app.use(`${API_PREFIX}/files`, fileRouter);
 app.use(`${API_PREFIX}/department`, departmentRouter);
 app.use(`${API_PREFIX}/report`, reportRouter);
+app.use(`${API_PREFIX}/ticket`, ticketRouter);
 
 // Global error handler
 app.use(errorHandler);
