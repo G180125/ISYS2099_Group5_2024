@@ -4,7 +4,7 @@ const { getUserByRole } = require("../services/mysqlService");
 const httpStatus = require("../utils/httpStatus");
 
 const authenticate = async (req, res, next) => {
-  const { accessToken} = req.cookies;
+  const { accessToken } = req.cookies;
 
   console.log("\n");
   console.log("Access token: " + accessToken);
@@ -30,7 +30,7 @@ const authenticate = async (req, res, next) => {
     console.log(`email with the token ${payload.email}`);
 
     // Get user by role
-    const user = await getUserByRole(payload.role, payload.email);
+    const user = await getUserByRole(payload.role, payload.id);
 
     if (!user || !user.access_token) {
       return res
@@ -38,14 +38,12 @@ const authenticate = async (req, res, next) => {
         .json({ error: httpStatus.FORBIDDEN("Authentication Invalid").message });
     }
 
-    console.log("\n");
-    console.log(`Auth user ${user.email} access token ${user.access_token}`);
     
     // Set new token cookies
     setCookie(res, accessToken);
 
     // Attach user information to the request
-    req.email = payload.email;
+    req.id = payload.id;
     req.role = payload.role;
 
     next();

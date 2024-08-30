@@ -92,19 +92,47 @@ const staffController = {
     }
 },
   
-  getStaffByEmail: async (req, res) => {
+  getMyInfo: async (req, res) => {
     try {
-      const email = req.body.email;
+      const id = req.id;
 
-      if(!email || email == ""){
+      if(!id || id == ""){
         return res
         .status(httpStatus.BAD_REQUEST().code)
-        .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
+        .json({ error: httpStatus.BAD_REQUEST("Unauthentication").message });
     }
 
       const [results] = await mysqlClient.poolStaff.query(
-        `SELECT * FROM staff WHERE email = ?`,
-        [email],
+        `SELECT * FROM staff WHERE staff_id = ?`,
+        [id],
+      );
+      if (results.length === 0) {
+        return res
+          .status(httpStatus.NOT_FOUND().code)
+          .json({ error: httpStatus.NOT_FOUND("Staff not found").message });
+      }
+      return res.json(results[0]);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
+        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+    }
+  },
+
+  getStaffById: async (req, res) => {
+    try {
+      const id = req.body.id;
+
+      if(!id || id == ""){
+        return res
+        .status(httpStatus.BAD_REQUEST().code)
+        .json({ error: httpStatus.BAD_REQUEST("Unauthentication").message });
+    }
+
+      const [results] = await mysqlClient.poolStaff.query(
+        `SELECT * FROM staff WHERE staff_id = ?`,
+        [id],
       );
       if (results.length === 0) {
         return res
@@ -121,14 +149,14 @@ const staffController = {
   },
 
   updateStaff: async (req, res) => {
-    console.log(req.params);
     try {
-      const { email, firstName, lastName, gender, jobType, departmentId, salary, managerId } = req.body;
+      const id = req.id;
+      const { firstName, lastName, gender, jobType, departmentId, salary, managerId } = req.body;
 
-      if(!email || email == ""){
+      if(!id || id == ""){
           return res
           .status(httpStatus.BAD_REQUEST().code)
-          .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
+          .json({ error: httpStatus.BAD_REQUEST("Unanthentication").message });
       }
 
       if (salary && salary < 0) {
@@ -141,7 +169,7 @@ const staffController = {
       let message = ''; 
 
       const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, @result, @message)`;
-      const [rows] = await mysqlClient.poolAdmin.query(query, [email, firstName, lastName, gender, jobType, departmentId, salary, managerId]);
+      const [rows] = await mysqlClient.poolAdmin.query(query, [id, firstName, lastName, gender, jobType, departmentId, salary, managerId]);
 
       result = rows[0][0].result;
       message = rows[0][0].message;
@@ -164,7 +192,7 @@ const staffController = {
         };
         res
           .status(httpStatus.OK().code)
-          .json(httpStatus.OK(`Staff ${staffId} updated successfully`, responseData).data);
+          .json(httpStatus.OK(`Staff ${staff_id} updated successfully`, responseData).data);
       }
     } catch (error) {
       console.error(error);
@@ -176,9 +204,9 @@ const staffController = {
 
   deleteStaffByEmail: async (req, res) => {
     try {
-      const email = req.body.email;
-      await mysqlClient.poolAdmin.query(`DELETE FROM staff WHERE email = ?`, [
-        email,
+      const id = req.id;
+      await mysqlClient.poolAdmin.query(`DELETE FROM staff WHERE staff_id = ?`, [
+        id,
       ]);
       res
         .status(httpStatus.OK().code)

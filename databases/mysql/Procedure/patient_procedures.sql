@@ -13,7 +13,8 @@ CREATE PROCEDURE register_patient(
     IN p_gender ENUM('M', 'F', 'O'),
     IN p_allergies TEXT,
     OUT result INT,
-    OUT message VARCHAR(255)
+    OUT message VARCHAR(255),
+    OUT new_patient_id INT  -- Added OUT parameter for new patient ID
 )
 this_proc:
 BEGIN
@@ -50,13 +51,15 @@ BEGIN
         ROLLBACK;
     ELSE
         SET result = 1;
+        SET new_patient_id = LAST_INSERT_ID(); 
         SET message = 'Registration successful';
         COMMIT;
     END IF;
 
-    -- Return the result and message
-    SELECT result, message;
+    -- Return the result, message, and new patient ID
+    SELECT result, message, new_patient_id;  -- Include the new patient ID in the output
 END;
+
 
 DROP PROCEDURE IF EXISTS search_patient_by_name;
 -- DELIMITER //
