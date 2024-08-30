@@ -10,8 +10,8 @@ const buckets = [
 ];
 const dbName = process.env.MONGO_DB_NAME;
 
-console.log("Connecting Mongo ...");
-(async () => {
+// console.log("Connecting Mongo ...");
+async function setupDb() {
   try {
     await client.connect();
     console.log("Mongo Connected!");
@@ -30,7 +30,9 @@ console.log("Connecting Mongo ...");
     console.log("Init mock data...");
     await mockData();
   } finally {
-    console.log("Closing connection...");
+    console.log("Init Success! Closing connection...");
     await client.close();
   }
-})().catch(console.dir);
+}
+
+module.exports = setupDb;

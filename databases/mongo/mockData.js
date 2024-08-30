@@ -9,7 +9,7 @@ const treatmentFileTypes = [
   "Procedure",
   "Admission",
   "Discharge",
-  'Preoperative',
+  "Preoperative",
 ];
 const staffFileTypes = [
   "Avatar",
@@ -41,7 +41,7 @@ const mockData = async () => {
         const filePath = path.join(subDirPath, fileName);
         const fileBuf = fs.readFileSync(filePath);
 
-        console.log(fileName);
+        // console.log(fileName);
         const fileTarget = {
           originalname: fileName,
           buffer: fileBuf,
@@ -50,12 +50,10 @@ const mockData = async () => {
           mysql_id: `${i + 1}`,
           type: getFileType(dirName),
         };
-        
+
         await uploadFile(fileTarget, dirName, metadata);
       }
     }
-  } catch (err) {
-    throw err;
   } finally {
     await client.close();
   }

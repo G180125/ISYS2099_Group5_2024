@@ -4,8 +4,7 @@
   "description": "Hospital Management",
   "main": "app.js",
   "scripts": {
-    "init-db": "node databases/mysql/initDB.js",
-    "init-mongo": "node databases/mongo/setup.js",
+    "init-db": "node databases/initDb.js",
     "app": "node app/app.js",
     "start": "npm-run-all init-db app"
   },
