@@ -1,9 +1,9 @@
 DROP PROCEDURE IF EXISTS create_ticket_for_update;
-
 CREATE PROCEDURE create_ticket_for_update(
     IN staff_id INT,
-    IN update_type ENUM('salary', 'job_type', 'department_id'), -- ENUM for update types
-    IN new_value VARCHAR(50),   -- Can represent new_salary, new_job_type, or new_department_id
+    IN new_salary DECIMAL(10, 2),    -- Nullable: new salary, or NULL if not updating
+    IN new_job_type ENUM('D', 'N', 'A'), -- Nullable: new job type, or NULL if not updating
+    IN new_department_id INT,        -- Nullable: new department ID, or NULL if not updating
     OUT result INT,
     OUT message VARCHAR(255)
 )
@@ -18,11 +18,9 @@ BEGIN
     DECLARE gender CHAR(1);
     DECLARE manager_id INT;
     DECLARE current_salary DECIMAL(10, 2);
-    DECLARE new_salary DECIMAL(10, 2);
     DECLARE current_job_type ENUM('D', 'N', 'A');
-    DECLARE new_job_type ENUM('D', 'N', 'A');
     DECLARE current_department_id INT;
-    DECLARE new_department_id INT;
+    DECLARE notes TEXT;
 
     -- Declare the handler for SQL exceptions
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
@@ -42,90 +40,61 @@ BEGIN
     FROM staff S
     WHERE S.staff_id = staff_id;
 
-    -- Determine the type of update
-    IF update_type = 'salary' THEN
-        -- Convert new_value to DECIMAL for salary
-        SET @is_numeric := new_value REGEXP '^-?[0-9]+(\.[0-9]{1,2})?$';
-        SET new_salary = CAST(new_value AS DECIMAL(10, 2));
+    -- Initialize notes for changes
+    SET notes = '';
+    
+    IF new_salary IS NULL AND new_job_type is NULL AND new_department_id IS NULL THEN
+		SET result = 0;
+		SET message = 'No value to update. ';
+		SELECT result, message;
+        ROLLBACK;
+		leave this_proc;
+	END IF;
 
-        -- Validate salary
-        IF @is_numeric = 0 OR new_salary < 0 THEN
+    -- Update Salary if new_salary is not NULL
+    IF new_salary IS NOT NULL THEN
+        IF new_salary < 0 THEN
             SET result = 0;
-            SET message = 'Invalid salary format. Must be a non-negative decimal number.';
-			SELECT result, message;
-            ROLLBACK;
-            leave this_proc;
-        ELSEIF current_salary = new_salary THEN
-            SET result = 0;
-            SET message = 'New salary is the same as the current salary. No update needed.';
+            SET message = 'Invalid salary format. Must be a non-negative decimal number. ';
             SELECT result, message;
             ROLLBACK;
-            leave this_proc;
-        ELSE
-            -- Insert the new ticket for salary update
-            INSERT INTO ticket (first_name, last_name, gender, job_type, department_id, salary, manager_id, creator, created_date, handled_by, status, note)
-            VALUES (first_name, last_name, gender, NULL, NULL, new_salary, manager_id, staff_id, DATE(NOW()), NULL, 1, 
-                    CONCAT('Salary update request from ', current_salary, ' to ', new_salary));
+			leave this_proc;
+        ELSE 
+			SET notes = CONCAT(notes, 'Salary update request from ', current_salary, ' to ', new_salary, '. ');
         END IF;
+    END IF;
 
-    ELSEIF update_type = 'job_type' THEN
-        SET new_job_type = new_value;
-
-        -- Validate new job type
+    -- Update Job Type if new_job_type is not NULL
+    IF new_job_type IS NOT NULL THEN
         IF new_job_type NOT IN ('D', 'N', 'A') THEN
             SET result = 0;
-            SET message = 'Invalid job type. Must be D, N, or A.';
-            SELECT result, message;
-            ROLLBACK;
-            leave this_proc;
-        ELSEIF current_job_type = new_job_type THEN
-            SET result = 0;
-            SET message = 'New job type is the same as the current job type. No update needed.';
+            SET message = 'Invalid job type. Must be D, N, or A. ';
             SELECT result, message;
             ROLLBACK;
             leave this_proc;
         ELSE
-            -- Insert the new ticket for job type update
-            INSERT INTO ticket (first_name, last_name, gender, job_type, department_id, salary, manager_id, creator, created_date, handled_by, status, note)
-            VALUES (first_name, last_name, gender, new_job_type, NULL, NULL, manager_id, staff_id, NOW(), NULL, 1, 
-                    CONCAT('Job type update request from ', current_job_type, ' to ', new_job_type));
+			SET notes = CONCAT(notes, 'Job type update request from ', current_job_type, ' to ', new_job_type, '. ');
         END IF;
+    END IF;
 
-    ELSEIF update_type = 'department_id' THEN
-        SET new_department_id = CAST(new_value AS UNSIGNED);
-
-        -- Validate new department ID
+    -- Update Department ID if new_department_id is not NULL
+    IF new_department_id IS NOT NULL THEN
         IF new_department_id < 1 OR new_department_id > 100 THEN
             SET result = 0;
-            SET message = 'Invalid department ID. Must be between 1 and 100.';
-            SELECT result, message;
-            ROLLBACK;
-            leave this_proc;
-        ELSEIF current_department_id = new_department_id THEN
-            SET result = 0;
-            SET message = 'New department ID is the same as the current department ID. No update needed.';
+            SET message = 'Invalid department ID. Must be between 1 and 100. ';
             SELECT result, message;
             ROLLBACK;
             leave this_proc;
         ELSEIF current_department_id IS NULL AND current_job_type = 'A' THEN
+			SET _rollback = 1;
             SET result = 0;
-            SET message = 'Cannot update department ID for Admin';
+            SET message = 'Cannot update department ID for Admin. ';
             SELECT result, message;
             ROLLBACK;
             leave this_proc;
         ELSE
-			-- Insert the new ticket for job type update
-            INSERT INTO ticket (first_name, last_name, gender, job_type, department_id, salary, manager_id, creator, created_date, handled_by, status, note)
-            VALUE (first_name, last_name, gender, NULL, new_department_id, NULL, manager_id, staff_id, DATE(NOW()), NULL, 1, 
-                    CONCAT('Department ID update request from ', current_department_id, ' to ', new_department_id));
+			SET notes = CONCAT(notes, 'Department ID update request from ', current_department_id, ' to ', new_department_id, '. ');
         END IF;
-
-    ELSE
-        SET result = 0;
-        SET message = 'Invalid update type specified. Must be salary, job_type, or department_id.';
-        SELECT result, message;
-        ROLLBACK;
-        leave this_proc;
     END IF;
 
     -- Final check before committing the transaction
@@ -133,8 +102,10 @@ BEGIN
         SET result = 0;
         ROLLBACK;
     ELSE
+		INSERT INTO ticket (first_name, last_name, gender, job_type, department_id, salary, manager_id, creator, created_date, handled_by, status, note)
+        VALUES (first_name, last_name, gender, new_job_type, new_department_id, new_salary, manager_id, staff_id, DATE(NOW()), NULL, 1, notes);
         SET result = 1;
-        SET message = CONCAT('Ticket creation for ', update_type, ' update successful');
+        SET message = 'Ticket creation successful for updates: ';
         COMMIT;
     END IF;
 
