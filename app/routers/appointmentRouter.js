@@ -4,20 +4,28 @@ const appointmentController = require("../controllers/appointmentController");
 const { authenticate } = require("../middleware/authenticate");
 const checkRoles = require("../middleware/checkRoles");
 
-// Get all schedules
+// Get all appointment
 appointmentRouter.get(
-    "/admin/all",
+    "/all",
     authenticate,
     checkRoles(["admin"]),
     appointmentController.getAllAppointments
   );
   
-  // Get schedules by patient
+  // Get my appointments
   appointmentRouter.get(
-    "/patient/all",
+    "/my",
     authenticate,
-    checkRoles(["patient", "admin"]),
-    appointmentController.getAppoinmentsByPatient
+    checkRoles(["patient"]),
+    appointmentController.getMyAppoinments
+  );
+
+  // Get my appointments
+  appointmentRouter.get(
+    "/patient",
+    authenticate,
+    checkRoles(["staff", "admin"]),
+    appointmentController.getAppointmentsByPatient
   );
 
   appointmentRouter.post(

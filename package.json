@@ -4,10 +4,9 @@
   "description": "Hospital Management",
   "main": "app.js",
   "scripts": {
-    "init-db": "node mySQL/initDB.js",
+    "init-db": "node databases/initDb.js",
     "app": "node app/app.js",
-    "start": "npm-run-all init-db app",
-    "init-mongo": "node databases/mongo/setup.js"
+    "start": "npm-run-all init-db app"
   },
   "repository": {
     "type": "git",

@@ -42,19 +42,19 @@ const patientController = {
       }
     },
 
-    getPatientByEmail: async (req, res) => {
+    getMyInfo: async (req, res) => {
       try {
-        const email = req.body.email;
+        const id = req.id;
 
-        if(!email || email == ""){
+        if(!id || id == ""){
             return res
             .status(httpStatus.BAD_REQUEST().code)
-            .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
+            .json({ error: httpStatus.BAD_REQUEST("Unauthentication").message });
         }
 
         const [results] = await mysqlClient.poolPatient.query(
-          `SELECT * FROM patient WHERE email = ?`,
-          [email],
+          `SELECT * FROM patient WHERE patient_id = ?`,
+          [id],
         );
         if (results.length === 0) {
           return res
@@ -62,6 +62,34 @@ const patientController = {
             .json({ error: httpStatus.NOT_FOUND("No patient found").message });
         }
 
+        return res.json(results[0]);
+      } catch (error) {
+        console.error(error);
+        res
+          .status(httpStatus.INTERNAL_SERVER_ERROR.code)
+          .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+      }
+    },
+
+    getPatientByID: async (req, res) => {
+      try {
+        const id = req.body.id;
+
+        if(!id || id == ""){
+            return res
+            .status(httpStatus.BAD_REQUEST().code)
+            .json({ error: httpStatus.BAD_REQUEST("Unauthentication").message });
+        }
+
+        const [results] = await mysqlClient.poolPatient.query(
+          `SELECT * FROM patient WHERE patient_id = ?`,
+          [id],
+        );
+        if (results.length === 0) {
+          return res
+            .status(httpStatus.NOT_FOUND().code)
+            .json({ error: httpStatus.NOT_FOUND("No patient found").message });
+        }
 
         return res.json(results[0]);
       } catch (error) {
@@ -121,17 +149,17 @@ const patientController = {
     },
   
     updatePatient: async (req, res) => {
-      console.log(req.params);
       try {
-        const { email, newFirstName, newLastName, newDOB, newGender } = req.body;
+        const id = req.id;
+        const {  newFirstName, newLastName, newDOB, newGender } = req.body;
 
-        if(!email || email == ""){
+        if(!id || id == ""){
             return res
             .status(httpStatus.BAD_REQUEST().code)
-            .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
+            .json({ error: httpStatus.BAD_REQUEST("Unauthentication").message });
         }
 
-        const user = await mysqlService.getPatient(email);
+        const user = await mysqlService.getPatientByID(id);
         if (!user) {
           return res
             .status(httpStatus.UNAUTHORIZED().code)
@@ -175,14 +203,13 @@ const patientController = {
         }
   
         if (updateFields.length > 0) {
-          updateQuery += updateFields.join(', ') + ' WHERE email = ?';
-          updateValues.push(email);
+          updateQuery += updateFields.join(', ') + ' WHERE patient_id = ?';
+          updateValues.push(id);
   
           await mysqlClient.poolPatient.query(updateQuery, updateValues);
   
           res.json({
-            message: `Patient ${email} updated successfully`,
-            email: email,
+            message: `Patient updated successfully`,
             first_name: newFirstName,
             last_name: newLastName,
             dob: newDOB,
@@ -205,27 +232,27 @@ const patientController = {
   
     deletePatientByEmail: async (req, res) => {
       try {
-        const email = req.body.email;
+        const id = req.body.id;
 
-        if(!email || email == ""){
+        if(!id || id == ""){
             return res
             .status(httpStatus.BAD_REQUEST().code)
-            .json({ error: httpStatus.BAD_REQUEST("No Input For Email").message });
+            .json({ error: httpStatus.BAD_REQUEST("No Input For Id").message });
         }
 
-        const user = await mysqlService.getPatient(email);
+        const user = await mysqlService.getPatientByID(id);
         if (!user) {
           return res
             .status(httpStatus.UNAUTHORIZED().code)
             .json({ error: httpStatus.UNAUTHORIZED("No patient found").message });
         }
 
-        await mysqlClient.poolAdmin.query(`DELETE FROM patient WHERE email = ?`, [
-          email,
+        await mysqlClient.poolAdmin.query(`DELETE FROM patient WHERE patient_id = ?`, [
+          id,
         ]);
         res
           .status(httpStatus.OK().code)
-          .json(httpStatus.OK(`Patient member ${email} deleted successfully`, email).data);
+          .json(httpStatus.OK(`Patient member deleted successfully`).data);
       } catch (error) {
         console.error(error);
         res

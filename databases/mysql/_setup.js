@@ -8,44 +8,45 @@ const stdin = readline.createInterface({
 });
 
 async function promptUser() {
-  return new Promise(resolve => {
-    stdin.question("Enter MySQL root username: ", user => {
+  return new Promise((resolve) => {
+    stdin.question("Enter MySQL root username: ", (user) => {
       resolve(user);
     });
   });
 }
 
-
 async function promptPassword(user) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
-      terminal: true
+      terminal: true,
     });
 
     // Override _writeToOutput to hide input
     rl._writeToOutput = function _writeToOutput(stringToWrite) {
-      rl.output.write("\x1B[2K\x1B[200D" + `Enter MySQL password for "${user}": `);
+      rl.output.write(
+        "\x1B[2K\x1B[200D" + `Enter MySQL password for "${user}": `
+      );
     };
 
     // Manually display the prompt
     rl.output.write(`Enter MySQL password for "${user}": `);
 
-    let password = '';
-    rl.input.on('keypress', (char) => {
-      if (char === '\r') { // Enter key pressed
+    let password = "";
+    rl.input.on("keypress", (char) => {
+      if (char === "\r") {
+        // Enter key pressed
         rl.output.write("\x1B[2K\x1B[200D");
         rl.close();
         resolve(password);
       } else {
         password += char;
-        rl._writeToOutput('*');
+        rl._writeToOutput("*");
       }
     });
   });
 }
-
 
 async function setValidationPolicy(connection) {
   try {
@@ -56,18 +57,17 @@ async function setValidationPolicy(connection) {
   }
 }
 
-
 async function executeSetupScript(connection, scriptPath) {
   try {
     let script = await fs
       .readFile(scriptPath, "utf-8")
-      .then(res => {
+      .then((res) => {
         return res.replaceAll("DELIMITER $$", "");
       })
-      .then(res => {
+      .then((res) => {
         return res.replaceAll("END $$", "END;");
       })
-      .then(res => {
+      .then((res) => {
         return res.replaceAll("DELIMITER ;", "");
       });
 
@@ -78,8 +78,7 @@ async function executeSetupScript(connection, scriptPath) {
   }
 }
 
-
-(async () => {
+async function setupDb() {
   try {
     const user = await promptUser();
     const password = await promptPassword(user);
@@ -98,7 +97,7 @@ async function executeSetupScript(connection, scriptPath) {
     const [rows] = await connection.query(checkPolicyQuery);
     if (rows.length === 0) {
       console.log(
-        "validate_password.policy not found. Skipping policy setting.",
+        "validate_password.policy not found. Skipping policy setting."
       );
     } else {
       await setValidationPolicy(connection);
@@ -106,18 +105,19 @@ async function executeSetupScript(connection, scriptPath) {
 
     // Execute SQL setup scripts
     let scripts;
-    if (process.argv.length === 2) {
-      scripts = [
-        "mySQL/tables.sql",
-        "mySQL/index.sql",
-        "mySQL/Procedure/appointment_procedures.sql",
-        "mySQL/Procedure/patient_procedures.sql",
-        "mySQL/Procedure/view_report.sql",
-        "mySQL/Procedure/staff_procedures.sql",
-        "mySQL/app_user.sql",
-        "mySQL/insert_data.sql",
-      ];
-    } 
+    const pathPrefix = "databases/mysql";
+    // if (process.argv.length === 2) {
+    scripts = [
+      `${pathPrefix}/tables.sql`,
+      `${pathPrefix}/index.sql`,
+      `${pathPrefix}/Procedure/appointment_procedures.sql`,
+      `${pathPrefix}/Procedure/patient_procedures.sql`,
+      `${pathPrefix}/Procedure/view_report.sql`,
+      `${pathPrefix}/Procedure/staff_procedures.sql`,
+      `${pathPrefix}/app_user.sql`,
+      `${pathPrefix}/insert_data.sql`,
+    ];
+    // }
 
     for (const script of scripts) {
       await executeSetupScript(connection, `${script}`);
@@ -130,4 +130,6 @@ async function executeSetupScript(connection, scriptPath) {
   } finally {
     stdin.close(); // Close the readline interface
   }
-})().then(() => {});
+}
+
+module.exports = setupDb;

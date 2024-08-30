@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS treatment_record (
     treatment_name      VARCHAR(100),
     treatment_date      DATE,
     appointment_id      INT,
-    status              ENUM('U', 'F'),
+    status              ENUM('M', 'F', 'U', 'C'),
     CONSTRAINT treatment_history_pk PRIMARY KEY (treatment_id),
     CONSTRAINT treatment_history_patient_fk FOREIGN KEY (appointment_id) REFERENCES appointment(appointment_id)
 ) ENGINE = InnoDB;

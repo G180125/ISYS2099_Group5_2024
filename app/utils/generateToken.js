@@ -2,7 +2,7 @@
 const jwt = require("jsonwebtoken");
 const db = require("../databases/mysqlClient");
 
-const generateToken = (email, role) => {
+const generateToken = (id, role) => {
   try {
     // Check if environment variables are set
     if (!process.env.ACCESS_TOKEN_SECRET) {
@@ -13,30 +13,30 @@ const generateToken = (email, role) => {
 
     // Generate an access token
     const accessToken = jwt.sign(
-      { email: email, role: role},
+      { id: id, role: role},
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "1d" },
     );
 
     console.log("\n");
-    console.log(`User for tokens: ${email}`);
+    console.log(`User for tokens: ${id}`);
 
     // Store the refresh token in the database
     if (role === "admin") {
       db.poolAdmin.query(
-        "UPDATE staff SET access_token = ? WHERE email = ? AND job_type = 'A'",
-        [accessToken, email],
+        "UPDATE staff SET access_token = ? WHERE staff_id = ? AND job_type = 'A'",
+        [accessToken, id],
       );
       console.log(`admin`);
     } else if (role === "staff"){
       db.poolStaff.query(
-        "UPDATE staff SET access_token = ? WHERE email = ? AND job_type <> 'A'",
-        [accessToken, email],
+        "UPDATE staff SET access_token = ? WHERE staff_id = ? AND job_type <> 'A'",
+        [accessToken, id],
       );
     } else {
         db.poolPatient.query(
-            "UPDATE patient SET access_token = ? WHERE email = ? ",
-            [accessToken, email],
+            "UPDATE patient SET access_token = ? WHERE patient_id = ? ",
+            [accessToken, id],
         );
     }
 
