@@ -38,7 +38,7 @@ const appointmentController = {
 
         const [results] = await mysqlClient.poolAdmin.query(query, [limit, offset]);
 
-        const [countResult] = await mysqlClient.poolAdmin.query(`SELECT COUNT(*) as total FROM appoitment`);
+        const [countResult] = await mysqlClient.poolAdmin.query(`SELECT COUNT(*) as total FROM appointment`);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
 

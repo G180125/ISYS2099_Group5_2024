@@ -9,6 +9,8 @@ const helmet = require("helmet");
 const { errorHandler } = require("./controllers/errorController");
 const httpStatus = require("./utils/httpStatus");
 const { authRouter, patientRouter, staffRouter, scheduleRouter, appointmentRouter, treatmentRouter, departmentRouter, reportRouter } = require("./routers");
+
+const setupSwagger = require("./utils/swagger"); // Import the Swagger setup
 const app = express();
 
 // SECURE HTTP HEADERS
@@ -47,6 +49,8 @@ app.get(`${API_PREFIX}`, (req, res) => {
   .json({ message: "Server is running" });
 });
 
+
+
 // Routes setup with prefix
 app.use(`${API_PREFIX}/auth`, authRouter);
 app.use(`${API_PREFIX}/patient`, patientRouter);
@@ -59,6 +63,9 @@ app.use(`${API_PREFIX}/report`, reportRouter);
 
 // Global error handler
 app.use(errorHandler);
+
+// Setup Swagger documentation
+setupSwagger(app);
 
 // Start the serve
 app.listen(SERVER_PORT, () => {
