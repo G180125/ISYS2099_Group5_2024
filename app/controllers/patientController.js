@@ -8,7 +8,7 @@ const mysqlService = require("../services/mysqlService");
 const app = express();
 app.use(cookieParser());
 
-const validGenders = ["F", "M", "O"];
+const validGenders = ["f", "m", "o"];
 
 const patientController = {
     getAllPatients: async (req, res) => {
@@ -124,7 +124,7 @@ const patientController = {
       console.log(req.params);
       try {
         const { email, newFirstName, newLastName, newDOB, newGender } = req.body;
-
+        console.log(newGender);
         if(!email || email == ""){
             return res
             .status(httpStatus.BAD_REQUEST().code)
@@ -166,7 +166,7 @@ const patientController = {
           updateValues.push(newLastName);
         }
         if (newDOB) {
-          updateFields.push('dob = ?');
+          updateFields.push('date_of_birth = ?');
           updateValues.push(newDOB);
         }
         if (newGender) {
