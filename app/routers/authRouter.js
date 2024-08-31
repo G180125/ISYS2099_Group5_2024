@@ -18,11 +18,25 @@ const {
 // }
 authRouter.post("/staff/new", authenticate, checkRoles(["admin"]), registerStaff);
 
-
+// {
+//   "email": "johono@gmail.com",
+//   "password": "test",
+//   "role": "staff"
+// }
 authRouter.post("/staff/login", loginStaff);
 
+// {
+//   "email": "nickkyjimmy@gmail.com",
+//   "password": "test"
+// }
 authRouter.post("/patient/new", registerPatient);
+
+// {
+//   "email": "paul@gmail.com",
+//   "password": "test"
+// }
 authRouter.post("/patient/login", login);
+
 
 authRouter.delete("/logout", authenticate, logout);
 

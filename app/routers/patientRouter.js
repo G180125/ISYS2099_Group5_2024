@@ -29,6 +29,7 @@ patientRouter.get(
 );
 
 // Get patient by name
+// {prefix}/patient/search?first_name=Paul&last_name=Buck
 patientRouter.get(
   "/search",
   authenticate,
@@ -36,22 +37,26 @@ patientRouter.get(
   patientController.getPatientByname
 );
 
-// Update a patient
+// Update my info
+// {
+//   "newFirstName":"Nhan",
+//   "newLastName":"Truong",
+//   "newGender":"M",
+//   "newDOB":"2003-04-27"
+// }
 patientRouter.put(
   "",
   authenticate,
   checkRoles(["patient"]),
-  patientController.updatePatient
+  patientController.updateMyInfo
 );
 
-// Delete a patient
+// Delete patient by id
 patientRouter.delete(
   "",
   authenticate,
   checkRoles(["admin"]),
-  patientController.deletePatientByEmail
+  patientController.deletePatientById
 );
-
-// 
 
 module.exports = patientRouter;
