@@ -44,6 +44,7 @@ DROP TABLE IF EXISTS doctor_work_report;
 CREATE TABLE doctor_work_report AS
 SELECT ST.first_name staff_first_name, 
        ST.last_name staff_last_name, 
+       ST.email staff_email,
        ST.gender staff_gender, 
        ST.job_type, 
        S.schedule_date,

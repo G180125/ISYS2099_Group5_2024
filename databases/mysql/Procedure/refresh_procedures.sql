@@ -55,6 +55,7 @@ BEGIN
     INSERT INTO doctor_work_report
     SELECT ST.first_name AS staff_first_name, 
            ST.last_name AS staff_last_name, 
+           ST.email AS staff_email,
            ST.gender AS staff_gender, 
            ST.job_type, 
            S.schedule_date,
