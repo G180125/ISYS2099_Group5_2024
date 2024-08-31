@@ -7,6 +7,7 @@ const treatmentRouter = require("./treatmentRouter");
 const departmentRouter = require("./departmentRouter");
 const reportRouter = require("./reportRouter");
 const fileRouter = require("./fileRouter");
+const ticketRouter = require("./ticketRouter");
 
 module.exports = {
     appointmentRouter,
@@ -18,4 +19,5 @@ module.exports = {
     departmentRouter,
     reportRouter,
     fileRouter,
+    ticketRouter,
 };

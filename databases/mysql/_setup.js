@@ -105,6 +105,7 @@ async function setupDb() {
 
     // Execute SQL setup scripts
     let scripts;
+
     const pathPrefix = "databases/mysql";
     // if (process.argv.length === 2) {
     scripts = [
@@ -114,6 +115,7 @@ async function setupDb() {
       `${pathPrefix}/Procedure/patient_procedures.sql`,
       `${pathPrefix}/Procedure/view_report.sql`,
       `${pathPrefix}/Procedure/staff_procedures.sql`,
+<<<<<<< HEAD
       `${pathPrefix}/materialized_view.sql`,
       `${pathPrefix}/Procedure/refresh_procedures.sql`,
       `${pathPrefix}/Trigger/billing_report_trigger.sql`,
@@ -123,6 +125,10 @@ async function setupDb() {
       `${pathPrefix}/AppUser/admin_app_user.sql`,
       `${pathPrefix}/AppUser/staff_app_user.sql`,
       `${pathPrefix}/AppUser/patient_app_user.sql`,
+=======
+      `${pathPrefix}/Procedure/ticket_procedures.sql`,
+      `${pathPrefix}/app_user.sql`,
+>>>>>>> main
       `${pathPrefix}/insert_data.sql`,
     ];
     // }
