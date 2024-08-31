@@ -11,7 +11,14 @@ const {
   logout,
 } = require("../controllers/authController");
 
+// {
+//   "email": "johono@gmail.com",
+//   "password": "test",
+//   "role": "staff"
+// }
 authRouter.post("/staff/new", authenticate, checkRoles(["admin"]), registerStaff);
+
+
 authRouter.post("/staff/login", loginStaff);
 
 authRouter.post("/patient/new", registerPatient);
