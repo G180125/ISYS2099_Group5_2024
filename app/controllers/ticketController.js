@@ -36,6 +36,7 @@ const ticketController = {
             ]);
 
             const message = rows[0][0].message;
+            const result = rows[0][0].result;
             console.log(rows);
 
             if (result == 0) {
@@ -53,7 +54,7 @@ const ticketController = {
             console.error('Error in createTicket:', error);
             res
                 .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-                .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+                .json({ error: error.message });
         }
     }
 };
