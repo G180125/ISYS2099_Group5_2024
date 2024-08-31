@@ -10,11 +10,12 @@ app.use(cookieParser());
 const ticketController = {
     createTicket: async (req, res) => {
         try {
+
             const { accessToken } = req.cookies;
             const payload = introspect(accessToken, process.env.ACCESS_TOKEN_SECRET);
             // Check if the staff ID is valid
-            const staffEmail = payload.email;
-            const staffId = await mysqlService.getStaffId(staffEmail);
+            console.log(payload);
+            const staffId = payload.id;
             if (!staffId) {
                 return res
                     .status(httpStatus.UNAUTHORIZED().code)
@@ -26,6 +27,7 @@ const ticketController = {
             const salary = newSalary !== undefined && newSalary !== '' ? newSalary : null;
             const jobType = newJobType !== undefined && newJobType !== '' ? newJobType : null;
             const departmentID = newDepartmentID !== undefined && newDepartmentID !== '' ? newDepartmentID : null;
+
 
             const query = `
                 CALL create_ticket_for_update(?, ?, ?, ?, @result, @message);

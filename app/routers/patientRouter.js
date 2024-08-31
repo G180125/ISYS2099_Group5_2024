@@ -12,19 +12,27 @@ patientRouter.get(
   patientController.getAllPatients
 );
 
-// Get patient by email
+// Get myinfo
 patientRouter.get(
-  "",
+  "/myInfo",
   authenticate,
-  checkRoles(["patient", "admin", "staff"]),
-  patientController.getPatientByEmail
+  checkRoles(["patient"]),
+  patientController.getMyInfo
+);
+
+// Get patient by id
+patientRouter.get(
+  "/id",
+  authenticate,
+  checkRoles(["staff", "admin"]),
+  patientController.getPatientByID
 );
 
 // Get patient by name
 patientRouter.get(
   "/search",
   authenticate,
-  checkRoles(["patient", "admin", "staff"]),
+  checkRoles(["admin", "staff"]),
   patientController.getPatientByname
 );
 

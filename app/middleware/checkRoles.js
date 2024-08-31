@@ -4,23 +4,23 @@ const httpStatus = require("../utils/httpStatus");
 const checkRoles = (allowedRoles) => {
   return async (req, res, next) => {
     try {
-      const { email, role } = req;
+      const { id, role } = req;
 
       console.log(`role: ${role}`);
 
       if (allowedRoles.includes(role)) {
         let user;
         if (role === "patient") {
-          user = await model.getPatient(email);
+          user = await model.getPatientByID(id);
         } else if (role === "staff") {
-          user = await model.getStaff(email);
+          user = await model.getStaffByID(id);
         } else {
-          user = await model.getAdmin(email);
+          user = await model.getAdminByID(id);
         }
 
         if (user) {
           console.log("Grant Permission");
-          req.email = email;
+          req.id = id;
           req.role = role;
           return next();
         }
