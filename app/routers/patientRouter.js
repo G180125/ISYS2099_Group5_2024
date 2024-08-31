@@ -49,7 +49,7 @@ patientRouter.delete(
   "",
   authenticate,
   checkRoles(["admin"]),
-  patientController.deletePatientByEmail
+  patientController.deletePatientById
 );
 
 // 
