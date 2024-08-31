@@ -168,7 +168,7 @@ const staffController = {
       let result = 0; 
       let message = ''; 
 
-      const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, @result, @message)`;
+      const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, ?, @result, @message)`;
       const [rows] = await mysqlClient.poolAdmin.query(query, [id, firstName, lastName, gender, jobType, departmentId, salary, managerId]);
 
       result = rows[0][0].result;
