@@ -33,12 +33,12 @@ staffRouter.get(
     staffController.getStaffById
 );
 
-// Update staff 
+// Update my info
 staffRouter.put(
     "",
     authenticate,
     checkRoles(["staff", "admin"]),
-    staffController.updateStaff
+    staffController.updateMyInfo
   );
 
 // Delete a staff
@@ -46,7 +46,7 @@ staffRouter.delete(
     "",
     authenticate,
     checkRoles(["admin"]),
-    staffController.deleteStaffByEmail
+    staffController.deleteStaffById
   );
 
 module.exports = staffRouter;
