@@ -29,25 +29,31 @@ const reportController = {
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST("Both start_date and end_date parameters are required.").message });
         }
-
-        if (!email) {
-            return res
-            .status(httpStatus.BAD_REQUEST().code)
-            .json({ error: httpStatus.BAD_REQUEST("Email parameter is required.").message });
-        }
+        
+        // Set default values to NULL if they are not provided
+        const email_ = email !== undefined && email !== '' ? email : null;
 
         try {
-            const [results] = await mysqlClient.poolAdmin.query("CALL view_patient_treatment_for_given_duration_by_email(?, ?, ?, @result, @message)", [start_date, end_date, email]);
-
-            if (results.length === 0) {
+            const [rows] = await mysqlClient.poolAdmin.query("CALL view_patient_treatment_for_given_duration(?, ?, ?, @result, @message)", [start_date, end_date, email_]);
+            
+            if (rows[0].length === 0) {
                 return res
                 .status(httpStatus.NOT_FOUND().code)
                 .json({ error: httpStatus.NOT_FOUND("No reports found for the given date.").message });
             }
+            console.log(rows);
+            const message = rows[1][0].message;
+            const result = rows[1][0].result;
+            
+            if (result == 0) {
+                return res
+                  .status(httpStatus.BAD_REQUEST().code)
+                  .json({ error: httpStatus.BAD_REQUEST(message).message });
+            }
 
             return res
             .status(httpStatus.OK().code)
-            .json(httpStatus.OK("Reports retrieved successfully", results));
+            .json(httpStatus.OK("Reports retrieved successfully", rows));
         } catch (error) {
             console.error(error);
             res
@@ -56,35 +62,6 @@ const reportController = {
         }
     },
 
-    // Function to get all patient treatment history within a specific date range
-    viewAllPatientTreatmentInGivenDuration: async (req, res) => {
-        const { start_date, end_date } = req.body; // Assuming dates are provided as query parameters
-
-        if (!start_date || !end_date) {
-            return res
-            .status(httpStatus.BAD_REQUEST().code)
-            .json({ error: httpStatus.BAD_REQUEST("Both start_date and end_date parameters are required.").message });
-        }
-
-        try {
-            const [results] = await mysqlClient.poolAdmin.query("CALL view_patient_treatment_in_given_duration(?, ?, @result, @message)", [start_date, end_date]);
-
-            if (results.length === 0) {
-                return res
-                .status(httpStatus.NOT_FOUND().code)
-                .json({ error: httpStatus.NOT_FOUND("No reports found for the given date.").message });
-            }
-
-            return res
-            .status(httpStatus.OK().code)
-            .json(httpStatus.OK("Reports retrieved successfully", results));
-        } catch (error) {
-            console.error(error);
-            res
-                .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-                .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
-        }
-    },
 
     // Function to get a doctor work within a specific date range
     viewDoctorWorkForGivenDuration: async (req, res) => {
@@ -95,71 +72,39 @@ const reportController = {
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST("Both start_date and end_date parameters are required.").message });
         }
-
-        if (!email) {
-            return res
-            .status(httpStatus.BAD_REQUEST().code)
-            .json({ error: httpStatus.BAD_REQUEST("Email parameter is required.").message });
-        }
+        
+        // Set default values to NULL if they are not provided
+        const email_ = email !== undefined && email !== '' ? email : null;
 
         try {
-            const [results] = await mysqlClient.poolAdmin.query("CALL view_doctor_work_for_given_duration_by_email(?, ?, ?, @result, @message)", [start_date, end_date, email]);
-
-            if (results.length === 0) {
+            const [rows] = await mysqlClient.poolAdmin.query("CALL view_doctor_work_for_given_duration(?, ?, ?, @result, @message)", [start_date, end_date, email_]);
+            
+            if (rows[0].length === 0) {
                 return res
                 .status(httpStatus.NOT_FOUND().code)
                 .json({ error: httpStatus.NOT_FOUND("No reports found for the given date.").message });
             }
-
+            console.log(rows);
+            const message = rows[1][0].message;
+            const result = rows[1][0].result;
+            
+            if (result == 0) {
+                return res
+                  .status(httpStatus.BAD_REQUEST().code)
+                  .json({ error: httpStatus.BAD_REQUEST(message).message });
+            }
+            
             // Convert the time_slot numbers to their corresponding time ranges
-            const resultsWithTimeSlots = results.map(result => ({
+            const resultsWithTimeSlots = rows.map(result => ({
                 ...result,
-                time_slot: timeSlotMap[result.slot_number]
+                time: timeSlotMap[rows.time]
             }));
 
-            console.log(resultsWithTimeSlots);
+            // console.log(resultsWithTimeSlots);
 
             return res
             .status(httpStatus.OK().code)
             .json(httpStatus.OK("Reports retrieved successfully", resultsWithTimeSlots));
-        } catch (error) {
-            console.error(error);
-            res
-                .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-                .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
-        }
-    },
-
-    // Function to get all doctor work within a specific date range
-    viewAllDoctorWorkInGivenDuration: async (req, res) => {
-        const { start_date, end_date } = req.body; // Assuming dates are provided as query parameters
-
-        if (!start_date || !end_date) {
-            return res
-            .status(httpStatus.BAD_REQUEST().code)
-            .json({ error: httpStatus.BAD_REQUEST("Both start_date and end_date parameters are required.").message });
-        }
-
-        try {
-            const [results] = await mysqlClient.poolAdmin.query("CALL view_doctor_work_in_given_duration(?, ?, @result, @message)", [start_date, end_date]);
-
-            if (results.length === 0) {
-                return res
-                .status(httpStatus.NOT_FOUND().code)
-                .json({ error: httpStatus.NOT_FOUND("No reports found for the given date.").message });
-            }
-
-            // Convert the time_slot numbers to their corresponding time ranges
-            const resultsWithTimeSlots = results.map(result => ({
-                ...result,
-                time_slot: timeSlotMap[result.slot_number]
-            }));
-
-            console.log(resultsWithTimeSlots);
-
-            return res
-            .status(httpStatus.OK().code)
-            .json(httpStatus.OK("Reports retrieved successfully", results));
         } catch (error) {
             console.error(error);
             res

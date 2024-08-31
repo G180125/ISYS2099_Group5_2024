@@ -5,6 +5,7 @@ BEGIN
     INSERT INTO treatment_report
     SELECT  P.first_name AS patient_first_name, 
             P.last_name AS patient_last_name, 
+            P.email AS patient_email,
             T.treatment_name, 
             T.treatment_date, 
             T.status AS treatment_status,
