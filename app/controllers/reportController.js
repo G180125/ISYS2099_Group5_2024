@@ -21,7 +21,7 @@ const timeSlotMap = {
 const reportController = {
 
     // Function to get patient treatment history within a specific date range
-    viewPatientTreatment: async (req, res) => {
+    viewPatientTreatment: async (req, res, next) => {
         const { start_date, end_date, email } = req.body; // Assuming dates are provided as query parameters
 
         if (!start_date || !end_date) {
@@ -55,15 +55,12 @@ const reportController = {
             .status(httpStatus.OK().code)
             .json(httpStatus.OK("Reports retrieved successfully", rows));
         } catch (error) {
-            console.error(error);
-            res
-                .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-                .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+            return next(error);
         }
     },
 
     // Function to get a doctor work within a specific date range
-    viewDoctorWork: async (req, res) => {
+    viewDoctorWork: async (req, res, next) => {
         const { start_date, end_date, email } = req.body; // Assuming dates are provided as query parameters
 
         if (!start_date || !end_date) {
@@ -105,15 +102,12 @@ const reportController = {
             .status(httpStatus.OK().code)
             .json(httpStatus.OK("Reports retrieved successfully", resultsWithTimeSlots));
         } catch (error) {
-            console.error(error);
-            res
-                .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-                .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+            return next(error);
         }
     },
 
     // Function to get a staff job changes within a specific date range
-    viewStaffJobChanges: async (req, res) => {
+    viewStaffJobChanges: async (req, res, next) => {
         const { start_date, end_date, email } = req.body; // Assuming dates are provided as query parameters
 
         if (!start_date || !end_date) {
@@ -155,10 +149,7 @@ const reportController = {
             .status(httpStatus.OK().code)
             .json(httpStatus.OK("Reports retrieved successfully", resultsWithTimeSlots));
         } catch (error) {
-            console.error(error);
-            res
-                .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-                .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+            return next(error);
         }
     }
 };

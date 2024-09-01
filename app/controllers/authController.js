@@ -9,7 +9,7 @@ const httpStatus = require("../utils/httpStatus");
 const app = express();
 app.use(cookieParser());
 
-const registerPatient = async (req, res) => {
+const registerPatient = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -48,14 +48,11 @@ const registerPatient = async (req, res) => {
       .status(httpStatus.OK().code)
       .json({ message: `User patient created with ID: ${newPatientId}` });
   } catch (err) {
-    console.error("error: " + err.stack);
-    return res
-      .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-      .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+    return next(err);
   }
 };
 
-const registerStaff = async (req, res) => {
+const registerStaff = async (req, res, next) => {
   try {
     const { email, password, role } = req.body;
 
@@ -104,15 +101,12 @@ const registerStaff = async (req, res) => {
       .status(httpStatus.OK().code)
       .json({ message: `User ${role} created with id: ${newStaffId}` });
   } catch (err) {
-    console.error("error: " + err.stack);
-    return res
-      .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-      .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+    return next(err);
   }
 };
 
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -151,14 +145,11 @@ const login = async (req, res) => {
       .status(httpStatus.OK().code)
       .json({ message: "User authenticated", tokens });
   } catch (err) {
-    console.error("error: " + err.stack);
-    return res
-      .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-      .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+    return next(err);
   }
 };
 
-const loginStaff = async (req, res) => {
+const loginStaff = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -204,14 +195,11 @@ const loginStaff = async (req, res) => {
       .status(httpStatus.OK().code)
       .json({ message: "User authenticated", tokens });
   } catch (err) {
-    console.error("error: " + err.stack);
-    return res
-      .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-      .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+    return next(err);
   }
 };
 
-const logout = async (req, res) => {
+const logout = async (req, res, next) => {
   try {
     if (req.role === "patient") {
       await models.deletePatientToken(req.id);
@@ -234,10 +222,7 @@ const logout = async (req, res) => {
       .status(httpStatus.OK().code)
       .json({ message: `User logged out` });
   } catch (err) {
-    console.error("error: " + err.stack);
-    return res
-      .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-      .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+    return next(err);
   }
 };
 
