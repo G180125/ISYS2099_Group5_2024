@@ -192,7 +192,7 @@ const staffController = {
         };
         res
           .status(httpStatus.OK().code)
-          .json(httpStatus.OK(`Staff ${staff_id} updated successfully`, responseData).data);
+          .json(httpStatus.OK(`Staff ${id} updated successfully`, responseData).data);
       }
     } catch (error) {
       console.error(error);
