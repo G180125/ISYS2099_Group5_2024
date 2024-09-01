@@ -18,10 +18,10 @@ const patientController = {
         const offset = (page - 1) * limit;
   
         // Query to fetch patients with pagination
-        const [results] = await mysqlClient.poolAdmin.query(`SELECT * FROM patient LIMIT ? OFFSET ?`, [limit, offset]);
+        const [results] = await mysqlClient.poolAdmin.query(`SELECT * FROM patient_secure_view LIMIT ? OFFSET ?`, [limit, offset]);
   
         // Optionally, fetch the total number of records for pagination metadata
-        const [countResult] = await mysqlClient.poolAdmin.query(`SELECT COUNT(*) as total FROM patient`);
+        const [countResult] = await mysqlClient.poolAdmin.query(`SELECT COUNT(*) as total FROM patient_secure_view`);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
   
@@ -53,7 +53,7 @@ const patientController = {
         }
 
         const [results] = await mysqlClient.poolPatient.query(
-          `SELECT * FROM patient WHERE patient_id = ?`,
+          `SELECT * FROM patient_secure_view WHERE patient_id = ?`,
           [id],
         );
         if (results.length === 0) {
@@ -82,7 +82,7 @@ const patientController = {
         }
 
         const [results] = await mysqlClient.poolPatient.query(
-          `SELECT * FROM patient WHERE patient_id = ?`,
+          `SELECT * FROM patient_secure_view WHERE patient_id = ?`,
           [id],
         );
         if (results.length === 0) {
@@ -126,7 +126,7 @@ const patientController = {
         }
     
         // Fetch total number of matching records for pagination metadata
-        const countQuery = `SELECT COUNT(*) as total FROM patient WHERE first_name = ? AND last_name = ?`;
+        const countQuery = `SELECT COUNT(*) as total FROM patient_secure_view WHERE first_name = ? AND last_name = ?`;
         const [countResult] = await mysqlClient.poolPatient.query(countQuery, [first_name, last_name]);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);

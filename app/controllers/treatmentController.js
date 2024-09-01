@@ -34,8 +34,7 @@ const treatmentController = {
             let countQuery = `
                 SELECT COUNT(*) as total
                 FROM appointment A
-                JOIN patient P ON A.patient_id = P.patient_id
-                WHERE P.patient_id = ?`;
+                WHERE A.patient_id = ?`;
 
             let queryParams = [id, limit, offset];
             let countParams = [id];
@@ -103,8 +102,7 @@ const treatmentController = {
             let countQuery = `
                 SELECT COUNT(*) as total
                 FROM appointment A
-                JOIN patient P ON A.patient_id = P.patient_id
-                WHERE P.patient_id = ?`;
+                WHERE A.patient_id = ?`;
 
             let queryParams = [id, limit, offset];
             let countParams = [id];

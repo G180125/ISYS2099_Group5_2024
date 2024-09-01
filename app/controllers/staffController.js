@@ -30,25 +30,25 @@ const staffController = {
         query = `CALL list_staff_by_department_and_jobtype(?, ?, ?, ?)`;
         results = await mysqlClient.poolStaff.query(query, [department, job_type, limit, offset]);
 
-        countQuery = `SELECT COUNT(*) as total FROM staff WHERE department_id = ? AND jobtype = ?`;
+        countQuery = `SELECT COUNT(*) as total FROM staff_secure_view WHERE department_id = ? AND jobtype = ?`;
         [countResult] = await mysqlClient.poolStaff.query(countQuery, [department, job_type]);
       } else if (department) {
         query = `CALL list_staff_by_department(?, ?, ?, ?)`;
         results = await mysqlClient.poolStaff.query(query, [department, null, limit, offset]);
 
-        countQuery = `SELECT COUNT(*) as total FROM staff WHERE department_id = ?`;
+        countQuery = `SELECT COUNT(*) as total FROM staff_secure_view WHERE department_id = ?`;
         [countResult] = await mysqlClient.poolStaff.query(countQuery, [department]);
       } else if (job_type) {
-        query = `SELECT * FROM staff WHERE jobtype = ? ORDER BY name ${order} LIMIT ? OFFSET ?`;
+        query = `SELECT * FROM staff_secure_view WHERE jobtype = ? ORDER BY name ${order} LIMIT ? OFFSET ?`;
         results = await mysqlClient.poolStaff.query(query, [job_type, limit, offset]);
 
-        countQuery = `SELECT COUNT(*) as total FROM staff WHERE jobtype = ?`;
+        countQuery = `SELECT COUNT(*) as total FROM staff_secure_view WHERE jobtype = ?`;
         [countResult] = await mysqlClient.poolStaff.query(countQuery, [job_type]);
       } else {
         query = `CALL list_staff_order_by_name(?, ?, ?)`;
         results = await mysqlClient.poolStaff.query(query, [order, limit, offset]);
 
-        countQuery = `SELECT COUNT(*) as total FROM staff`;
+        countQuery = `SELECT COUNT(*) as total FROM staff_secure_view`;
         [countResult] = await mysqlClient.poolStaff.query(countQuery);
       }
   
@@ -103,7 +103,7 @@ const staffController = {
     }
 
       const [results] = await mysqlClient.poolStaff.query(
-        `SELECT * FROM staff WHERE staff_id = ?`,
+        `SELECT * FROM staff_secure_view WHERE staff_id = ?`,
         [id],
       );
       if (results.length === 0) {
@@ -131,7 +131,7 @@ const staffController = {
     }
 
       const [results] = await mysqlClient.poolStaff.query(
-        `SELECT * FROM staff WHERE staff_id = ?`,
+        `SELECT * FROM staff_secure_view WHERE staff_id = ?`,
         [id],
       );
       if (results.length === 0) {

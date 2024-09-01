@@ -113,3 +113,40 @@ BEGIN
         P.first_name, 
         P.last_name;
 END;
+
+DROP PROCEDURE IF EXISTS refresh_patient_secure_view;
+CREATE PROCEDURE refresh_patient_secure_view()
+BEGIN
+    DELETE FROM patient_secure_view;
+    INSERT INTO patient_secure_view
+    SELECT 
+        patient_id,
+        first_name,
+        last_name,
+        email,
+        access_token,
+        date_of_birth,
+        gender,
+        allergies
+    FROM 
+        patient;
+END;
+
+DROP PROCEDURE IF EXISTS refresh_staff_secure_view;
+CREATE PROCEDURE refresh_staff_secure_view()
+BEGIN
+    DELETE FROM staff_secure_view;
+    INSERT INTO staff_secure_view
+    SELECT 
+        staff_id,
+        first_name,
+        last_name,
+        email,
+        access_token,
+        gender,
+        job_type,
+        department_id,
+        manager_id
+    FROM 
+        staff;
+END;

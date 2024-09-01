@@ -20,6 +20,7 @@ GRANT EXECUTE ON PROCEDURE hospital_management.cancel_appointment TO 'group5_pat
 GRANT EXECUTE ON PROCEDURE hospital_management.refresh_treatment_report TO 'group5_patient_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.refresh_doctor_work_report TO 'group5_patient_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.refresh_billing_report TO 'group5_patient_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.refresh_patient_secure_view TO 'group5_patient_app_user'@'localhost';
 
 -- Granting TRIGGER privilege on all relevant TABLES to staff user
 GRANT TRIGGER ON hospital_management.staff TO 'group5_patient_app_user'@'localhost';

@@ -98,3 +98,32 @@ GROUP BY
     P.first_name, 
     P.last_name;
 
+DROP TABLE IF EXISTS patient_secure_view;
+CREATE VIEW patient_secure_view AS
+SELECT 
+    patient_id,
+    first_name,
+    last_name,
+    email,
+    access_token,
+    date_of_birth,
+    gender,
+    allergies
+FROM 
+    patient;
+
+DROP TABLE IF EXISTS staff_secure_view;
+CREATE VIEW staff_secure_view AS
+SELECT 
+    staff_id,
+    first_name,
+    last_name,
+    email,
+    access_token,
+    gender,
+    job_type,
+    department_id,
+    manager_id
+FROM 
+    staff;
+

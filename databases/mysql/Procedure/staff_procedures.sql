@@ -74,7 +74,7 @@ CREATE PROCEDURE list_staff_by_department(
 )
 BEGIN
     --  return the staff list by department
-    SELECT * FROM staff 
+    SELECT * FROM staff_secure_view 
     WHERE department_id = s_department_id 
     AND (s_job_type IS NULL OR job_type = s_job_type)
     ORDER BY department_id, last_name, first_name
@@ -89,11 +89,11 @@ CREATE PROCEDURE list_staff_order_by_name(
 )
 BEGIN
     IF p_order = 'ASC' THEN
-        SELECT * FROM staff
+        SELECT * FROM staff_secure_view
         ORDER BY first_name, last_name ASC
         LIMIT p_limit OFFSET p_offset;
     ELSE
-        SELECT * FROM staff
+        SELECT * FROM staff_secure_view
         ORDER BY first_name, last_name DESC
         LIMIT p_limit OFFSET p_offset;
     END IF;
