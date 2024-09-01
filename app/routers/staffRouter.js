@@ -46,7 +46,7 @@ staffRouter.delete(
     "",
     authenticate,
     checkRoles(["admin"]),
-    staffController.deleteStaffByEmail
+    staffController.deleteStaffById
   );
 
 module.exports = staffRouter;

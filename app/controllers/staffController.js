@@ -202,15 +202,15 @@ const staffController = {
     }
   },
 
-  deleteStaffByEmail: async (req, res) => {
+  deleteStaffById: async (req, res) => {
     try {
-      const id = req.id;
+      const id = req.body.id;
       await mysqlClient.poolAdmin.query(`DELETE FROM staff WHERE staff_id = ?`, [
         id,
       ]);
       res
         .status(httpStatus.OK().code)
-        .json(httpStatus.OK(`Staff member ${email} deleted successfully`, email).data);
+        .json(httpStatus.OK(`Staff member deleted successfully`).data);
     } catch (error) {
       console.error(error);
       res
