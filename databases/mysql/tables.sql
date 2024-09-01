@@ -56,7 +56,6 @@ CREATE TABLE IF NOT EXISTS schedule
     schedule_id     INT AUTO_INCREMENT,
     staff_id        INT,
     schedule_date   DATE NOT NULL,
-    time_slot       TINYINT, 
     CONSTRAINT schedule_pk PRIMARY KEY (schedule_id),
     CONSTRAINT schedule_staff_fk FOREIGN KEY (staff_id) REFERENCES staff(staff_id)
 ) ENGINE = InnoDB;

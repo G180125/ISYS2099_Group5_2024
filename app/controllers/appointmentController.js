@@ -82,7 +82,7 @@ const appointmentController = {
 
   getMyAppoinments: async (req, res) => {
     try {
-      const status = req.query.status;
+      const status = req.query.status || null;
       const id = req.id;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
@@ -122,15 +122,13 @@ const appointmentController = {
           treatment_record T ON A.appointment_id = T.appointment_id
       WHERE 
           P.patient_id = ?
-      GROUP BY 
-          A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
       `;
 
       let countQuery = 
         `SELECT COUNT(*) as total
         FROM appointment A
         JOIN patient P ON A.patient_id = P.patient_id
-        WHERE P.email = ?`;
+        WHERE P.patient_id = ?`;
 
       let queryParams = [id, limit, offset];
       let countParams = [id];
@@ -138,13 +136,15 @@ const appointmentController = {
 
       // Append LIMIT and OFFSET based on the condition
       if (status) {
-      query += ` AND A.status = ? LIMIT ? OFFSET ?`;
+      query += ` AND A.status = ? 
+                GROUP BY A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
+                LIMIT ? OFFSET ?`;
       queryParams = [id, status, limit, offset];
 
       countQuery += ` AND A.status = ?`;
       countParams = [id, status];
       } else {
-      query += ` LIMIT ? OFFSET ?`;
+      query += `GROUP BY A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name LIMIT ? OFFSET ?`;
       queryParams = [id, limit, offset];
       }
 
@@ -185,6 +185,7 @@ const appointmentController = {
       A.appointment_id, 
       S.schedule_date, 
       A.slot_number, 
+      A.status,
       ST.first_name AS staff_first_name, 
       ST.last_name AS staff_last_name,
       ST.gender AS staff_gender, 
@@ -212,14 +213,14 @@ const appointmentController = {
       WHERE 
           P.patient_id = ?
       GROUP BY 
-          A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
+          A.appointment_id, S.schedule_date, A.slot_number, A.status, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
       `;
 
       let countQuery = 
         `SELECT COUNT(*) as total
         FROM appointment A
         JOIN patient P ON A.patient_id = P.patient_id
-        WHERE P.email = ?`;
+        WHERE P.patient_id = ?`;
 
       let queryParams = [id, limit, offset];
       let countParams = [id];
@@ -330,14 +331,15 @@ const appointmentController = {
   cancelAppointment: async (req, res, next) => {
     try {
       const patient_id = req.id;
-      const appointment_id = req.body;
-
+      const { appointment_id } = req.body;
+      
       if(!appointment_id || !patient_id){
         return res
           .status(httpStatus.BAD_REQUEST().code)
           .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
       }
-
+        console.log(appointment_id);
+        console.log(patient_id);
       const query = `CALL cancel_appointment(?,?, @result, @message)`;
       const [rows] = await mysqlClient.poolPatient.query(query, [appointment_id,patient_id]);
       // If there are multiple result sets, select the last one

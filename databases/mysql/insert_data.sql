@@ -162,31 +162,6 @@ VALUES
     (85, 38, '2024-09-16');
 
 /*
-INSERT INTO treatment_history (history_id, treatment_name, patient_id, treatment_date, doctor_id) 
-VALUES
-    (1, 'X-ray', 6, '2024-09-02', 12),
-    (2, 'Endoscopy', 3, '2024-09-04', 24),
-    (3, 'Colonoscopy', 15, '2024-09-05', 5),
-    (4, 'X-ray', 12, '2024-09-07', 33),
-    (5, 'X-ray', 8, '2024-09-10', 14),
-    (6, 'Allergy Test', 14, '2024-09-03', 5),
-    (7, 'CT Scan', 2, '2024-09-07', 4),
-    (8, 'Ultrasound', 7, '2024-09-09', 12),
-    (9, 'Mammography', 7, '2024-09-02', 22),
-    (10, 'Colonoscopy', 3, '2024-09-04', 33),
-    (11,'Colonoscopy', 1, '2024-09-01', 5),
-    (12, 'MRI Scan', 5, '2024-09-01', 15),
-    (13, 'Blood Test', 13, '2024-09-06', 35),
-    (14, 'Endoscopy', 6, '2024-09-10', 2),
-    (15, 'Allergy Test', 12, '2024-09-04', 3),
-    (16, 'CT Scan', 4, '2024-09-07', 21),
-    (17, 'MRI Scan', 12, '2024-09-01', 23),
-    (18, 'CT Scan', 6, '2024-09-06', 34),
-    (19, 'MRI Scan', 15, '2024-09-08', 35),
-    (20, 'Allergy Test', 9, '2024-09-08', 2);
-*/
-
-/*
     slot number:
     9-10: 1
     10-11: 2
