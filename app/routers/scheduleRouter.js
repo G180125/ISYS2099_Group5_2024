@@ -5,6 +5,7 @@ const { authenticate } = require("../middleware/authenticate");
 const checkRoles = require("../middleware/checkRoles");
 
 // Get all schedules
+// {{base_url}}/schedule/all?limit=5&page=1
 scheduleRouter.get(
     "/all",
     authenticate,
@@ -13,6 +14,7 @@ scheduleRouter.get(
   );
   
   // Get schedules by staff
+  
   scheduleRouter.get(
     "/staff",
     authenticate,
