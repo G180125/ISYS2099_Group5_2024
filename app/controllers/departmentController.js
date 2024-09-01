@@ -8,7 +8,7 @@ const app = express();
 app.use(cookieParser());
 
 const departmentController = {
-    getAllDepartments: async (req, res) => {
+    getAllDepartments: async (req, res, next) => {
         try {
             const [results] = await mysqlClient.poolPatient.query(`
             SELECT department_name
@@ -18,12 +18,11 @@ const departmentController = {
             .status(httpStatus.OK().code)
             .json(results);
         } catch (error) {
-          console.error(error);
-          res.status(500).json({ error: "Internal Server Error" });
+            return next(error);
         }
     },
 
-    getAllDoctorsByDepartment: async (req, res) => {
+    getAllDoctorsByDepartment: async (req, res, next) => {
         try {
             const { department_name } = req.body;
 
@@ -49,8 +48,7 @@ const departmentController = {
             .status(httpStatus.OK().code)
             .json(results);
         } catch (error) {
-          console.error(error);
-          res.status(500).json({ error: "Internal Server Error" });
+            return next(error);
         }
     },
 }

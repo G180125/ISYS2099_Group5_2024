@@ -18,7 +18,7 @@ const timeSlotMap = {
 };
 
 const appointmentController = {
-  getAllAppointments: async (req, res) => {
+  getAllAppointments: async (req, res, next) => {
     try{    
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
@@ -73,14 +73,11 @@ const appointmentController = {
           }
         });
     } catch (error) {
-        console.error('Error fetching appointments:', error);
-        res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-          error: httpStatus.INTERNAL_SERVER_ERROR.message 
-        });
+        return next(error);
       }
   },
 
-  getMyAppoinments: async (req, res) => {
+  getMyAppoinments: async (req, res, next) => {
     try {
       const status = req.query.status || null;
       const id = req.id;
@@ -164,14 +161,11 @@ const appointmentController = {
         }
       });
     } catch (error) {
-      console.error('Error fetching appointments:', error);
-      res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-        error: httpStatus.INTERNAL_SERVER_ERROR.message 
-      });
+      return next(error);
     }
   },
 
-  getAppointmentsByPatient: async (req, res) => {
+  getAppointmentsByPatient: async (req, res, next) => {
     try {
       const status = req.query.status;
       const id = req.body.id;
@@ -254,14 +248,11 @@ const appointmentController = {
         }
       });
     } catch (error) {
-      console.error('Error fetching appointments:', error);
-      res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-        error: httpStatus.INTERNAL_SERVER_ERROR.message 
-      });
+      return next(error);
     }
   },
 
-  bookAppointment: async (req, res) => {
+  bookAppointment: async (req, res, next) => {
     try {
       const { patientID, doctorID, date, slotNumber, purpose } = req.body;
 
@@ -288,14 +279,11 @@ const appointmentController = {
           .status(httpStatus.OK().code)
           .json({ message: message });
     } catch (error) {
-      console.error('Error fetching appointments:', error);
-      res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-        error: httpStatus.INTERNAL_SERVER_ERROR.message 
-      });
+      return next(error);
     }
   },
 
-  updateAppointment: async (req, res) => {
+  updateAppointment: async (req, res, next) => {
     try {
       const { appointmentId, date, timeSlot } = req.body;
 
@@ -321,10 +309,7 @@ const appointmentController = {
           .status(httpStatus.OK().code)
           .json({ message: message });
     } catch (error) {
-      console.error('Error fetching appointments:', error);
-      res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-        error: httpStatus.INTERNAL_SERVER_ERROR.message 
-      });
+      return next(error);
     }
   },
 
@@ -354,8 +339,7 @@ const appointmentController = {
           .status(httpStatus.OK().code)
           .json({ message: message });
     } catch (error) {
-      console.log('Error fetching appointments:', error);
-      next(error);
+      return next(error);
     }
   }
 };

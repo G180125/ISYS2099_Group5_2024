@@ -11,7 +11,7 @@ app.use(cookieParser());
 const validGenders = ["f", "m", "o"];
 
 const patientController = {
-    getAllPatients: async (req, res) => {
+    getAllPatients: async (req, res, next) => {
       try {
         const page = parseInt(req.query.page) || 1;  
         const limit = parseInt(req.query.limit) || 10; 
@@ -35,14 +35,11 @@ const patientController = {
           }
         });
       } catch (error) {
-        console.error(error);
-        res
-          .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-          .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+        return next(error);
       }
     },
 
-    getMyInfo: async (req, res) => {
+    getMyInfo: async (req, res, next) => {
       try {
         const id = req.id;
 
@@ -64,14 +61,11 @@ const patientController = {
 
         return res.json(results[0]);
       } catch (error) {
-        console.error(error);
-        res
-          .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-          .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+        return next(error);
       }
     },
 
-    getPatientByID: async (req, res) => {
+    getPatientByID: async (req, res, next) => {
       try {
         const id = req.body.id;
 
@@ -93,14 +87,11 @@ const patientController = {
 
         return res.json(results[0]);
       } catch (error) {
-        console.error(error);
-        res
-          .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-          .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+        return next(error);
       }
     },
   
-    getPatientByname: async (req, res) => {
+    getPatientByname: async (req, res, next) => {
       try {
         const first_name = req.query.first_name;
         const last_name = req.query.last_name;
@@ -141,14 +132,11 @@ const patientController = {
           }
         });
       } catch (error) {
-        console.error(error);
-        res
-          .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-          .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+        return next(error);
       }
     },
   
-    updateMyInfo: async (req, res) => {
+    updateMyInfo: async (req, res, next) => {
       try {
         const id = req.id;
         const {  newFirstName, newLastName, newDOB, newGender } = req.body;
@@ -223,14 +211,11 @@ const patientController = {
         }
   
       } catch (error) {
-        console.error(error);
-        res
-          .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-          .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+        return next(error);
       }
     },
   
-    deletePatientById: async (req, res) => {
+    deletePatientById: async (req, res, next) => {
       try {
         const id = req.body.id;
 
@@ -254,10 +239,7 @@ const patientController = {
           .status(httpStatus.OK().code)
           .json(httpStatus.OK(`Patient member deleted successfully`).data);
       } catch (error) {
-        console.error(error);
-        res
-          .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-          .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+        return next(error);
       }
     },
 };
