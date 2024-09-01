@@ -8,7 +8,7 @@ const checkRoles = require("../middleware/checkRoles");
 staffRouter.get(
     "/all",
     authenticate,
-    checkRoles(["patient", "admin"]),
+    checkRoles(["staff", "admin"]),
     staffController.getAllStaffs
 );
 
@@ -46,7 +46,7 @@ staffRouter.delete(
     "",
     authenticate,
     checkRoles(["admin"]),
-    staffController.deleteStaffByEmail
+    staffController.deleteStaffById
   );
 
 module.exports = staffRouter;

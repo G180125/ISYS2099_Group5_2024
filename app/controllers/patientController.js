@@ -230,7 +230,7 @@ const patientController = {
       }
     },
   
-    deletePatientByEmail: async (req, res) => {
+    deletePatientById: async (req, res) => {
       try {
         const id = req.body.id;
 
