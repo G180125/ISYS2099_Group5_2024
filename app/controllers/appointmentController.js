@@ -332,14 +332,15 @@ const appointmentController = {
   cancelAppointment: async (req, res, next) => {
     try {
       const patient_id = req.id;
-      const appointment_id = req.body;
-
+      const { appointment_id } = req.body;
+      
       if(!appointment_id || !patient_id){
         return res
           .status(httpStatus.BAD_REQUEST().code)
           .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
       }
-
+        console.log(appointment_id);
+        console.log(patient_id);
       const query = `CALL cancel_appointment(?,?, @result, @message)`;
       const [rows] = await mysqlClient.poolPatient.query(query, [appointment_id,patient_id]);
       // If there are multiple result sets, select the last one
