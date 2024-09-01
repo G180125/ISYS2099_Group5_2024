@@ -26,7 +26,7 @@ const registerPatient = async (req, res) => {
     const salt = genSaltSync(10);
     const hashedPassword = hashSync(password, salt);
 
-    const query = `CALL register_patient(?, ?, ?, ?, ?, ?, ?, @result, @message)`;
+    const query = `CALL register_patient(?, ?, ?, ?, ?, ?, ?, @result, @message, @new_patient_id)`;
     const [rows] = await mysqlClient.poolPatient.query(query, [null, null, email, hashedPassword, null, 'O', null]);
 
     console.log(rows);
@@ -76,10 +76,10 @@ const registerStaff = async (req, res) => {
     let rows;
 
     if (role === "staff") {
-      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message)`;
+      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @new_patient_id)`;
       [rows] = await mysqlClient.poolAdmin.query(query, [null, null, email, hashedPassword, 'O', 'D', 1, 1, 1]);
     } else if (role === "admin") {
-      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message)`;
+      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @new_patient_id)`;
       [rows] = await mysqlClient.poolAdmin.query(query, [null, null, email, hashedPassword, 'O', 'A', 1, 0, 1]);
     } else {
       return res

@@ -82,7 +82,7 @@ const appointmentController = {
 
   getMyAppoinments: async (req, res) => {
     try {
-      const status = req.query.status;
+      const status = req.query.status || null;
       const id = req.id;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
@@ -122,15 +122,13 @@ const appointmentController = {
           treatment_record T ON A.appointment_id = T.appointment_id
       WHERE 
           P.patient_id = ?
-      GROUP BY 
-          A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
       `;
 
       let countQuery = 
         `SELECT COUNT(*) as total
         FROM appointment A
         JOIN patient P ON A.patient_id = P.patient_id
-        WHERE P.email = ?`;
+        WHERE P.patient_id = ?`;
 
       let queryParams = [id, limit, offset];
       let countParams = [id];
@@ -138,13 +136,15 @@ const appointmentController = {
 
       // Append LIMIT and OFFSET based on the condition
       if (status) {
-      query += ` AND A.status = ? LIMIT ? OFFSET ?`;
+      query += ` AND A.status = ? 
+                GROUP BY A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
+                LIMIT ? OFFSET ?`;
       queryParams = [id, status, limit, offset];
 
       countQuery += ` AND A.status = ?`;
       countParams = [id, status];
       } else {
-      query += ` LIMIT ? OFFSET ?`;
+      query += `GROUP BY A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name LIMIT ? OFFSET ?`;
       queryParams = [id, limit, offset];
       }
 
@@ -187,6 +187,7 @@ const appointmentController = {
       A.appointment_id, 
       S.schedule_date, 
       A.slot_number, 
+      A.status,
       ST.first_name AS staff_first_name, 
       ST.last_name AS staff_last_name,
       ST.gender AS staff_gender, 
@@ -214,14 +215,14 @@ const appointmentController = {
       WHERE 
           P.patient_id = ?
       GROUP BY 
-          A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
+          A.appointment_id, S.schedule_date, A.slot_number, A.status, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
       `;
 
       let countQuery = 
         `SELECT COUNT(*) as total
         FROM appointment A
         JOIN patient P ON A.patient_id = P.patient_id
-        WHERE P.email = ?`;
+        WHERE P.patient_id = ?`;
 
       let queryParams = [id, limit, offset];
       let countParams = [id];
