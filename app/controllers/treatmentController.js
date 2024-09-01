@@ -158,7 +158,7 @@ const treatmentController = {
                         ST.last_name AS staff_last_name, 
                         P.first_name AS patient_first_name, P.last_name AS patient_last_name,
                         ST.job_type, D.department_name
-                FROM treatment_reord T
+                FROM treatment_record T
                 JOIN appointment A ON T.appointment_id = A.appointment_id
                 JOIN patient P ON A.patient_id = P.patient_id
                 JOIN schedule S ON A.schedule_id = S.schedule_id
