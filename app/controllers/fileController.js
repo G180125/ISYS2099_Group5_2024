@@ -58,32 +58,34 @@ const fileController = {
   },
 
   getFileMeta: async (req, res, next) => {
-    const dirTarget = req.body.dirTarget || "staff";
-    const filters = {
-      "metadata.mysql_id": req.body.mysql_id || "",
-    };
+    const bucket = req.params.bucket;
+    const filters = {};
+    if (req.query.mysql_id) filters["metadata.mysql_id"] = req.query.mysql_id;
+    if (req.query.type) filters["metadata.type"] = req.query.type;
 
-    const arr = await mongoService.getFileMeta(filters, dirTarget);
+    const arr = await mongoService.getFileMeta(filters, bucket);
+
     return res.status(StatusCodes.ACCEPTED).json({
-      results: arr,
+      result: arr,
     });
   },
 
   getOneFile: async (req, res, next) => {
-    const fileTarget = req.body.fileTarget;
-    const dirTarget = req.body.dirTarget;
+    const bucket = req.params.bucket;
+    const fileName = req.params.filename;
 
     try {
-      const fileBuffer = await mongoService.getOneFile(fileTarget, dirTarget);
-
+      const fileBuffer = await mongoService.getOneFile(fileName, bucket);
       const b64 = Buffer.from(fileBuffer).toString("base64");
-      const mimeType = "image/jpg";
-      const image = `<img src="data:${mimeType};base64,${b64}" />`;
 
-      res.send(image);
+      res.status(StatusCodes.ACCEPTED).json({
+        filename: fileName,
+        base64: b64,
+      });
     } catch (err) {
       next(err);
     }
+    
   },
 };
 

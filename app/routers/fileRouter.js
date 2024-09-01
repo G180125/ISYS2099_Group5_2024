@@ -15,23 +15,15 @@ use multi-part form
 }
 */
 fileRouter.post(
-    "/upload",
-    fileHandler.single("fileTarget"),
-    fileController.uploadFile
+  "/upload",
+  fileHandler.single("fileTarget"),
+  fileController.uploadFile
 );
 
-/* 
-{
-    "mysql_id" : "3927188"
-}
-*/
-fileRouter.get("/meta", fileController.getFileMeta);
+// .../files/meta/staff/?mysql_id=1&type=Avatar
+fileRouter.get("/meta/:bucket", fileController.getFileMeta);
 
-/* 
-{
-    "fileTarget" : "1724911268187-08d6725d-a884-4b0e-8706-0d5a90f3de16.jpg",
-    "dirTarget": "treatment"
-}
-*/
-fileRouter.get("/find", fileController.getOneFile);
+// .../files/content/staff/:filename
+fileRouter.get("/content/:bucket/:filename", fileController.getOneFile);
+
 module.exports = fileRouter;
