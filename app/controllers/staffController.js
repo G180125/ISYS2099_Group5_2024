@@ -9,14 +9,14 @@ const app = express();
 app.use(cookieParser());
 
 const validGenders = ["F", "M", "O"];
-const validJobTypes = ["D", "N", "A"];
+const validjob_types = ["D", "N", "A"];
 
 const staffController = {
   getAllStaffs: async (req, res) => {
     try {
-      const job_type = req.query.job_type;
-      const department = req.query.department;
-      const order = req.query.order || 'ASC';
+      const job_type = req.body.job_type;
+      const department = req.body.department;
+      const order = req.body.order || 'ASC';
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
@@ -27,10 +27,10 @@ const staffController = {
       let countResult;
   
       if (job_type && department) {
-        query = `CALL list_staff_by_department_and_jobtype(?, ?, ?, ?)`;
+        query = `CALL list_staff_by_department(?, ?, ?, ?)`;
         results = await mysqlClient.poolStaff.query(query, [department, job_type, limit, offset]);
 
-        countQuery = `SELECT COUNT(*) as total FROM staff WHERE department_id = ? AND jobtype = ?`;
+        countQuery = `SELECT COUNT(*) as total FROM staff WHERE department_id = ? AND job_type = ?`;
         [countResult] = await mysqlClient.poolStaff.query(countQuery, [department, job_type]);
       } else if (department) {
         query = `CALL list_staff_by_department(?, ?, ?, ?)`;
@@ -39,10 +39,10 @@ const staffController = {
         countQuery = `SELECT COUNT(*) as total FROM staff WHERE department_id = ?`;
         [countResult] = await mysqlClient.poolStaff.query(countQuery, [department]);
       } else if (job_type) {
-        query = `SELECT * FROM staff WHERE jobtype = ? ORDER BY name ${order} LIMIT ? OFFSET ?`;
+        query = `SELECT * FROM staff WHERE job_type = ? ORDER BY name ${order} LIMIT ? OFFSET ?`;
         results = await mysqlClient.poolStaff.query(query, [job_type, limit, offset]);
 
-        countQuery = `SELECT COUNT(*) as total FROM staff WHERE jobtype = ?`;
+        countQuery = `SELECT COUNT(*) as total FROM staff WHERE job_type = ?`;
         [countResult] = await mysqlClient.poolStaff.query(countQuery, [job_type]);
       } else {
         query = `CALL list_staff_order_by_name(?, ?, ?)`;
@@ -151,7 +151,7 @@ const staffController = {
   updateStaff: async (req, res) => {
     try {
       const id = req.id;
-      const { firstName, lastName, gender, jobType, departmentId, salary, managerId } = req.body;
+      const { firstName, lastName, gender, job_type, departmentId, salary, managerId } = req.body;
 
       if(!id || id == ""){
           return res
@@ -169,7 +169,7 @@ const staffController = {
       let message = ''; 
 
       const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, @result, @message)`;
-      const [rows] = await mysqlClient.poolAdmin.query(query, [id, firstName, lastName, gender, jobType, departmentId, salary, managerId]);
+      const [rows] = await mysqlClient.poolAdmin.query(query, [id, firstName, lastName, gender, job_type, departmentId, salary, managerId]);
 
       result = rows[0][0].result;
       message = rows[0][0].message;
@@ -185,7 +185,7 @@ const staffController = {
           first_name: firstName,
           last_name: lastName,
           gender: gender,
-          job_type: jobType || null,
+          job_type: job_type || null,
           department_id: departmentId || null,
           salary: salary || null,
           manager_id: managerId || null,
