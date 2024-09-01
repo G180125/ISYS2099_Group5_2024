@@ -179,8 +179,6 @@ const appointmentController = {
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
 
-      console.log(id);
-
       // Corrected SQL Query
       let query = `
       SELECT 
