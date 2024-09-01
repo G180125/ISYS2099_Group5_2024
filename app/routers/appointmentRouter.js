@@ -62,7 +62,11 @@ appointmentRouter.put(
   appointmentController.updateAppointment
 );
 
-
+// {{base_url}}/appointment/cancel
+// {
+//   "patient_id":"3",
+//   "appointment_id":"3"
+// }
 appointmentRouter.put(
   "/cancel",
   authenticate,

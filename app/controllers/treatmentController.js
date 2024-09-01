@@ -10,7 +10,7 @@ app.use(cookieParser());
 const treatment_list = ["hormone therapy", "chemotherapy"]
 
 const treatmentController = {
-    getMyTreatments: async (req, res) => {
+    getMyTreatments: async (req, res, next) => {
         try{
             const status = req.query.status;
             const id = req.id;
@@ -50,8 +50,8 @@ const treatmentController = {
                 query += ` LIMIT ? OFFSET ?`;
             }
 
-            const [results] = await db.poolPatient.query(query, queryParams);
-            const [countResult] = await db.poolPatient.query(countQuery, countParams);
+            const [results] = await mysqlClient.poolPatient.query(query, queryParams);
+            const [countResult] = await mysqlClient.poolPatient.query(countQuery, countParams);
 
             const totalRecords = countResult[0].total;
             const totalPages = Math.ceil(totalRecords / limit);
@@ -71,15 +71,12 @@ const treatmentController = {
                 pageSize: limit,
                 }
             });
-            } catch (error) {
-            console.error('Error fetching appointments:', error);
-            res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-                error: httpStatus.INTERNAL_SERVER_ERROR.message 
-            });
-        }
+        } catch (error) {
+            return next(error);
+        } 
     },
 
-    getTreatmentsByPatient: async (req, res) => {
+    getTreatmentsByPatient: async (req, res, next) => {
         try{
             const status = req.query.status;
             const id = req.body.id;
@@ -119,8 +116,8 @@ const treatmentController = {
                 query += ` LIMIT ? OFFSET ?`;
             }
 
-            const [results] = await db.poolPatient.query(query, queryParams);
-            const [countResult] = await db.poolPatient.query(countQuery, countParams);
+            const [results] = await mysqlClient.poolPatient.query(query, queryParams);
+            const [countResult] = await mysqlClient.poolPatient.query(countQuery, countParams);
 
             const totalRecords = countResult[0].total;
             const totalPages = Math.ceil(totalRecords / limit);
@@ -140,15 +137,12 @@ const treatmentController = {
                 pageSize: limit,
                 }
             });
-            } catch (error) {
-            console.error('Error fetching appointments:', error);
-            res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-                error: httpStatus.INTERNAL_SERVER_ERROR.message 
-            });
+        } catch (error) {
+            return next(error);
         }
     },
 
-    getTreatmentById: async (req, res) => {
+    getTreatmentById: async (req, res, next) => {
         try{
             const status = req.query.status;
             const treatmentId = req.body.treatmentId;
@@ -166,20 +160,17 @@ const treatmentController = {
                 JOIN department D ON ST.department_id = D.department_id
                 WHERE T.treatment_id = ?`;
 
-            const [result] = await db.poolPatient.query(query, [treatmentId]);
+            const [result] = await mysqlClient.poolPatient.query(query, [treatmentId]);
 
             return res 
                     .status(httpStatus.OK().code)
                     .json({ result: result });
-            } catch (error) {
-            console.error('Error fetching appointments:', error);
-            res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-                error: httpStatus.INTERNAL_SERVER_ERROR.message 
-            });
+        } catch (error) {
+            return next(error);
         }
     },
 
-    addTreatment: async (req, res)=>{
+    addTreatment: async (req, res, next)=>{
         try{
             const { treatment_name, treatment_date, appointment_id } = req.body;
             console.log(treatment_name);
@@ -215,10 +206,7 @@ const treatmentController = {
                 .json({ message: message });
             }
         catch(err){
-            console.error("error: " + err.stack);
-            return res
-              .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-              .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+            return next(err);
         }
     },
 };
