@@ -1,23 +1,58 @@
 const { StatusCodes } = require("http-status-codes");
 const mongoService = require("../services/mongoService");
 
+const dirTargets = ["staff", "treatment"];
+const treatmentFileTypes = [
+  "Prescription",
+  "Procedure",
+  "Admission",
+  "Discharge",
+  "Preoperative",
+];
+const staffFileTypes = [
+  "Avatar",
+  "Certificate",
+  "Curriculum Vitae",
+  "References",
+  "Legal Documents",
+];
+const fileTypes = {
+  staff: staffFileTypes,
+  treatment: treatmentFileTypes,
+};
+
 const fileController = {
   uploadFile: async (req, res, next) => {
     try {
-      // console.log(req.body);
-      const statusCode = req.file
-        ? StatusCodes.ACCEPTED
-        : StatusCodes.BAD_REQUEST;
-      const message = req.file ? "File Uploaded!" : "No file received!";
+      if (!req.file) throw new Error("No file received!");
+
+      const file = req.file;
       const dirTarget = req.body.dirTarget;
+      if (!dirTargets.includes(dirTarget))
+        throw new Error(`Choose one of the following folders: ${dirTargets}`);
 
-      await mongoService.uploadFile(req.file, dirTarget);
+      const fileType = req.body.fileType;
+      if (!fileTypes[dirTarget].includes(fileType))
+        throw new Error(
+          `Choose one of the following file types: ${fileTypes[dirTarget]}`
+        );
 
-      return res.status(statusCode).json({
-        message: message,
+      const mysql_id = req.body.mysql_id;
+      if (!mysql_id) throw new Error("Missing field: mysql_id");
+
+      const fileMeta = {
+        mysql_id: mysql_id,
+        type: dirTarget,
+      };
+      
+      await mongoService.uploadFile(file, dirTarget, fileMeta);
+
+      return res.status(StatusCodes.OK).json({
+        message: "File Uploaded Succesfully!",
+        fileName: file.originalname,
+        directory: dirTarget,
       });
     } catch (err) {
-      console.dir(err);
       next(err);
     }
   },

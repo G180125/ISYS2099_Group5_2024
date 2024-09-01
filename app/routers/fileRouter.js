@@ -10,6 +10,8 @@ use multi-part form
 {
     fileTarget : <insert file>
     dirTarget: staff / treatment
+    fileType: Avatar, ... check controller
+    mysql_id: xxx
 }
 */
 fileRouter.post(
