@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS treatment_report;
 CREATE TABLE treatment_report AS
 SELECT  P.first_name AS patient_first_name, 
         P.last_name AS patient_last_name, 
+        P.email AS patient_email,
         T.treatment_name, 
         T.treatment_date, 
         T.status treatment_status,
@@ -44,6 +45,7 @@ DROP TABLE IF EXISTS doctor_work_report;
 CREATE TABLE doctor_work_report AS
 SELECT ST.first_name staff_first_name, 
        ST.last_name staff_last_name, 
+       ST.email staff_email,
        ST.gender staff_gender, 
        ST.job_type, 
        S.schedule_date,

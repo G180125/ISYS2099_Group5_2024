@@ -5,6 +5,7 @@ BEGIN
     INSERT INTO treatment_report
     SELECT  P.first_name AS patient_first_name, 
             P.last_name AS patient_last_name, 
+            P.email AS patient_email,
             T.treatment_name, 
             T.treatment_date, 
             T.status treatment_status,
@@ -60,6 +61,7 @@ BEGIN
     INSERT INTO doctor_work_report
     SELECT ST.first_name AS staff_first_name, 
            ST.last_name AS staff_last_name, 
+           ST.email AS staff_email,
            ST.gender AS staff_gender, 
            ST.job_type, 
            S.schedule_date,

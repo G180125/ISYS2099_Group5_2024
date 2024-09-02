@@ -4,54 +4,43 @@ const reportController = require("../controllers/reportController");
 const { authenticate } = require("../middleware/authenticate");
 const checkRoles = require("../middleware/checkRoles");
 
-// get patient treatment history for a specific date
-// {
+// get  patient treatment history 
 //   "start_date": "2024-09-02",
 //   "end_date": "2024-09-15",
 //   "email" : "paul@gmail.com"
 // }
 reportRouter.get(
-  "/range_query/patient",
+  "/patient",
   authenticate, 
   checkRoles(["admin", "staff"]), 
-  reportController.viewPatientTreatmentForGivenDuration
+  reportController.viewPatientTreatment
 );
 
-// get all patient treatment history within a date range
-// {
-//   "start_date": "2024-09-02",
-//   "end_date": "2024-09-15",
-// }
-reportRouter.get(
-  "/range_query/patient/all",
-  authenticate, 
-  checkRoles(["admin", "staff"]), 
-  reportController.viewAllPatientTreatmentInGivenDuration
-);
-
-//get doctor work for given duration
+//get doctor work 
 // {
 //   "start_date": "2024-09-02",
 //   "end_date": "2024-09-15",
 //   "eve.brown@hospital.management.com"
 // }
 reportRouter.get(
-  "/range_query/doctor",
+  "/doctor/work",
   authenticate, 
   checkRoles(["admin", "staff"]), 
-  reportController.viewDoctorWorkForGivenDuration
+  reportController.viewDoctorWork
 );
 
-//get doctor work for given duration
+//get staff job change
 // {
 //   "start_date": "2024-09-02",
 //   "end_date": "2024-09-15",
+//   "eve.brown@hospital.management.com"
 // }
 reportRouter.get(
-  "/range_query/doctor/all",
+  "/doctor/job_changes",
   authenticate, 
   checkRoles(["admin", "staff"]), 
-  reportController.viewAllDoctorWorkInGivenDuration
+  reportController.viewStaffJobChanges
 );
+
 
 module.exports = reportRouter;

@@ -49,8 +49,8 @@ const treatmentController = {
                 query += ` LIMIT ? OFFSET ?`;
             }
 
-            const [results] = await db.poolPatient.query(query, queryParams);
-            const [countResult] = await db.poolPatient.query(countQuery, countParams);
+            const [results] = await mysqlClient.poolPatient.query(query, queryParams);
+            const [countResult] = await mysqlClient.poolPatient.query(countQuery, countParams);
 
             const totalRecords = countResult[0].total;
             const totalPages = Math.ceil(totalRecords / limit);
@@ -117,8 +117,8 @@ const treatmentController = {
                 query += ` LIMIT ? OFFSET ?`;
             }
 
-            const [results] = await db.poolPatient.query(query, queryParams);
-            const [countResult] = await db.poolPatient.query(countQuery, countParams);
+            const [results] = await mysqlClient.poolPatient.query(query, queryParams);
+            const [countResult] = await mysqlClient.poolPatient.query(countQuery, countParams);
 
             const totalRecords = countResult[0].total;
             const totalPages = Math.ceil(totalRecords / limit);
@@ -156,7 +156,7 @@ const treatmentController = {
                         ST.last_name AS staff_last_name, 
                         P.first_name AS patient_first_name, P.last_name AS patient_last_name,
                         ST.job_type, D.department_name
-                FROM treatment_reord T
+                FROM treatment_record T
                 JOIN appointment A ON T.appointment_id = A.appointment_id
                 JOIN patient P ON A.patient_id = P.patient_id
                 JOIN schedule S ON A.schedule_id = S.schedule_id
@@ -164,7 +164,7 @@ const treatmentController = {
                 JOIN department D ON ST.department_id = D.department_id
                 WHERE T.treatment_id = ?`;
 
-            const [result] = await db.poolPatient.query(query, [treatmentId]);
+            const [result] = await mysqlClient.poolPatient.query(query, [treatmentId]);
 
             return res 
                     .status(httpStatus.OK().code)

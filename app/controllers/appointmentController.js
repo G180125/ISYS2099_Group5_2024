@@ -83,7 +83,7 @@ const appointmentController = {
 
   getMyAppoinments: async (req, res) => {
     try {
-      const status = req.query.status;
+      const status = req.query.status || null;
       const id = req.id;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
@@ -124,8 +124,6 @@ const appointmentController = {
           treatment_record T ON A.appointment_id = T.appointment_id
       WHERE 
           P.patient_id = ?
-      GROUP BY 
-          A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
       `;
 
       let countQuery = 
@@ -140,13 +138,15 @@ const appointmentController = {
 
       // Append LIMIT and OFFSET based on the condition
       if (status) {
-      query += ` AND A.status = ? LIMIT ? OFFSET ?`;
+      query += ` AND A.status = ? 
+                GROUP BY A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
+                LIMIT ? OFFSET ?`;
       queryParams = [id, status, limit, offset];
 
       countQuery += ` AND A.status = ?`;
       countParams = [id, status];
       } else {
-      query += ` LIMIT ? OFFSET ?`;
+      query += `GROUP BY A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name LIMIT ? OFFSET ?`;
       queryParams = [id, limit, offset];
       }
 
@@ -190,6 +190,7 @@ const appointmentController = {
       S.schedule_date, 
       A.slot_number, 
       A.purpose,
+      A.status,
       ST.first_name AS staff_first_name, 
       ST.last_name AS staff_last_name,
       ST.gender AS staff_gender, 
@@ -217,7 +218,7 @@ const appointmentController = {
       WHERE 
           P.patient_id = ?
       GROUP BY 
-          A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
+          A.appointment_id, S.schedule_date, A.slot_number, A.status, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
       `;
 
       let countQuery = 
@@ -335,14 +336,15 @@ const appointmentController = {
   cancelAppointment: async (req, res, next) => {
     try {
       const patient_id = req.id;
-      const appointment_id = req.body;
-
+      const { appointment_id } = req.body;
+      
       if(!appointment_id || !patient_id){
         return res
           .status(httpStatus.BAD_REQUEST().code)
           .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
       }
-
+        console.log(appointment_id);
+        console.log(patient_id);
       const query = `CALL cancel_appointment(?,?, @result, @message)`;
       const [rows] = await mysqlClient.poolPatient.query(query, [appointment_id,patient_id]);
       // If there are multiple result sets, select the last one
@@ -361,62 +363,6 @@ const appointmentController = {
       next(error);
     }
   }
-// <<<<<<< HEAD
-//   cancelAppointment: async (req, res, next) => {
-//     try {
-//       const { appointment_id, patient_id} = req.body;
-
-//       if(!appointment_id || !patient_id){
-// =======
-//   updateAppointment: async (req, res) => {
-//     try {
-//       const { appointmentId, date, timeSlot } = req.body;
-
-//       if(!appointmentId || !date || !timeSlot){
-// >>>>>>> main
-//         return res
-//           .status(httpStatus.BAD_REQUEST().code)
-//           .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
-//       }
-      
-// <<<<<<< HEAD
-//       const query = `CALL cancel_appointment(?,?, @result, @message)`;
-//       const [rows] = await mysqlClient.poolPatient.query(query, [appointment_id,patient_id]);
-// =======
-//       const query = `CALL update_appointment(?,?,?, @result, @message)`;
-//       const [rows] = await mysqlClient.poolStaff.query(query, [appointmentId,date,timeSlot]);
-// >>>>>>> main
-//       // If there are multiple result sets, select the last one
-//       const result = rows[0][0].result;
-//       const message = rows[0][0].message;
-      
-//       if (result == 0) {
-// <<<<<<< HEAD
-//         throw new Error(message);
-// =======
-//         return res
-//           .status(httpStatus.BAD_REQUEST().code)
-//           .json({ error: httpStatus.BAD_REQUEST(message).message });
-// >>>>>>> main
-//       }
-
-//       return res  
-//           .status(httpStatus.OK().code)
-//           .json({ message: message });
-//     } catch (error) {
-// <<<<<<< HEAD
-//       console.log('Error fetching appointments:', error);
-//       next(error);
-//     }
-//   }
-// =======
-//       console.error('Error fetching appointments:', error);
-//       res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-//         error: httpStatus.INTERNAL_SERVER_ERROR.message 
-//       });
-//     }
-//   },
-// >>>>>>> main
 };
 
 module.exports = appointmentController;

@@ -67,6 +67,10 @@ const scheduleController = {
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST(errorMessage).message });
         }
+
+        const [countResult] = await mysqlClient.poolAdmin.query(`SELECT COUNT(*) as total FROM schedule WHERE staff_id = ?`, [staffId]);
+        const totalRecords = countResult[0].total;
+        const totalPages = Math.ceil(totalRecords / limit);
   
         // Return results with pagination metadata
         res.json({
