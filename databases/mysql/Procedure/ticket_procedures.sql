@@ -35,9 +35,9 @@ BEGIN
     START TRANSACTION;
 
     -- Fetch common staff details
-    SELECT S.first_name, S.last_name, S.gender, S.salary, S.job_type, S.department_id, S.manager_id
+    SELECT S.staff_first_name, S.staff_last_name, S.staff_gender, S.staff_salary, S.staff_job_type, S.department_id, S.manager_id
     INTO first_name, last_name, gender, current_salary, current_job_type, current_department_id, manager_id
-    FROM staff S
+    FROM staff_secure_view S
     WHERE S.staff_id = staff_id;
 
     -- Initialize notes for changes

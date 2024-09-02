@@ -22,23 +22,10 @@ const generateToken = (id, role) => {
     console.log(`User for tokens: ${id}`);
 
     // Store the refresh token in the database
-    if (role === "admin") {
-      db.poolAdmin.query(
-        "UPDATE staff SET access_token = ? WHERE staff_id = ? AND job_type = 'A'",
-        [accessToken, id],
-      );
-      console.log(`admin`);
-    } else if (role === "staff"){
-      db.poolStaff.query(
-        "UPDATE staff SET access_token = ? WHERE staff_id = ? AND job_type <> 'A'",
-        [accessToken, id],
-      );
-    } else {
-        db.poolPatient.query(
-            "UPDATE patient SET access_token = ? WHERE patient_id = ? ",
-            [accessToken, id],
-        );
-    }
+    db.poolPatient.query(
+      "UPDATE user SET access_token = ? WHERE user_id = ? ",
+      [accessToken, id],
+  );
 
     return { accessToken };
   } catch (err) {

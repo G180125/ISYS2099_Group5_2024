@@ -1,5 +1,5 @@
 -- INSERT, UPDATE, DELETER on treatment_record
-CREATE TRIGGER update_treatment_report_after_treatment_record
+CREATE TRIGGER update_treatment_report_after_treatment_record_insert
 AFTER INSERT ON treatment_record
 FOR EACH ROW
 BEGIN
@@ -35,23 +35,8 @@ BEGIN
     CALL refresh_treatment_report();
 END;
 
--- UPDATE, DELETER on patient
-CREATE TRIGGER update_treatment_report_after_patient
-AFTER UPDATE ON patient
-FOR EACH ROW
-BEGIN
-    CALL refresh_treatment_report();
-END;
-
-CREATE TRIGGER update_treatment_report_after_patient_delete
-AFTER DELETE ON patient
-FOR EACH ROW
-BEGIN
-    CALL refresh_treatment_report();
-END;
-
 -- UPDATE, DELETER on schedule
-CREATE TRIGGER update_treatment_report_after_schedule
+CREATE TRIGGER update_treatment_report_after_schedule_update
 AFTER UPDATE ON schedule
 FOR EACH ROW
 BEGIN
@@ -65,8 +50,38 @@ BEGIN
     CALL refresh_treatment_report();
 END;
 
+-- UPDATE, DELETER on user
+CREATE TRIGGER update_treatment_report_after_user_update
+AFTER UPDATE ON user
+FOR EACH ROW
+BEGIN
+    CALL refresh_treatment_report();
+END;
+
+CREATE TRIGGER update_treatment_report_after_user_delete
+AFTER DELETE ON user
+FOR EACH ROW
+BEGIN
+    CALL refresh_treatment_report();
+END;
+
+-- UPDATE, DELETER on patient
+CREATE TRIGGER update_treatment_report_after_patient_update
+AFTER UPDATE ON patient
+FOR EACH ROW
+BEGIN
+    CALL refresh_treatment_report();
+END;
+
+CREATE TRIGGER update_treatment_report_after_patient_delete
+AFTER DELETE ON patient
+FOR EACH ROW
+BEGIN
+    CALL refresh_treatment_report();
+END;
+
 -- UPDATE, DELETER on staff
-CREATE TRIGGER update_treatment_report_after_staff
+CREATE TRIGGER update_treatment_report_after_staff_update
 AFTER UPDATE ON staff
 FOR EACH ROW
 BEGIN
@@ -81,7 +96,7 @@ BEGIN
 END;
 
 -- UPDATE, DELETER on department
-CREATE TRIGGER update_treatment_report_after_department
+CREATE TRIGGER update_treatment_report_after_department_update
 AFTER UPDATE ON department
 FOR EACH ROW
 BEGIN

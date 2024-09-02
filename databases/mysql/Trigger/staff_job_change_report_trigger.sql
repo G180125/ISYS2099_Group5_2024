@@ -1,5 +1,20 @@
+-- UPDATE, DELETER on user
+CREATE TRIGGER update_staff_job_change_report_after_user_update
+AFTER UPDATE ON user
+FOR EACH ROW
+BEGIN
+    CALL refresh_staff_job_change_report();
+END;
+
+CREATE TRIGGER update_staff_job_change_report_after_user_delete
+AFTER DELETE ON user
+FOR EACH ROW
+BEGIN
+    CALL refresh_staff_job_change_report();
+END;
+
 -- UPDATE, DELETER on staff
-CREATE TRIGGER update_staff_job_change_report_after_staff
+CREATE TRIGGER update_staff_job_change_report_after_staff_update
 AFTER UPDATE ON staff
 FOR EACH ROW
 BEGIN
@@ -14,7 +29,7 @@ BEGIN
 END;
 
 -- UPDATE, DELETER on department
-CREATE TRIGGER update_staff_job_change_report_after_department
+CREATE TRIGGER update_staff_job_change_report_after_department_update
 AFTER UPDATE ON department
 FOR EACH ROW
 BEGIN
@@ -29,7 +44,7 @@ BEGIN
 END;
 
 -- INSERT, UPDATE, DELETER on ticket
-CREATE TRIGGER update_staff_job_change_report_after_ticket
+CREATE TRIGGER update_staff_job_change_report_after_ticket_insert
 AFTER INSERT ON ticket
 FOR EACH ROW
 BEGIN

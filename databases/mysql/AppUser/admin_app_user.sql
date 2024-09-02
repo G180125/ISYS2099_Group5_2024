@@ -8,6 +8,8 @@ CREATE USER 'group5_admin_app_user'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON hospital_management.* TO 'group5_admin_app_user'@'localhost';
 
 -- Granting EXECUTE privilege on PROCEDURES to admin user
+GRANT EXECUTE ON PROCEDURE hospital_management.add_new_user TO 'group5_admin_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.update_user TO 'group5_admin_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.add_new_staff TO 'group5_admin_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.update_staff TO 'group5_admin_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.refresh_treatment_report TO 'group5_admin_app_user'@'localhost';
@@ -20,6 +22,7 @@ GRANT EXECUTE ON PROCEDURE hospital_management.view_doctor_work TO 'group5_admin
 GRANT EXECUTE ON PROCEDURE hospital_management.view_staff_job_change TO 'group5_admin_app_user'@'localhost';
 
 -- Granting TRIGGER privilege on all relevant TABLES to admin user
+GRANT TRIGGER ON hospital_management.user TO 'group5_admin_app_user'@'localhost';
 GRANT TRIGGER ON hospital_management.staff TO 'group5_admin_app_user'@'localhost';
 GRANT TRIGGER ON hospital_management.department TO 'group5_admin_app_user'@'localhost';
 GRANT TRIGGER ON hospital_management.ticket TO 'group5_admin_app_user'@'localhost';

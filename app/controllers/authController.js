@@ -105,7 +105,6 @@ const registerStaff = async (req, res, next) => {
   }
 };
 
-
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -116,16 +115,15 @@ const login = async (req, res, next) => {
         .json({ error: httpStatus.BAD_REQUEST("Please provide email and password").message });
     }
 
-    let role, user;
+    const { role, message } = await models.getRoleByEmail(email);
 
-    user = await models.getPatientByEmail(email);
-    if (user) {
-      role = "patient";
-    } else {
+    if (!role){
       return res
         .status(httpStatus.UNAUTHORIZED().code)
-        .json({ error: httpStatus.UNAUTHORIZED("User not found").message });
+        .json({ error: httpStatus.UNAUTHORIZED(message).message });
     }
+
+    const user = await models.getUserByEmail(email);
 
     const passwordMatches = compareSync(password, user.password);
 
@@ -135,7 +133,7 @@ const login = async (req, res, next) => {
         .json({ error: httpStatus.UNAUTHORIZED("Invalid password").message });
     }
 
-    const tokens = generateToken(user.patient_id, role);
+    const tokens = generateToken(user.user_id, role);
     setCookie(res, tokens.accessToken);
 
     req.role = role;
@@ -149,70 +147,20 @@ const login = async (req, res, next) => {
   }
 };
 
-const loginStaff = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res
-        .status(httpStatus.BAD_REQUEST().code)
-        .json({ error: httpStatus.BAD_REQUEST("Please provide email and password").message });
-    }
-
-    let role, user;
-
-    user = await models.getStaffByEmail(email);
-    if (user) {
-      role = "staff";
-    } else {
-      user = await models.getAdminByEmail(email);
-      if (user) {
-        role = "admin";
-      } else {
-        return res
-          .status(httpStatus.UNAUTHORIZED().code)
-          .json({ error: httpStatus.UNAUTHORIZED("User not found").message });
-      }
-    }
-
-    console.log(`role: ${role}`);
-
-    const passwordMatches = compareSync(password, user.password);
-
-    if (!passwordMatches) {
-      return res
-        .status(httpStatus.UNAUTHORIZED().code)
-        .json({ error: httpStatus.UNAUTHORIZED("Invalid password").message });
-    }
-
-    const tokens = generateToken(user.staff_id, role);
-    setCookie(res, tokens.accessToken, tokens.refreshToken, email, role);
-
-    req.role = role;
-    req.id = user.staff_id;
-
-    return res
-      .status(httpStatus.OK().code)
-      .json({ message: "User authenticated", tokens });
-  } catch (err) {
-    return next(err);
-  }
-};
-
 const logout = async (req, res, next) => {
   try {
-    if (req.role === "patient") {
-      await models.deletePatientToken(req.id);
-    } else if (req.role === "staff") {
-      await models.deleteStaffToken(req.id);
-    } else if (req.role === "admin") {
-      await models.deleteAdminToken(req.id);
+    const validRoles = ["patient", "staff", "admin"]; 
+
+    // Check if the role is valid
+    if (validRoles.includes(req.role)) {
+      await models.deleteUserToken(req.id);
     } else {
       return res
         .status(httpStatus.UNAUTHORIZED().code)
         .json({ error: httpStatus.UNAUTHORIZED("User not found").message });
     }
 
+    // Clear the cookie
     res.cookie("accessToken", "", {
       httpOnly: true,
       expires: new Date(0),
@@ -220,16 +168,16 @@ const logout = async (req, res, next) => {
 
     return res
       .status(httpStatus.OK().code)
-      .json({ message: `User logged out` });
+      .json({ message: "User logged out" });
   } catch (err) {
     return next(err);
   }
 };
 
+
 module.exports = {
   registerPatient,
   registerStaff,
   login,
-  loginStaff,
   logout,
 };

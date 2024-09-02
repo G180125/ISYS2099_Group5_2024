@@ -1,4 +1,4 @@
-const model = require("../services/mysqlService");
+const models = require("../services/mysqlService");
 const httpStatus = require("../utils/httpStatus");
 
 const checkRoles = (allowedRoles) => {
@@ -9,14 +9,7 @@ const checkRoles = (allowedRoles) => {
       console.log(`role: ${role}`);
 
       if (allowedRoles.includes(role)) {
-        let user;
-        if (role === "patient") {
-          user = await model.getPatientByID(id);
-        } else if (role === "staff") {
-          user = await model.getStaffByID(id);
-        } else {
-          user = await model.getAdminByID(id);
-        }
+        const user = models.getUserById(id)
 
         if (user) {
           console.log("Grant Permission");

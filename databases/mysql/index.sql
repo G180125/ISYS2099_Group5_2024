@@ -1,7 +1,7 @@
--- PATIENT TABLE
-ALTER TABLE patient ADD INDEX idx_patient_full_name (first_name, last_name); -- Index for faster search patient by name
-ALTER TABLE patient ADD INDEX idx_patient_first_name (first_name);
-ALTER TABLE patient ADD INDEX idx_patient_last_name (last_name);
+-- USER TABLE
+ALTER TABLE user ADD INDEX idx_user_full_name (first_name, last_name); -- Index for faster search patient by name
+ALTER TABLE user ADD INDEX idx_user_first_name (first_name);
+ALTER TABLE user ADD INDEX idx_user_last_name (last_name);
 
 -- STAFF TABLE
 ALTER TABLE staff ADD INDEX idx_staff_department_job_type (department_id, job_type); -- Index for faster search staff by department, job_type 

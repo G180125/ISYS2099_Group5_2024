@@ -6,21 +6,28 @@ DROP DATABASE IF EXISTS hospital_management;
 CREATE DATABASE IF NOT EXISTS hospital_management;
 USE hospital_management;
 
--- Patient table
-CREATE TABLE IF NOT EXISTS patient 
+-- User table
+CREATE TABLE IF NOT EXISTS user 
 (
-    patient_id INT AUTO_INCREMENT,
+    user_id INT AUTO_INCREMENT,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL, 
     access_token VARCHAR(255),
-    date_of_birth DATE,
     gender ENUM('M', 'F', 'O'),
-    allergies TEXT,
-    CONSTRAINT patient_pk PRIMARY KEY (patient_id)
+    CONSTRAINT user_pk PRIMARY KEY (user_id)
 ) ENGINE = InnoDB;
 
+-- Patient table
+CREATE TABLE IF NOT EXISTS patient 
+(
+    user_id       INT,
+    date_of_birth DATE,
+    allergies     TEXT,
+    CONSTRAINT patient_pk PRIMARY KEY (user_id),
+    CONSTRAINT patient_user_fk FOREIGN KEY (user_id) REFERENCES user(user_id)
+) ENGINE = InnoDB;
 
 -- Department table
 CREATE TABLE IF NOT EXISTS department
@@ -32,21 +39,16 @@ CREATE TABLE IF NOT EXISTS department
 
 -- Staff table
 CREATE TABLE IF NOT EXISTS staff
-(
-    staff_id       INT AUTO_INCREMENT,
-    first_name     VARCHAR(100),
-    last_name      VARCHAR(100),
-    email          VARCHAR(100) UNIQUE NOT NULL,
-    password       VARCHAR(100) NOT NULL, 
-    access_token  VARCHAR(255),
-    gender         ENUM('M', 'F', 'O'), 
+(   
+    user_id        INT,
     job_type       ENUM('D', 'N', 'A'),  
     department_id  INT,
     salary         DECIMAL(10, 2),
     manager_id     INT,
-    CONSTRAINT staff_pk PRIMARY KEY (staff_id),
+    CONSTRAINT staff_pk PRIMARY KEY (user_id),
+    CONSTRAINT staff_user_fk FOREIGN KEY (user_id) REFERENCES user(user_id),
     CONSTRAINT staff_department_fk FOREIGN KEY (department_id) REFERENCES department(department_id),
-    CONSTRAINT staff_manager_fk FOREIGN KEY (manager_id) REFERENCES staff(staff_id),
+    CONSTRAINT staff_manager_fk FOREIGN KEY (manager_id) REFERENCES staff(user_id),
     CONSTRAINT chk_staff_salary CHECK (salary > 0)
 ) ENGINE = InnoDB;
 
@@ -57,7 +59,7 @@ CREATE TABLE IF NOT EXISTS schedule
     staff_id        INT,
     schedule_date   DATE NOT NULL,
     CONSTRAINT schedule_pk PRIMARY KEY (schedule_id),
-    CONSTRAINT schedule_staff_fk FOREIGN KEY (staff_id) REFERENCES staff(staff_id)
+    CONSTRAINT schedule_staff_fk FOREIGN KEY (staff_id) REFERENCES staff(user_id)
 ) ENGINE = InnoDB;
 
 -- Appointment table
@@ -72,10 +74,11 @@ CREATE TABLE IF NOT EXISTS appointment
     notes_after    TEXT,
     status         ENUM('C', 'U', 'I', 'F'),
     CONSTRAINT appointment_pk PRIMARY KEY (appointment_id),
-    CONSTRAINT appointment_patient_fk FOREIGN KEY (patient_id) REFERENCES patient(patient_id),
+    CONSTRAINT appointment_patient_fk FOREIGN KEY (patient_id) REFERENCES patient(user_id),
     CONSTRAINT appointment_schedule_fk FOREIGN KEY (schedule_id) REFERENCES schedule(schedule_id)
 ) ENGINE = InnoDB;
 
+-- Ticket table
 CREATE TABLE IF NOT EXISTS ticket
 (
     ticket_id      INT AUTO_INCREMENT,
@@ -92,8 +95,8 @@ CREATE TABLE IF NOT EXISTS ticket
     status         ENUM('P', 'A', 'R'),
     note           TEXT,
     CONSTRAINT ticket_pk PRIMARY KEY (ticket_id),
-    CONSTRAINT ticket_creator_pk FOREIGN KEY (creator) REFERENCES staff(staff_id),
-    CONSTRAINT ticket_handled_by_pk FOREIGN KEY (handled_by) REFERENCES staff(staff_id)
+    CONSTRAINT ticket_creator_pk FOREIGN KEY (creator) REFERENCES staff(user_id),
+    CONSTRAINT ticket_handled_by_pk FOREIGN KEY (handled_by) REFERENCES staff(user_id)
 ) ENGINE = InnoDB;
 
 -- Treatment Record table 
