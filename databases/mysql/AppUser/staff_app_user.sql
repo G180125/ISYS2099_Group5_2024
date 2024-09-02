@@ -32,3 +32,4 @@ GRANT TRIGGER ON hospital_management.appointment TO 'group5_staff_app_user'@'loc
 GRANT TRIGGER ON hospital_management.patient TO 'group5_staff_app_user'@'localhost';
 GRANT TRIGGER ON hospital_management.schedule TO 'group5_staff_app_user'@'localhost';
 GRANT TRIGGER ON hospital_management.treatment_record TO 'group5_staff_app_user'@'localhost';
+GRANT TRIGGER ON hospital_management.ticket TO 'group5_staff_app_user'@'localhost';
