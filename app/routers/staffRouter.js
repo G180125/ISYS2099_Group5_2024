@@ -33,12 +33,12 @@ staffRouter.get(
     staffController.getStaffById
 );
 
-// Update staff 
+// Update my info
 staffRouter.put(
     "",
     authenticate,
     checkRoles(["staff", "admin"]),
-    staffController.updateStaff
+    staffController.updateMyInfo
   );
 
 // Delete a staff

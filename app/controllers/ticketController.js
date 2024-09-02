@@ -8,7 +8,7 @@ const app = express();
 app.use(cookieParser());
 
 const ticketController = {
-    createTicket: async (req, res) => {
+    createTicket: async (req, res, next) => {
         try {
 
             const { accessToken } = req.cookies;
@@ -53,10 +53,7 @@ const ticketController = {
             
 
         } catch (error) {
-            console.error('Error in createTicket:', error);
-            res
-                .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-                .json({ error: error.message });
+            return next(error);
         }
     }
 };

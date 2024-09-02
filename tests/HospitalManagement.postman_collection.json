@@ -1,0 +1,1268 @@
+{
+	"info": {
+		"_postman_id": "b6e3e578-2420-41f6-92cb-0794d3694eb8",
+		"name": "Hospital Management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31418866"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login Staff",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"eve.brown@hospital.management.com\",\n    \"password\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/staff/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"staff",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"eve.williams@hospital.management.com\",\n    \"password\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/staff/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"staff",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Patient",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"paul@gmail.com\",\n    \"password\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/patient/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"patient",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Staff",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"johono@gmail.com\",\n    \"password\": \"test\",\n    \"role\": \"staff\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/staff/new",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"staff",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Patient",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"nickkyjimmy@gmail.com\",\n    \"password\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/patient/new",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"patient",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log out",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Patient",
+			"item": [
+				{
+					"name": "Get All Patients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/patient/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"patient",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Info",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/patient/myInfo",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"patient",
+								"myInfo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Patient by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":\"3\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/patient/id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"patient",
+								"id"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Patients by Name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/patient/search?first_name=Paul&last_name=Buck",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"patient",
+								"search"
+							],
+							"query": [
+								{
+									"key": "first_name",
+									"value": "Paul"
+								},
+								{
+									"key": "last_name",
+									"value": "Buck"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update My Info",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"newFirstName\":\"Nhan\",\n    \"newLastName\":\"Truong\",\n    \"newGender\":\"M\",\n    \"newDOB\":\"2003-04-27\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/patient",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"patient"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Patient By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"3\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/patient",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"patient"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Staff",
+			"item": [
+				{
+					"name": "Get all staff",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"job_type\" : \"D\",\n    \"department\": \"2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/staff/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"staff",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all doctors",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/staff/doctor",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"staff",
+								"doctor"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get my info",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/staff/my",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"staff",
+								"my"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get staff by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":\"4\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/staff/id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"staff",
+								"id"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update my info",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Nhan\",\n    \"lastName\": \"Truong\",\n    \"gender\": \"M\",\n    \"jobType\": \"D\",\n    \"departmentId\": \"2\",\n    \"salary\": \"100\",\n    \"managerId\": \"2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/staff",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"staff"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Staff",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"7\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/staff/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"staff",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Schedule",
+			"item": [
+				{
+					"name": "Get all schedule",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/schedule/all?limit=5&page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"schedule",
+								"all"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get schedule by staff",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"staff_id\": \"1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/schedule/staff?page=1&limit=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"schedule",
+								"staff"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Appointment",
+			"item": [
+				{
+					"name": "Get all appointment",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/appointment/all?page=1&limit=10&offset=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"appointment",
+								"all"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "offset",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get my appointments",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/appointment/my?status=U&page=1&limit=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"appointment",
+								"my"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "U"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get appointment by patient id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/appointment/patient?status=U&page=1&limit=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"appointment",
+								"patient"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "U"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Book Appointment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"patientID\":\"3\",\n    \"doctorID\":\"4\",\n    \"date\":\"2024-09-13\",\n    \"slotNumber\":\"2\",\n    \"purpose\":\"Check my teeth\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/appointment/new",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"appointment",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Appointment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"appointmentId\":\"3\",\n    \"date\":\"2024-09-12\",\n    \"timeSlot\":\"2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/appointment/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"appointment",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Appointment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"appointment_id\":\"1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/appointment/cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"appointment",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Treatment",
+			"item": [
+				{
+					"name": "Get my treatments",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/treatment/my",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"treatment",
+								"my"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get treatments by patient",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/treatment/patient",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"treatment",
+								"patient"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get treatments by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"treatmentId\": \"2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/treatment/id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"treatment",
+								"id"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Treatment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"treatment_name\":\"chemotherapy\",\n    \"treatment_date\":\"2024-09-15\",\n    \"appointment_id\":\"3\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/treatment/new",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"treatment",
+								"new"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Unstructured File",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fileTarget",
+									"type": "file",
+									"src": "/home/joun/Downloads/62138004.jpeg"
+								},
+								{
+									"key": "dirTarget",
+									"value": "staff",
+									"type": "text"
+								},
+								{
+									"key": "fileType",
+									"value": "Avatar",
+									"type": "text"
+								},
+								{
+									"key": "mysql_id",
+									"value": "xxx",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/files/upload",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"files",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find file meta",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fileTarget",
+									"type": "file",
+									"src": "/home/joun/Downloads/62138004.jpeg"
+								},
+								{
+									"key": "dirTarget",
+									"value": "staff",
+									"type": "text"
+								},
+								{
+									"key": "fileType",
+									"value": "Avatar",
+									"type": "text"
+								},
+								{
+									"key": "mysql_id",
+									"value": "xxx",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/files/meta/:bucket?type=Prescription",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"files",
+								"meta",
+								":bucket"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "Prescription"
+								}
+							],
+							"variable": [
+								{
+									"key": "bucket",
+									"value": "treatment"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get file content",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fileTarget",
+									"type": "file",
+									"src": "/home/joun/Downloads/62138004.jpeg"
+								},
+								{
+									"key": "dirTarget",
+									"value": "staff",
+									"type": "text"
+								},
+								{
+									"key": "fileType",
+									"value": "Avatar",
+									"type": "text"
+								},
+								{
+									"key": "mysql_id",
+									"value": "xxx",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/files/content/:bucket/:filename",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"files",
+								"content",
+								":bucket",
+								":filename"
+							],
+							"variable": [
+								{
+									"key": "bucket",
+									"value": "staff"
+								},
+								{
+									"key": "filename",
+									"value": "1725182372072-avatar1.jpe"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Department",
+			"item": [
+				{
+					"name": "Get All Department",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/department/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"department",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Doctor by department",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"department_name\" : \"Pediatrician\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/department/doctor",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"department",
+								"doctor"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Report",
+			"item": [
+				{
+					"name": "Get patient treatment",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"start_date\": \"2024-09-02\",\n  \"end_date\": \"2024-09-15\",\n  \"email\" : \"paul@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/report/patient",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"report",
+								"patient"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get staff history",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"start_date\": \"2024-09-02\",\n  \"end_date\": \"2024-09-15\",\n  \"email\": \"eve.brown@hospital.management.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/report/doctor/work",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"report",
+								"doctor",
+								"work"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get staff job_changes",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"start_date\": \"2024-09-02\",\n  \"end_date\": \"2024-09-15\",\n  \"email\": \"eve.brown@hospital.management.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/report/doctor/job_changes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"report",
+								"doctor",
+								"job_changes"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ticket",
+			"item": [
+				{
+					"name": "New Ticket",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"newSalary\" : \"90000\",\n    \"newJobType\": 2,\n    \"newDepartmentID\" : 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/ticket/new",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ticket",
+								"new"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "localhost:2099/hospital_management/api/v1"
+		}
+	]
+}

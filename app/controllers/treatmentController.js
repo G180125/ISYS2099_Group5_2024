@@ -10,7 +10,7 @@ app.use(cookieParser());
 const treatment_list = ["hormone therapy", "chemotherapy"]
 
 const treatmentController = {
-    getMyTreatments: async (req, res) => {
+    getMyTreatments: async (req, res, next) => {
         try{
             const status = req.query.status;
             const id = req.id;
@@ -70,15 +70,12 @@ const treatmentController = {
                 pageSize: limit,
                 }
             });
-            } catch (error) {
-            console.error('Error fetching appointments:', error);
-            res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-                error: httpStatus.INTERNAL_SERVER_ERROR.message 
-            });
-        }
+        } catch (error) {
+            return next(error);
+        } 
     },
 
-    getTreatmentsByPatient: async (req, res) => {
+    getTreatmentsByPatient: async (req, res, next) => {
         try{
             const status = req.query.status;
             const id = req.body.id;
@@ -138,15 +135,12 @@ const treatmentController = {
                 pageSize: limit,
                 }
             });
-            } catch (error) {
-            console.error('Error fetching appointments:', error);
-            res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-                error: httpStatus.INTERNAL_SERVER_ERROR.message 
-            });
+        } catch (error) {
+            return next(error);
         }
     },
 
-    getTreatmentById: async (req, res) => {
+    getTreatmentById: async (req, res, next) => {
         try{
             const status = req.query.status;
             const treatmentId = req.body.treatmentId;
@@ -169,15 +163,12 @@ const treatmentController = {
             return res 
                     .status(httpStatus.OK().code)
                     .json({ result: result });
-            } catch (error) {
-            console.error('Error fetching appointments:', error);
-            res.status(httpStatus.INTERNAL_SERVER_ERROR.code).json({ 
-                error: httpStatus.INTERNAL_SERVER_ERROR.message 
-            });
+        } catch (error) {
+            return next(error);
         }
     },
 
-    addTreatment: async (req, res)=>{
+    addTreatment: async (req, res, next)=>{
         try{
             const { treatment_name, treatment_date, appointment_id } = req.body;
             console.log(treatment_name);
@@ -213,10 +204,7 @@ const treatmentController = {
                 .json({ message: message });
             }
         catch(err){
-            console.error("error: " + err.stack);
-            return res
-              .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-              .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+            return next(err);
         }
     },
 };

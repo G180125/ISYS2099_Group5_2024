@@ -12,7 +12,7 @@ const validGenders = ["F", "M", "O"];
 const validjob_types = ["D", "N", "A"];
 
 const staffController = {
-  getAllStaffs: async (req, res) => {
+  getAllStaffs: async (req, res, next) => {
     try {
       const job_type = req.body.job_type;
       const department = req.body.department;
@@ -66,18 +66,17 @@ const staffController = {
       });
   
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      return next(error);
     }
   },
 
-  getAllDoctors: async (req, res) => {
+  getAllDoctors: async (req, res, next) => {
     try {
       const page = parseInt(req.query.page) || 1;  
       const limit = parseInt(req.query.limit) || 10; 
       const offset = (page - 1) * limit;
 
-        const [results] = await db.poolPatient.query(`
+        const [results] = await mysqlClient.poolPatient.query(`
         SELECT S.first_name, S.last_name, D.department_name
         FROM staff S
         JOIN department D ON S.department_id = D.department_id
@@ -87,12 +86,11 @@ const staffController = {
         .status(httpStatus.OK().code)
         .json(results);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      return next(error);
     }
 },
   
-  getMyInfo: async (req, res) => {
+  getMyInfo: async (req, res, next) => {
     try {
       const id = req.id;
 
@@ -113,14 +111,11 @@ const staffController = {
       }
       return res.json(results[0]);
     } catch (error) {
-      console.error(error);
-      res
-        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+      return next(error);
     }
   },
 
-  getStaffById: async (req, res) => {
+  getStaffById: async (req, res, next) => {
     try {
       const id = req.body.id;
 
@@ -141,14 +136,11 @@ const staffController = {
       }
       return res.json(results[0]);
     } catch (error) {
-      console.error(error);
-      res
-        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+      return next(error);
     }
   },
 
-  updateStaff: async (req, res) => {
+  updateMyInfo: async (req, res, next) => {
     try {
       const id = req.id;
       const { firstName, lastName, gender, job_type, departmentId, salary, managerId } = req.body;
@@ -168,7 +160,7 @@ const staffController = {
       let result = 0; 
       let message = ''; 
 
-      const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, @result, @message)`;
+      const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, ?, @result, @message)`;
       const [rows] = await mysqlClient.poolAdmin.query(query, [id, firstName, lastName, gender, job_type, departmentId, salary, managerId]);
 
       result = rows[0][0].result;
@@ -192,17 +184,14 @@ const staffController = {
         };
         res
           .status(httpStatus.OK().code)
-          .json(httpStatus.OK(`Staff ${staff_id} updated successfully`, responseData).data);
+          .json(httpStatus.OK(`Staff ${id} updated successfully`, responseData).data);
       }
     } catch (error) {
-      console.error(error);
-      res
-        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+      return next(error);
     }
   },
 
-  deleteStaffById: async (req, res) => {
+  deleteStaffById: async (req, res, next) => {
     try {
       const id = req.body.id;
       await mysqlClient.poolAdmin.query(`DELETE FROM staff WHERE staff_id = ?`, [
@@ -212,10 +201,7 @@ const staffController = {
         .status(httpStatus.OK().code)
         .json(httpStatus.OK(`Staff member deleted successfully`).data);
     } catch (error) {
-      console.error(error);
-      res
-        .status(httpStatus.INTERNAL_SERVER_ERROR.code)
-        .json({ error: httpStatus.INTERNAL_SERVER_ERROR.message });
+      return next(error);
     }
   },
 };

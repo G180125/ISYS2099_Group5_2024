@@ -6,7 +6,7 @@ const httpStatus = require("../utils/httpStatus");
 const authenticate = async (req, res, next) => {
   const { accessToken } = req.cookies;
 
-  console.log("\n");
+  // console.log("\n");
   console.log("Access token: " + accessToken);
 
   try {
