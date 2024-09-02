@@ -136,7 +136,7 @@ BEGIN
     START TRANSACTION;
 
     -- Check if the staff exists
-    IF (SELECT COUNT(*) FROM staff WHERE email = s_email) = 0 THEN
+    IF (SELECT COUNT(*) FROM staff WHERE staff_id = s_id) = 0 THEN
         SET result = 0;
         SET message = 'Staff member not found';
         ROLLBACK;
@@ -154,7 +154,7 @@ BEGIN
     -- Lock the staff for update
     SELECT *
     FROM staff 
-    WHERE email = s_email FOR UPDATE;
+    WHERE staff_id = s_id FOR UPDATE;
 
     -- Update the staff record
     UPDATE staff
