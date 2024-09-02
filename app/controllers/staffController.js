@@ -160,7 +160,7 @@ const staffController = {
       let result = 0; 
       let message = ''; 
 
-      const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, @result, @message)`;
+      const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, ?, @result, @message)`;
       const [rows] = await mysqlClient.poolAdmin.query(query, [id, firstName, lastName, gender, job_type, departmentId, salary, managerId]);
 
       result = rows[0][0].result;
@@ -184,7 +184,7 @@ const staffController = {
         };
         res
           .status(httpStatus.OK().code)
-          .json(httpStatus.OK(`Staff ${staff_id} updated successfully`, responseData).data);
+          .json(httpStatus.OK(`Staff ${id} updated successfully`, responseData).data);
       }
     } catch (error) {
       return next(error);
