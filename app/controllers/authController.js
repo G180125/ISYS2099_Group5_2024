@@ -33,7 +33,7 @@ const registerPatient = async (req, res, next) => {
 
     result = rows[0][0].result;
     message = rows[0][0].message;
-    newPatientId = rows[0][0].new_patient_id;
+    new_patient_id = rows[0][0].new_patient_id;
 
     if (result == 0) {
       return res
@@ -41,7 +41,7 @@ const registerPatient = async (req, res, next) => {
         .json({ error: httpStatus.BAD_REQUEST(message).message });
     }
 
-    req.id = newPatientId;
+    req.id = new_patient_id;
     req.role = 'patient';
 
     return res
@@ -104,7 +104,6 @@ const registerStaff = async (req, res, next) => {
     return next(err);
   }
 };
-
 
 const login = async (req, res, next) => {
   try {

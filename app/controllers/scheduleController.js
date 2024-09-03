@@ -9,12 +9,15 @@ app.use(cookieParser());
 const scheduleController = {
   getAllSchedules: async (req, res, next) => {
     try {
+      const role = req.role;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
 
+      const pool = mysqlClient.getPool(role);
+
       // Query to fetch patients with pagination
-      const [results] = await mysqlClient.poolAdmin.query(
+      const [results] = await pool.query(
         `
         SELECT S.staff_id, 
           S.schedule_date, 
@@ -33,7 +36,7 @@ const scheduleController = {
       );
 
       // Optionally, fetch the total number of records for pagination metadata
-      const [countResult] = await mysqlClient.poolAdmin.query(
+      const [countResult] = await pool.query(
         `SELECT COUNT(*) as total FROM schedule`
       );
       const totalRecords = countResult[0].total;
@@ -55,13 +58,16 @@ const scheduleController = {
 
   getAllSchedulesByStaff: async (req, res, next) => {
     try {
+      const role = req.role;
       const staffId = req.body.staff_id;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
 
+      const pool = mysqlClient.getPool(role);
+
       const query = `CALL view_staff_schedule(?, ?, ?)`;
-      const results = await mysqlClient.poolPatient.query(query, [
+      const results = await pool.query(query, [
         staffId,
         limit,
         offset,

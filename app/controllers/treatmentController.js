@@ -14,6 +14,7 @@ const treatmentController = {
         try{
             const status = req.query.status;
             const id = req.id;
+            const role = req.role;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
             const offset = (page - 1) * limit;
@@ -49,8 +50,10 @@ const treatmentController = {
                 query += ` LIMIT ? OFFSET ?`;
             }
 
-            const [results] = await mysqlClient.poolPatient.query(query, queryParams);
-            const [countResult] = await mysqlClient.poolPatient.query(countQuery, countParams);
+            const pool = mysqlClient.getPool(role);
+
+            const [results] = await pool.query(query, queryParams);
+            const [countResult] = await pool.query(countQuery, countParams);
 
             const totalRecords = countResult[0].total;
             const totalPages = Math.ceil(totalRecords / limit);
@@ -79,6 +82,7 @@ const treatmentController = {
         try{
             const status = req.query.status;
             const id = req.body.id;
+            const role = req.role;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
             const offset = (page - 1) * limit;
@@ -114,8 +118,10 @@ const treatmentController = {
                 query += ` LIMIT ? OFFSET ?`;
             }
 
-            const [results] = await mysqlClient.poolPatient.query(query, queryParams);
-            const [countResult] = await mysqlClient.poolPatient.query(countQuery, countParams);
+            const pool = mysqlClient.getPool(role);
+
+            const [results] = await pool.query(query, queryParams);
+            const [countResult] = await pool.query(countQuery, countParams);
 
             const totalRecords = countResult[0].total;
             const totalPages = Math.ceil(totalRecords / limit);
@@ -142,6 +148,7 @@ const treatmentController = {
 
     getTreatmentById: async (req, res, next) => {
         try{
+            const role = req.role;
             const status = req.query.status;
             const treatmentId = req.body.treatmentId;
 
@@ -158,7 +165,9 @@ const treatmentController = {
                 JOIN department D ON ST.department_id = D.department_id
                 WHERE T.treatment_id = ?`;
 
-            const [result] = await mysqlClient.poolPatient.query(query, [treatmentId]);
+            const pool = mysqlClient.getPool(role);
+
+            const [result] = await pool.query(query, [treatmentId]);
 
             return res 
                     .status(httpStatus.OK().code)
@@ -170,6 +179,7 @@ const treatmentController = {
 
     addTreatment: async (req, res, next)=>{
         try{
+            const role = req.role;
             const { treatment_name, treatment_date, appointment_id } = req.body;
             console.log(treatment_name);
             console.log(treatment_date);
@@ -180,15 +190,16 @@ const treatmentController = {
                         .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
             }
 
-
             if(!treatment_list.includes(treatment_name.toLowerCase())){
                 return res
                 .status(httpStatus.BAD_REQUEST().code)
                 .json({error: httpStatus.BAD_REQUEST("Invalid treatment!").message});
             }
 
+            const pool = mysqlClient.getPool(role);
+
             const query = `CALL add_patient_treatment(?,?,?, @result, @message)`;
-            const [rows] = await mysqlClient.poolStaff.query(query, [treatment_name,treatment_date,appointment_id]);
+            const [rows] = await pool.query(query, [treatment_name,treatment_date,appointment_id]);
             const result = rows[0][0].result;
             const message = rows[0][0].message;
             console.log(rows);

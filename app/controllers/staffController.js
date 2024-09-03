@@ -14,6 +14,7 @@ const validjob_types = ["D", "N", "A"];
 const staffController = {
   getAllStaffs: async (req, res, next) => {
     try {
+      const role = req.role;
       const job_type = req.body.job_type;
       const department = req.body.department;
       const order = req.body.order || 'ASC';
@@ -25,31 +26,33 @@ const staffController = {
       let results;
       let countQuery;
       let countResult;
+
+      const pool = mysqlClient.getPool(role);
   
       if (job_type && department) {
         query = `CALL list_staff_by_department(?, ?, ?, ?)`;
-        results = await mysqlClient.poolStaff.query(query, [department, job_type, limit, offset]);
+        results = await pool.query(query, [department, job_type, limit, offset]);
 
         countQuery = `SELECT COUNT(*) as total FROM staff_secure_view WHERE department_id = ? AND job_type = ?`;
-        [countResult] = await mysqlClient.poolStaff.query(countQuery, [department, job_type]);
+        [countResult] = await pool.query(countQuery, [department, job_type]);
       } else if (department) {
         query = `CALL list_staff_by_department(?, ?, ?, ?)`;
-        results = await mysqlClient.poolStaff.query(query, [department, null, limit, offset]);
+        results = await pool.query(query, [department, null, limit, offset]);
 
         countQuery = `SELECT COUNT(*) as total FROM staff_secure_view WHERE department_id = ?`;
-        [countResult] = await mysqlClient.poolStaff.query(countQuery, [department]);
+        [countResult] = await pool.query(countQuery, [department]);
       } else if (job_type) {
         query = `SELECT * FROM staff_secure_view WHERE job_type = ? ORDER BY name ${order} LIMIT ? OFFSET ?`;
-        results = await mysqlClient.poolStaff.query(query, [job_type, limit, offset]);
+        results = await pool.query(query, [job_type, limit, offset]);
 
         countQuery = `SELECT COUNT(*) as total FROM staff_secure_view WHERE job_type = ?`;
-        [countResult] = await mysqlClient.poolStaff.query(countQuery, [job_type]);
+        [countResult] = await pool.query(countQuery, [job_type]);
       } else {
         query = `CALL list_staff_order_by_name(?, ?, ?)`;
-        results = await mysqlClient.poolStaff.query(query, [order, limit, offset]);
+        results = await pool.query(query, [order, limit, offset]);
 
         countQuery = `SELECT COUNT(*) as total FROM staff_secure_view`;
-        [countResult] = await mysqlClient.poolStaff.query(countQuery);
+        [countResult] = await pool.query(countQuery);
       }
   
       const totalRecords = countResult[0].total;
@@ -76,15 +79,23 @@ const staffController = {
       const limit = parseInt(req.query.limit) || 10; 
       const offset = (page - 1) * limit;
 
-        const [results] = await mysqlClient.poolPatient.query(`
-        SELECT S.first_name, S.last_name, D.department_name
-        FROM staff S
-        JOIN department D ON S.department_id = D.department_id
-        WHERE S.job_type = 'D'`);
-        
-        res
-        .status(httpStatus.OK().code)
-        .json(results);
+      const pool = mysqlClient.getPool("patient");
+
+      const [results] = await pool.query(query, [limit, offset]);
+
+      const [countResult] = await pool.query(`SELECT COUNT(*) as total FROM staff_job_change_report`);
+      const totalRecords = countResult[0].total;
+      const totalPages = Math.ceil(totalRecords / limit);
+
+      res.json({
+          results,
+          pagination: {
+              totalRecords,
+              totalPages,
+              currentPage: page,
+              pageSize: limit,
+          }
+      });
     } catch (error) {
       return next(error);
     }
@@ -93,14 +104,16 @@ const staffController = {
   getMyInfo: async (req, res, next) => {
     try {
       const id = req.id;
-
+      const role = req.role;
       if(!id || id == ""){
         return res
         .status(httpStatus.BAD_REQUEST().code)
         .json({ error: httpStatus.BAD_REQUEST("Unauthentication").message });
-    }
+      }
 
-      const [results] = await mysqlClient.poolStaff.query(
+      const pool = mysqlClient.getPool(role);
+
+      const [results] = await pool.query(
         `SELECT * FROM staff_secure_view WHERE staff_id = ?`,
         [id],
       );
@@ -118,14 +131,16 @@ const staffController = {
   getStaffById: async (req, res, next) => {
     try {
       const id = req.body.id;
-
+      const role = req.role;
       if(!id || id == ""){
         return res
         .status(httpStatus.BAD_REQUEST().code)
         .json({ error: httpStatus.BAD_REQUEST("Unauthentication").message });
-    }
+      }
 
-      const [results] = await mysqlClient.poolStaff.query(
+      const pool = mysqlClient.getPool(role);
+
+      const [results] = await pool.query(
         `SELECT * FROM staff_secure_view WHERE staff_id = ?`,
         [id],
       );
@@ -143,6 +158,7 @@ const staffController = {
   updateMyInfo: async (req, res, next) => {
     try {
       const id = req.id;
+      const role = req.role;
       const { firstName, lastName, gender, job_type, departmentId, salary, managerId } = req.body;
 
       if(!id || id == ""){
@@ -160,8 +176,10 @@ const staffController = {
       let result = 0; 
       let message = ''; 
 
+      const pool = mysqlClient.getPool(role);
+
       const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, ?, @result, @message)`;
-      const [rows] = await mysqlClient.poolAdmin.query(query, [id, firstName, lastName, gender, job_type, departmentId, salary, managerId]);
+      const [rows] = await pool.query(query, [id, firstName, lastName, gender, job_type, departmentId, salary, managerId]);
 
       result = rows[0][0].result;
       message = rows[0][0].message;
@@ -194,7 +212,10 @@ const staffController = {
   deleteStaffById: async (req, res, next) => {
     try {
       const id = req.body.id;
-      await mysqlClient.poolAdmin.query(`DELETE FROM staff WHERE staff_id = ?`, [
+      const role = req.role;
+
+      const pool = mysqlClient.getPool(role);
+      await pool.query(`DELETE FROM staff WHERE staff_id = ?`, [
         id,
       ]);
       res

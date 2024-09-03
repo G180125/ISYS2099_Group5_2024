@@ -10,7 +10,9 @@ app.use(cookieParser());
 const departmentController = {
     getAllDepartments: async (req, res, next) => {
         try {
-            const [results] = await mysqlClient.poolPatient.query(`
+            const pool = mysqlClient.getPool("patient");
+
+            const [results] = await pool.query(`
             SELECT department_name
             FROM department`);
 
@@ -33,8 +35,10 @@ const departmentController = {
                 .json({ error: httpStatus.BAD_REQUEST("No Input For Department").message });
             }
 
+            const pool = mysqlClient.getPool("patient");
+
             // Execute query to fetch doctors by department name
-            const [results] = await mysqlClient.poolPatient.query(
+            const [results] = await pool.query(
             `
             SELECT S.first_name, S.last_name, D.department_name
             FROM staff S

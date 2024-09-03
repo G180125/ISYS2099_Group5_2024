@@ -19,9 +19,9 @@ const timeSlotMap = {
 
 // Define the reportController
 const reportController = {
-
     // Function to get patient treatment history within a specific date range
     viewPatientTreatment: async (req, res, next) => {
+        const role = req.role;
         const { start_date, end_date, email } = req.body; // Assuming dates are provided as query parameters
 
         if (!start_date || !end_date) {
@@ -34,7 +34,9 @@ const reportController = {
         const email_ = email !== undefined && email !== '' ? email : null;
 
         try {
-            const [rows] = await mysqlClient.poolAdmin.query("CALL view_patient_treatment(?, ?, ?, @result, @message)", [start_date, end_date, email_]);
+            const pool = mysqlClient.getPool(role);
+
+            const [rows] = await pool.query("CALL view_patient_treatment(?, ?, ?, @result, @message)", [start_date, end_date, email_]);
             
             if (rows[0].length === 0) {
                 return res
@@ -61,6 +63,7 @@ const reportController = {
 
     // Function to get a doctor work within a specific date range
     viewDoctorWork: async (req, res, next) => {
+        const role = req.role;
         const { start_date, end_date, email } = req.body; // Assuming dates are provided as query parameters
 
         if (!start_date || !end_date) {
@@ -73,7 +76,9 @@ const reportController = {
         const email_ = email !== undefined && email !== '' ? email : null;
 
         try {
-            const [rows] = await mysqlClient.poolAdmin.query("CALL view_doctor_work(?, ?, ?, @result, @message)", [start_date, end_date, email_]);
+            const pool = mysqlClient.getPool(role);
+
+            const [rows] = await pool.query("CALL view_doctor_work(?, ?, ?, @result, @message)", [start_date, end_date, email_]);
             
             if (rows[0].length === 0) {
                 return res
@@ -108,6 +113,7 @@ const reportController = {
 
     // Function to get a staff job changes within a specific date range
     viewStaffJobChanges: async (req, res, next) => {
+        const role = req.role;
         const { start_date, end_date, email } = req.body; // Assuming dates are provided as query parameters
 
         if (!start_date || !end_date) {
@@ -120,7 +126,9 @@ const reportController = {
         const email_ = email !== undefined && email !== '' ? email : null;
 
         try {
-            const [rows] = await mysqlClient.poolAdmin.query("CALL view_staff_job_change(?, ?, ?, @result, @message)", [start_date, end_date, email_]);
+            const pool = mysqlClient.getPool(role);
+
+            const [rows] = await pool.query("CALL view_staff_job_change(?, ?, ?, @result, @message)", [start_date, end_date, email_]);
             
             if (rows[0].length === 0) {
                 return res

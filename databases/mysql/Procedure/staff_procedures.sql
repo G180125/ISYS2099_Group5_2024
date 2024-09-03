@@ -105,12 +105,11 @@ END $$
         1: Success
 */
 DROP PROCEDURE IF EXISTS update_staff;
--- DELIMITER //
 CREATE PROCEDURE update_staff(
-    IN s_id VARCHAR(255),
+    IN s_id INT,
     IN s_first_name VARCHAR(100),
     IN s_last_name VARCHAR(100),
-    IN s_gender ENUM ('M', 'F', 'O'),
+    IN s_gender ENUM('M', 'F', 'O'),
     IN s_job_type ENUM('D', 'N', 'A'),
     IN s_department_id INT,
     IN s_salary DECIMAL(10, 2),
@@ -122,7 +121,7 @@ this_proc:
 BEGIN
     DECLARE _rollback BOOL DEFAULT 0;
     DECLARE sql_error_message VARCHAR(255);
-    
+
     -- Declare the handler for SQL exceptions
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
     BEGIN
@@ -143,43 +142,31 @@ BEGIN
         LEAVE this_proc;
     END IF;
 
-     -- Check if salary is valid
-    IF s_salary < 0 THEN
-        SET result = 0;
-        SET message = 'Salary must be a positive number';
-        ROLLBACK;
-        LEAVE this_proc;
-    END IF;
-
-    -- Lock the staff for update
-    SELECT *
-    FROM staff 
-    WHERE staff_id = s_id FOR UPDATE;
-
-    -- Update the staff record
+    -- Begin the update using COALESCE to update only if the parameter is not null
     UPDATE staff
-    SET first_name = s_first_name,
-        last_name = s_last_name,
-        gender = s_gender,
-        job_type = s_job_type,      
-        department_id = s_department_id,
-        salary = s_salary,
-        manager_id = s_manager_id
+    SET 
+        first_name = COALESCE(s_first_name, first_name),
+        last_name = COALESCE(s_last_name, last_name),
+        gender = COALESCE(s_gender, gender),
+        job_type = COALESCE(s_job_type, job_type),
+        department_id = COALESCE(s_department_id, department_id),
+        salary = COALESCE(s_salary, salary),
+        manager_id = COALESCE(s_manager_id, manager_id)
     WHERE staff_id = s_id;
 
-   IF _rollback THEN
+    -- Check if there was an error during the update
+    IF _rollback THEN
         SET result = 0;
         ROLLBACK;
     ELSE
         SET result = 1;
-        SET message = 'Update successfully';
+        SET message = 'Update successful';
         COMMIT;
     END IF;
 
     -- Return the result and message
     SELECT result, message;
-END; -- //
--- DELIMITER ;
+END;
 
 DROP PROCEDURE IF EXISTS view_staff_schedule;
 -- DELIMITER //

@@ -22,38 +22,6 @@ BEGIN
     ORDER BY T.status;
 END;
 
-DROP PROCEDURE IF EXISTS refresh_staff_job_change_report;
-CREATE PROCEDURE refresh_staff_job_change_report()
-BEGIN
-    DELETE FROM staff_job_change_report;
-    INSERT INTO staff_job_change_report
-    SELECT 
-        S.first_name AS staff_first_name, 
-        S.last_name AS staff_last_name, 
-        S.email AS staff_email, 
-        S.gender AS staff_gender,
-        S.salary AS staff_salary,
-        S.job_type AS staff_job_type, 
-        D1.department_name AS staff_department_name,
-        M1.email AS staff_manager,
-        T.created_date,
-        T.note AS ticket_note,
-        T.status AS ticket_status,
-        T.first_name AS ticket_first_name,
-        T.last_name AS ticket_last_name,
-        T.gender AS ticket_gender,
-        T.job_type AS ticket_job_type,
-        D2.department_name AS ticket_department_name,
-        M2.email AS ticket_manager
-    FROM ticket T
-    JOIN staff S ON T.creator = S.staff_id
-    JOIN department D1 ON S.department_id = D1.department_id
-    LEFT JOIN staff M1 ON S.manager_id = M1.staff_id
-    LEFT JOIN department D2 ON T.department_id = D2.department_id
-    LEFT JOIN staff M2 ON T.manager_id = M2.staff_id
-    ORDER BY T.created_date;
-END;
-
 DROP PROCEDURE IF EXISTS refresh_doctor_work_report;
 CREATE PROCEDURE refresh_doctor_work_report()
 BEGIN

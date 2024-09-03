@@ -1,9 +1,14 @@
 DROP PROCEDURE IF EXISTS create_ticket_for_update;
 CREATE PROCEDURE create_ticket_for_update(
     IN staff_id INT,
+    IN new_first_name VARCHAR(100),
+    IN new_last_name VARCHAR(100),
+    IN new_gender ENUM('M', 'F', 'O'), 
     IN new_salary DECIMAL(10, 2),    -- Nullable: new salary, or NULL if not updating
     IN new_job_type ENUM('D', 'N', 'A'), -- Nullable: new job type, or NULL if not updating
     IN new_department_id INT,        -- Nullable: new department ID, or NULL if not updating
+    IN new_manager_id  INT,
+    IN notes TEXT,
     OUT result INT,
     OUT message VARCHAR(255)
 )
@@ -11,16 +16,6 @@ this_proc:
 BEGIN
     DECLARE _rollback BOOL DEFAULT 0;
     DECLARE sql_error_message VARCHAR(255);
-
-    -- Declare variables to hold staff data
-    DECLARE first_name VARCHAR(100);
-    DECLARE last_name VARCHAR(100);
-    DECLARE gender CHAR(1);
-    DECLARE manager_id INT;
-    DECLARE current_salary DECIMAL(10, 2);
-    DECLARE current_job_type ENUM('D', 'N', 'A');
-    DECLARE current_department_id INT;
-    DECLARE notes TEXT;
 
     -- Declare the handler for SQL exceptions
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
@@ -33,23 +28,16 @@ BEGIN
     END;
 
     START TRANSACTION;
-
-    -- Fetch common staff details
-    SELECT S.first_name, S.last_name, S.gender, S.salary, S.job_type, S.department_id, S.manager_id
-    INTO first_name, last_name, gender, current_salary, current_job_type, current_department_id, manager_id
-    FROM staff S
-    WHERE S.staff_id = staff_id;
-
-    -- Initialize notes for changes
-    SET notes = '';
     
-    IF new_salary IS NULL AND new_job_type is NULL AND new_department_id IS NULL THEN
-		SET result = 0;
-		SET message = 'No value to update. ';
-		SELECT result, message;
+    -- Check if all update inputs are NULL
+    IF new_first_name IS NULL AND new_last_name IS NULL AND new_gender IS NULL AND 
+       new_salary IS NULL AND new_job_type IS NULL AND new_department_id IS NULL AND 
+       new_manager_id IS NULL THEN
+        SET result = 0;
+        SET message = 'No values provided for update.';
         ROLLBACK;
-		leave this_proc;
-	END IF;
+        LEAVE this_proc;
+    END IF;
 
     -- Update Salary if new_salary is not NULL
     IF new_salary IS NOT NULL THEN
@@ -59,8 +47,6 @@ BEGIN
             SELECT result, message;
             ROLLBACK;
 			leave this_proc;
-        ELSE 
-			SET notes = CONCAT(notes, 'Salary update request from ', current_salary, ' to ', new_salary, '. ');
         END IF;
     END IF;
 
@@ -69,8 +55,8 @@ BEGIN
         IF new_job_type NOT IN ('D', 'N', 'A') THEN
             SET result = 0;
             SET message = 'Invalid job type. Must be D, N, or A. ';
-            SELECT result, message;
             ROLLBACK;
+            SELECT result, message;
             leave this_proc;
         ELSE
 			SET notes = CONCAT(notes, 'Job type update request from ', current_job_type, ' to ', new_job_type, '. ');
@@ -81,19 +67,10 @@ BEGIN
     IF new_department_id IS NOT NULL THEN
         IF new_department_id < 1 OR new_department_id > 100 THEN
             SET result = 0;
-            SET message = 'Invalid department ID. Must be between 1 and 100. ';
-            SELECT result, message;
+            SET message = 'Invalid department ID.';
             ROLLBACK;
-            leave this_proc;
-        ELSEIF current_department_id IS NULL AND current_job_type = 'A' THEN
-			SET _rollback = 1;
-            SET result = 0;
-            SET message = 'Cannot update department ID for Admin. ';
             SELECT result, message;
-            ROLLBACK;
             leave this_proc;
-        ELSE
-			SET notes = CONCAT(notes, 'Department ID update request from ', current_department_id, ' to ', new_department_id, '. ');
         END IF;
     END IF;
 
@@ -103,9 +80,278 @@ BEGIN
         ROLLBACK;
     ELSE
 		INSERT INTO ticket (first_name, last_name, gender, job_type, department_id, salary, manager_id, creator, created_date, handled_by, status, note)
-        VALUES (first_name, last_name, gender, new_job_type, new_department_id, new_salary, manager_id, staff_id, DATE(NOW()), NULL, 1, notes);
+        VALUES (new_first_name, new_last_name, new_gender, new_job_type, new_department_id, new_salary, new_manager_id, staff_id, DATE(NOW()), NULL, 1, notes);
         SET result = 1;
         SET message = 'Ticket creation successful for updates: ';
+        COMMIT;
+    END IF;
+
+    -- Return the result and message
+    SELECT result, message;
+END;
+
+DROP PROCEDURE IF EXISTS update_ticket_for_update;
+CREATE PROCEDURE update_ticket_for_update(
+    IN t_id INT,
+    IN staff_id INT,
+    IN new_first_name VARCHAR(100),
+    IN new_last_name VARCHAR(100),
+    IN new_gender ENUM('M', 'F', 'O'), 
+    IN new_salary DECIMAL(10, 2),    -- Nullable: new salary, or NULL if not updating
+    IN new_job_type ENUM('D', 'N', 'A'), -- Nullable: new job type, or NULL if not updating
+    IN new_department_id INT,        -- Nullable: new department ID, or NULL if not updating
+    IN new_manager_id  INT,
+    IN notes TEXT,
+    OUT result INT,
+    OUT message VARCHAR(255)
+)
+this_proc:
+BEGIN
+    DECLARE _rollback BOOL DEFAULT 0;
+    DECLARE sql_error_message VARCHAR(255);
+
+    -- Declare the handler for SQL exceptions
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = sql_error_message;
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+    -- Update Salary if new_salary is not NULL
+    IF new_salary IS NOT NULL THEN
+        IF new_salary < 0 THEN
+            SET result = 0;
+            SET message = 'Invalid salary format. Must be a non-negative decimal number. ';
+            SELECT result, message;
+            ROLLBACK;
+			leave this_proc;
+        END IF;
+    END IF;
+
+    -- Update Job Type if new_job_type is not NULL
+    IF new_job_type IS NOT NULL THEN
+        IF new_job_type NOT IN ('D', 'N', 'A') THEN
+            SET result = 0;
+            SET message = 'Invalid job type. Must be D, N, or A. ';
+            ROLLBACK;
+            SELECT result, message;
+            leave this_proc;
+        ELSE
+			SET notes = CONCAT(notes, 'Job type update request from ', current_job_type, ' to ', new_job_type, '. ');
+        END IF;
+    END IF;
+
+    -- Update Department ID if new_department_id is not NULL
+    IF new_department_id IS NOT NULL THEN
+        IF new_department_id < 1 OR new_department_id > 100 THEN
+            SET result = 0;
+            SET message = 'Invalid department ID.';
+            ROLLBACK;
+            SELECT result, message;
+            leave this_proc;
+        END IF;
+    END IF;
+
+    SELECT * FROM ticket WHERE ticket_id = t_id FOR UPDATE;
+
+    -- Final check before committing the transaction
+    IF _rollback THEN
+        SET result = 0;
+        ROLLBACK;
+    ELSE
+		UPDATE ticket
+        SET
+            first_name = COALESCE(new_first_name, first_name),
+            last_name = COALESCE(new_last_name, last_name),
+            gender = COALESCE(new_gender, gender),
+            salary = COALESCE(new_salary, salary),
+            job_type = COALESCE(new_job_type, job_type),
+            department_id = COALESCE(new_department_id, department_id),
+            manager_id = COALESCE(new_manager_id, manager_id),
+            note = CONCAT(note, IFNULL(notes, ''))
+        WHERE ticket_id = t_id;
+
+        SET result = 1;
+        SET message = 'Ticket creation successful for updates: ';
+        COMMIT;
+    END IF;
+
+    -- Return the result and message
+    SELECT result, message;
+END;
+
+DROP PROCEDURE IF EXISTS approve_ticket_for_update;
+CREATE PROCEDURE approve_ticket_for_update(
+    IN t_id INT,
+    IN admin_id INT,
+    OUT result INT,
+    OUT message VARCHAR(255)
+)
+this_proc:
+BEGIN
+    DECLARE _rollback BOOL DEFAULT 0;
+    DECLARE sql_error_message VARCHAR(255);
+    DECLARE _creator INT;
+
+    -- Handler for SQL exceptions
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = sql_error_message;
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    -- Lock the ticket for update and check if staff_id is the creator
+    SELECT creator 
+    INTO _creator 
+    FROM ticket 
+    WHERE ticket_id = t_id 
+    FOR UPDATE;
+
+    IF _creator IS NULL THEN
+        SET result = 0;
+        SET message = 'Ticket not found.';
+        ROLLBACK;
+        LEAVE this_proc;
+    END IF;
+
+    -- Call the update_staff procedure with the values from the ticket
+    CALL update_staff(
+        _creator,
+        (SELECT first_name FROM ticket WHERE ticket_id = t_id),
+        (SELECT last_name FROM ticket WHERE ticket_id = t_id),
+        (SELECT gender FROM ticket WHERE ticket_id = t_id),
+        (SELECT job_type FROM ticket WHERE ticket_id = t_id),
+        (SELECT department_id FROM ticket WHERE ticket_id = t_id),
+        (SELECT salary FROM ticket WHERE ticket_id = t_id),
+        (SELECT manager_id FROM ticket WHERE ticket_id = t_id),
+        result,
+        message
+    );
+
+    IF result = 0 THEN 
+        SET _rollback = 1;
+    END IF; 
+
+    -- Check if any rollback was set
+    IF _rollback THEN
+        SET result = 0;
+        ROLLBACK;
+    ELSE
+        UPDATE ticket
+        SET 
+            status = 'A',
+            handled_by = manager_id
+        WHERE ticket_id = t_id;
+
+        SET result = 1;
+        SET message = CONCAT('Ticket approval successful. ', message);
+        COMMIT;
+    END IF;
+
+    -- Return the result and message
+    SELECT result, message;
+END;
+
+DROP PROCEDURE IF EXISTS reject_ticket_for_update;
+CREATE PROCEDURE reject_ticket_for_update(
+    IN t_id INT,
+    IN admin_id INT,
+    IN note TEXT,
+    OUT result INT,
+    OUT message VARCHAR(255)
+)
+this_proc:
+BEGIN
+    DECLARE _rollback BOOL DEFAULT 0;
+    DECLARE sql_error_message VARCHAR(255);
+
+    -- Handler for SQL exceptions
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = sql_error_message;
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    -- Lock the ticket for update and check if staff_id is the creator
+    SELECT *
+    FROM ticket 
+    WHERE ticket_id = t_id 
+    FOR UPDATE;
+
+    -- Check if any rollback was set
+    IF _rollback THEN
+        SET result = 0;
+        ROLLBACK;
+    ELSE
+        UPDATE ticket
+        SET 
+            status = 'R',
+            handled_by = admin_id,
+            note = note
+        WHERE ticket_id = t_id;
+
+        SET result = 1;
+        SET message = CONCAT('Ticket rejected ', message);
+        COMMIT;
+    END IF;
+
+    -- Return the result and message
+    SELECT result, message;
+END;
+
+DROP PROCEDURE IF EXISTS delete_ticket_for_update;
+CREATE PROCEDURE delete_ticket_for_update(
+    IN t_id INT,
+    OUT result INT,
+    OUT message VARCHAR(255)
+)
+this_proc:
+BEGIN
+    DECLARE _rollback BOOL DEFAULT 0;
+    DECLARE sql_error_message VARCHAR(255);
+
+    -- Handler for SQL exceptions
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = sql_error_message;
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    -- Lock the ticket for update and check if staff_id is the creator
+    SELECT *
+    FROM ticket 
+    WHERE ticket_id = t_id 
+    FOR UPDATE;
+
+    -- Check if any rollback was set
+    IF _rollback THEN
+        SET result = 0;
+        ROLLBACK;
+    ELSE
+        DELETE FROM ticket
+        WHERE ticket_id = t_id;
+
+        SET result = 1;
+        SET message = CONCAT('Ticket deleted ', message);
         COMMIT;
     END IF;
 

@@ -21,6 +21,7 @@ ORDER BY T.status;
 DROP TABLE IF EXISTS staff_job_change_report;
 CREATE TABLE staff_job_change_report AS
 SELECT 
+    S.staff_id,
     S.first_name AS staff_first_name, 
     S.last_name AS staff_last_name, 
     S.email AS staff_email, 
@@ -29,6 +30,7 @@ SELECT
     S.job_type AS staff_job_type, 
     D1.department_name AS staff_department_name,
     M1.email AS staff_manager,
+    T.ticket_id,
     T.created_date,
     T.note AS ticket_note,
     T.status AS ticket_status,
