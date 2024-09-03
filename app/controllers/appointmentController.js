@@ -179,7 +179,8 @@ const appointmentController = {
       SELECT 
       A.appointment_id, 
       S.schedule_date, 
-      A.slot_number, 
+      A.slot_number,
+      A.status,
       A.purpose,
       A.status,
       ST.first_name AS staff_first_name, 
