@@ -44,8 +44,8 @@ const scheduleController = {
       res.json({
         results,
         pagination: {
-          totalRecords,
-          totalPages,
+          totalRecords: totalRecords,
+          totalPages: totalPages,
           currentPage: page,
           pageSize: limit,
         },

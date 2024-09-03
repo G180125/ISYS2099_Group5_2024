@@ -53,10 +53,10 @@ const treatmentController = {
             res.json({
                 results: results,
                 pagination: {
-                totalRecords,
-                totalPages,
-                currentPage: page,
-                pageSize: limit,
+                    totalRecords: totalRecords,
+                    totalPages: totalPages,
+                    currentPage: page,
+                    pageSize: limit,
                 }
             });
         } catch (error) {
@@ -107,10 +107,10 @@ const treatmentController = {
             res.json({
                 results: results,
                 pagination: {
-                totalRecords,
-                totalPages,
-                currentPage: page,
-                pageSize: limit,
+                    totalRecords: totalRecords,
+                    totalPages: totalPages,
+                    currentPage: page,
+                    pageSize: limit,
                 }
             });
         } catch (error) {

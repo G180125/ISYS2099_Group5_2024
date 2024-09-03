@@ -70,8 +70,8 @@ const appointmentController = {
         res.json({
           results,
           pagination: {
-            totalRecords,
-            totalPages,
+            totalRecords: totalRecords,
+            totalPages: totalPages,
             currentPage: page,
             pageSize: limit,
           }
@@ -162,8 +162,8 @@ const appointmentController = {
       res.json({
         results: results,
         pagination: {
-          totalRecords,
-          totalPages,
+          totalRecords: totalRecords,
+          totalPages: totalPages,
           currentPage: page,
           pageSize: limit,
         }
@@ -251,8 +251,8 @@ const appointmentController = {
       res.json({
         results: results,
         pagination: {
-          totalRecords,
-          totalPages,
+          totalRecords: totalRecords,
+          totalPages: totalPages,
           currentPage: page,
           pageSize: limit,
         }

@@ -31,8 +31,8 @@ const patientController = {
         res.json({
           results,
           pagination: {
-            totalRecords,
-            totalPages,
+            totalRecords: totalRecords,
+            totalPages: totalPages,
             currentPage: page,
             pageSize: limit,
           }
@@ -135,8 +135,8 @@ const patientController = {
         return res.json({
           results,
           pagination: {
-            totalRecords,
-            totalPages,
+            totalRecords: totalRecords,
+            totalPages: totalPages,
             currentPage: page,
             pageSize: limit,
           }

@@ -61,8 +61,8 @@ const staffController = {
       res.json({
         results: results[0],
         pagination: {
-          totalRecords,
-          totalPages,
+          totalRecords: totalRecords,
+          totalPages: totalPages,
           currentPage: page,
           pageSize: limit,
         }
@@ -81,6 +81,13 @@ const staffController = {
 
       const pool = mysqlClient.getPool("patient");
 
+      const query = `
+        SELECT S.first_name, S.last_name, D.department_name
+        FROM staff S
+        JOIN department D ON S.department_id = D.department_id
+        WHERE S.job_type = 'D'
+        LIMIT ? OFFSET ?;`;
+
       const [results] = await pool.query(query, [limit, offset]);
 
       const [countResult] = await pool.query(`SELECT COUNT(*) as total FROM staff_job_change_report`);
@@ -88,13 +95,13 @@ const staffController = {
       const totalPages = Math.ceil(totalRecords / limit);
 
       res.json({
-          results,
-          pagination: {
-              totalRecords,
-              totalPages,
-              currentPage: page,
-              pageSize: limit,
-          }
+        results: results,
+        pagination: {
+          totalRecords: totalRecords,
+          totalPages: totalPages,
+          currentPage: page,
+          pageSize: limit,
+        }
       });
     } catch (error) {
       return next(error);
