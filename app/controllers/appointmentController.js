@@ -97,7 +97,7 @@ const appointmentController = {
       A.purpose,
       ST.first_name AS staff_first_name, 
       ST.last_name AS staff_last_name,
-      ST.gender AS staff_gender, 
+      ST.staff_id, 
       ST.job_type, 
       D.department_name,
       JSON_ARRAYAGG(
