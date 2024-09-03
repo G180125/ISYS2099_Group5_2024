@@ -3,16 +3,18 @@ CREATE PROCEDURE refresh_treatment_report()
 BEGIN
     DELETE FROM treatment_report;
     INSERT INTO treatment_report
-    SELECT  P.first_name AS patient_first_name, 
-            P.last_name AS patient_last_name, 
-            P.email AS patient_email,
-            T.treatment_name, 
-            T.treatment_date, 
-            T.status AS treatment_status,
-            ST.first_name AS staff_first_name, 
-            ST.last_name AS staff_last_name, 
-            ST.job_type, 
-            D.department_name
+    SELECT  P.patient_id,
+        P.first_name AS patient_first_name, 
+        P.last_name AS patient_last_name, 
+        P.email AS patient_email,
+        T.treatment_id,
+        T.treatment_name, 
+        T.treatment_date, 
+        T.status treatment_status,
+        ST.first_name AS staff_first_name, 
+        ST.last_name AS staff_last_name, 
+        ST.job_type, 
+        D.department_name
     FROM treatment_record T
     JOIN appointment A ON T.appointment_id = A.appointment_id
     JOIN patient P ON A.patient_id = P.patient_id

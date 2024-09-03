@@ -24,6 +24,7 @@ GRANT EXECUTE ON PROCEDURE hospital_management.refresh_doctor_work_report TO 'gr
 GRANT EXECUTE ON PROCEDURE hospital_management.refresh_billing_report TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.refresh_staff_secure_view TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.create_ticket_for_update TO 'group5_staff_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.update_ticket_for_update TO 'group5_staff_app_user'@'localhost';
 
 -- Granting TRIGGER privilege on all relevant TABLES to staff user
 GRANT TRIGGER ON hospital_management.staff TO 'group5_staff_app_user'@'localhost';

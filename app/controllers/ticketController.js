@@ -157,6 +157,7 @@ const ticketController = {
     approveTicket: async (req, res, next) => {
         try {
             const adminId = req.id;
+            const role = req.role;
             const { ticketId } = req.body;
 
             if (!ticketId) {
@@ -195,6 +196,7 @@ const ticketController = {
     rejectTicket: async (req, res, next) => {
         try {
             const adminId = req.id;
+            const role = req.role;
             const { ticketId, note } = req.body;
 
             if (!ticketId || !note) {
@@ -233,7 +235,7 @@ const ticketController = {
     deleteTicket: async (req, res, next) => {
         try {
             const { ticketId } = req.body;
-
+            const role = req.role;
             if (!ticketId) {
                 return res
                     .status(httpStatus.UNAUTHORIZED().code)

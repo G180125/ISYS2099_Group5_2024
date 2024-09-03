@@ -21,7 +21,6 @@ const scheduleController = {
         `
         SELECT S.staff_id, 
           S.schedule_date, 
-          S.time_slot, 
           ST.first_name, 
           ST.last_name, 
           ST.email, 
@@ -80,15 +79,8 @@ const scheduleController = {
           .json({ error: httpStatus.BAD_REQUEST(errorMessage).message });
       }
 
-      // Return results with pagination metadata
       res.json({
-        results,
-        pagination: {
-          totalRecords,
-          totalPages,
-          currentPage: page,
-          pageSize: limit,
-        },
+        results
       });
     } catch (error) {
       return next(error);

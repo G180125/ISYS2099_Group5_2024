@@ -20,22 +20,14 @@ const treatmentController = {
             const offset = (page - 1) * limit;
 
             let query = `
-                SELECT  P.first_name AS patient_first_name, P.last_name AS patient_last_name, 
-                        T.treatment_name, T.treatment_date, ST.first_name AS staff_first_name, 
-                        ST.last_name AS staff_last_name, ST.email AS staff_email, 
-                        ST.job_type, D.department_name
-                FROM treatment_record T
-                JOIN appointment A ON T.appointment_id = A.appointment_id
-                JOIN patient P ON A.patient_id = P.patient_id
-                JOIN schedule S ON A.schedule_id = S.schedule_id
-                JOIN staff ST ON S.staff_id = ST.staff_id
-                JOIN department D ON ST.department_id = D.department_id
-                WHERE P.patient_id = ?`;
+                SELECT *
+                FROM treatment_report
+                WHERE patient_id = ?`;
 
             let countQuery = `
                 SELECT COUNT(*) as total
-                FROM appointment A
-                WHERE A.patient_id = ?`;
+                FROM treatment_report
+                WHERE patient_id = ?`;
 
             let queryParams = [id, limit, offset];
             let countParams = [id];
@@ -58,14 +50,8 @@ const treatmentController = {
             const totalRecords = countResult[0].total;
             const totalPages = Math.ceil(totalRecords / limit);
 
-            // Convert the time_slot numbers to their corresponding time ranges
-            const resultsWithTimeSlots = results.map(result => ({
-                ...result,
-                time_slot: timeSlotMap[result.time_slot]
-            }));
-
             res.json({
-                results: resultsWithTimeSlots,
+                results: results,
                 pagination: {
                 totalRecords,
                 totalPages,
@@ -88,31 +74,23 @@ const treatmentController = {
             const offset = (page - 1) * limit;
 
             let query = `
-                SELECT  P.first_name AS patient_first_name, P.last_name AS patient_last_name, 
-                        T.treatment_name, T.treatment_date, ST.first_name AS staff_first_name, 
-                        ST.last_name AS staff_last_name, ST.email AS staff_email, 
-                        ST.job_type, D.department_name
-                FROM treatment_record T
-                JOIN appointment A ON T.appointment_id = A.appointment_id
-                JOIN patient P ON A.patient_id = P.patient_id
-                JOIN schedule S ON A.schedule_id = S.schedule_id
-                JOIN staff ST ON S.staff_id = ST.staff_id
-                JOIN department D ON ST.department_id = D.department_id
-                WHERE P.patient_id = ?`;
+                SELECT *
+                FROM treatment_report
+                WHERE patient_id = ?`;
 
             let countQuery = `
                 SELECT COUNT(*) as total
-                FROM appointment A
-                WHERE A.patient_id = ?`;
+                FROM treatment_report
+                WHERE patient_id = ?`;
 
             let queryParams = [id, limit, offset];
             let countParams = [id];
 
             if (status) {
-                query += ` AND A.status = ? LIMIT ? OFFSET ?`;
+                query += ` AND treatment_status = ? LIMIT ? OFFSET ?`;
                 queryParams = [id, status, limit, offset];
 
-                countQuery += ` AND A.status = ?`;
+                countQuery += ` AND treatment_status = ?`;
                 countParams = [id, status];
             } else {
                 query += ` LIMIT ? OFFSET ?`;
@@ -126,14 +104,8 @@ const treatmentController = {
             const totalRecords = countResult[0].total;
             const totalPages = Math.ceil(totalRecords / limit);
 
-            // Convert the time_slot numbers to their corresponding time ranges
-            const resultsWithTimeSlots = results.map(result => ({
-                ...result,
-                time_slot: timeSlotMap[result.time_slot]
-            }));
-
             res.json({
-                results: resultsWithTimeSlots,
+                results: results,
                 pagination: {
                 totalRecords,
                 totalPages,
@@ -153,21 +125,20 @@ const treatmentController = {
             const treatmentId = req.body.treatmentId;
 
             let query = `
-                SELECT  T.treatment_name, T.treatment_date, ST.first_name AS staff_first_name, 
-                        ST.last_name AS staff_last_name, 
-                        P.first_name AS patient_first_name, P.last_name AS patient_last_name,
-                        ST.job_type, D.department_name
-                FROM treatment_record T
-                JOIN appointment A ON T.appointment_id = A.appointment_id
-                JOIN patient P ON A.patient_id = P.patient_id
-                JOIN schedule S ON A.schedule_id = S.schedule_id
-                JOIN staff ST ON S.staff_id = ST.staff_id
-                JOIN department D ON ST.department_id = D.department_id
-                WHERE T.treatment_id = ?`;
+                SELECT *
+                FROM treatment_record
+                WHERE treatment_id = ?`;
+
+            let queryParams = [treatmentId];
+            
+            if(status){
+                query += ` AND treatment_status = ?`;
+                queryParams = [treatmentId, status];
+            }
 
             const pool = mysqlClient.getPool(role);
 
-            const [result] = await pool.query(query, [treatmentId]);
+            const [result] = await pool.query(query, queryParams);
 
             return res 
                     .status(httpStatus.OK().code)
