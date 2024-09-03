@@ -90,7 +90,10 @@ const staffController = {
 
       const [results] = await pool.query(query, [limit, offset]);
 
-      const [countResult] = await pool.query(`SELECT COUNT(*) as total FROM staff_job_change_report`);
+      const [countResult] = await pool.query(`
+          SELECT COUNT(*) as total
+          FROM staff S
+          WHERE S.job_type = 'D'`);
       const totalRecords = countResult[0].total;
       const totalPages = Math.ceil(totalRecords / limit);
 
