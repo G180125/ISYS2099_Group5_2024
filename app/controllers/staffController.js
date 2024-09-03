@@ -33,25 +33,25 @@ const staffController = {
         query = `CALL list_staff_by_department(?, ?, ?, ?)`;
         results = await pool.query(query, [department, job_type, limit, offset]);
 
-        countQuery = `SELECT COUNT(*) as total FROM staff_secure_view WHERE department_id = ? AND job_type = ?`;
+        countQuery = `SELECT COUNT(*) as total FROM staff_secure_report WHERE department_id = ? AND job_type = ?`;
         [countResult] = await pool.query(countQuery, [department, job_type]);
       } else if (department) {
         query = `CALL list_staff_by_department(?, ?, ?, ?)`;
         results = await pool.query(query, [department, null, limit, offset]);
 
-        countQuery = `SELECT COUNT(*) as total FROM staff_secure_view WHERE department_id = ?`;
+        countQuery = `SELECT COUNT(*) as total FROM staff_secure_report WHERE department_id = ?`;
         [countResult] = await pool.query(countQuery, [department]);
       } else if (job_type) {
-        query = `SELECT * FROM staff_secure_view WHERE job_type = ? ORDER BY name ${order} LIMIT ? OFFSET ?`;
+        query = `SELECT * FROM staff_secure_report WHERE job_type = ? ORDER BY name ${order} LIMIT ? OFFSET ?`;
         results = await pool.query(query, [job_type, limit, offset]);
 
-        countQuery = `SELECT COUNT(*) as total FROM staff_secure_view WHERE job_type = ?`;
+        countQuery = `SELECT COUNT(*) as total FROM staff_secure_report WHERE job_type = ?`;
         [countResult] = await pool.query(countQuery, [job_type]);
       } else {
         query = `CALL list_staff_order_by_name(?, ?, ?)`;
         results = await pool.query(query, [order, limit, offset]);
 
-        countQuery = `SELECT COUNT(*) as total FROM staff_secure_view`;
+        countQuery = `SELECT COUNT(*) as total FROM staff_secure_report`;
         [countResult] = await pool.query(countQuery);
       }
   
@@ -121,7 +121,7 @@ const staffController = {
       const pool = mysqlClient.getPool(role);
 
       const [results] = await pool.query(
-        `SELECT * FROM staff_secure_view WHERE staff_id = ?`,
+        `SELECT * FROM staff_secure_report WHERE staff_id = ?`,
         [id],
       );
       if (results.length === 0) {
@@ -148,7 +148,7 @@ const staffController = {
       const pool = mysqlClient.getPool(role);
 
       const [results] = await pool.query(
-        `SELECT * FROM staff_secure_view WHERE staff_id = ?`,
+        `SELECT * FROM staff_secure_report WHERE staff_id = ?`,
         [id],
       );
       if (results.length === 0) {

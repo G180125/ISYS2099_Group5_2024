@@ -70,7 +70,7 @@ CREATE PROCEDURE search_patient_by_name(
     IN p_offset INT
 )
 BEGIN
-    SELECT * FROM patient_secure_view
+    SELECT * FROM patient_secure_report
     WHERE (p_first_name IS NULL OR first_name LIKE CONCAT('%', p_first_name, '%'))
     AND (p_last_name IS NULL OR last_name LIKE CONCAT('%', p_last_name, '%'))
     LIMIT p_limit OFFSET p_offset;

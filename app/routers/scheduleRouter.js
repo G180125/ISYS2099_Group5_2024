@@ -24,4 +24,11 @@ scheduleRouter.get(
   scheduleController.getAllSchedulesByStaff
 );
 
+scheduleRouter.get(
+  "/doctor",
+  authenticate,
+  checkRoles(["patient", "admin", "staff"]),
+  scheduleController.getAllSchedulesOfDoctors
+);
+
 module.exports = scheduleRouter;

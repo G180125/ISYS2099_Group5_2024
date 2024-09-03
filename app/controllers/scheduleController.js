@@ -86,6 +86,48 @@ const scheduleController = {
       return next(error);
     }
   },
+
+  getAllSchedulesOfDoctors: async (req, res, next) => {
+    try {
+      const role = req.role;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
+
+      const pool = mysqlClient.getPool(role);
+
+      const query = `SELECT * FROM doctor_free_slot_report LIMIT ? OFFSET ?`;
+      const results = await pool.query(query, [
+        limit,
+        offset,
+      ]);
+
+      const errorMessage = results[0]?.[0]?.message;
+      if (errorMessage) {
+        return res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({ error: httpStatus.BAD_REQUEST(errorMessage).message });
+      }
+
+      const [countResult] = await pool.query(
+        `SELECT COUNT(*) as total FROM doctor_free_slot_report`
+      );
+      const totalRecords = countResult[0].total;
+      const totalPages = Math.ceil(totalRecords / limit);
+
+      res.json({
+        results: results[0],
+        pagination: {
+          totalRecords: totalRecords,
+          totalPages: totalPages,
+          currentPage: page,
+          pageSize: limit,
+        },
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
 };
 
 module.exports = scheduleController;

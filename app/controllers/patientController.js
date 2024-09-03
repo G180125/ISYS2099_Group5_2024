@@ -21,10 +21,10 @@ const patientController = {
         const pool = mysqlClient.getPool(role);
   
         // Query to fetch patients with pagination
-        const [results] = await pool.query(`SELECT * FROM patient_secure_view LIMIT ? OFFSET ?`, [limit, offset]);
+        const [results] = await pool.query(`SELECT * FROM patient_secure_report LIMIT ? OFFSET ?`, [limit, offset]);
   
         // Optionally, fetch the total number of records for pagination metadata
-        const [countResult] = await pool.query(`SELECT COUNT(*) as total FROM patient_secure_view`);
+        const [countResult] = await pool.query(`SELECT COUNT(*) as total FROM patient_secure_report`);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
   
@@ -55,7 +55,7 @@ const patientController = {
         const pool = mysqlClient.getPool(role);
 
         const [results] = await pool.query(
-          `SELECT * FROM patient_secure_view WHERE patient_id = ?`,
+          `SELECT * FROM patient_secure_report WHERE patient_id = ?`,
           [id],
         );
         if (results.length === 0) {
@@ -83,7 +83,7 @@ const patientController = {
         const pool = mysqlClient.getPool(role);
 
         const [results] = await pool.query(
-          `SELECT * FROM patient_secure_view WHERE patient_id = ?`,
+          `SELECT * FROM patient_secure_report WHERE patient_id = ?`,
           [id],
         );
         if (results.length === 0) {
@@ -127,7 +127,7 @@ const patientController = {
         }
     
         // Fetch total number of matching records for pagination metadata
-        const countQuery = `SELECT COUNT(*) as total FROM patient_secure_view WHERE first_name = ? AND last_name = ?`;
+        const countQuery = `SELECT COUNT(*) as total FROM patient_secure_report WHERE first_name = ? AND last_name = ?`;
         const [countResult] = await pool.query(countQuery, [first_name, last_name]);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);

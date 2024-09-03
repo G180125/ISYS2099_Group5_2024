@@ -91,11 +91,11 @@ BEGIN
         P.last_name;
 END;
 
-DROP PROCEDURE IF EXISTS refresh_patient_secure_view;
-CREATE PROCEDURE refresh_patient_secure_view()
+DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
+CREATE PROCEDURE refresh_patient_secure_report()
 BEGIN
-    DELETE FROM patient_secure_view;
-    INSERT INTO patient_secure_view
+    DELETE FROM patient_secure_report;
+    INSERT INTO patient_secure_report
     SELECT 
         patient_id,
         first_name,
@@ -109,11 +109,11 @@ BEGIN
         patient;
 END;
 
-DROP PROCEDURE IF EXISTS refresh_staff_secure_view;
-CREATE PROCEDURE refresh_staff_secure_view()
+DROP PROCEDURE IF EXISTS refresh_staff_secure_report;
+CREATE PROCEDURE refresh_staff_secure_report()
 BEGIN
-    DELETE FROM staff_secure_view;
-    INSERT INTO staff_secure_view
+    DELETE FROM staff_secure_report;
+    INSERT INTO staff_secure_report
     SELECT 
         staff_id,
         first_name,
@@ -126,4 +126,48 @@ BEGIN
         manager_id
     FROM 
         staff;
+END;
+
+DROP PROCEDURE IF EXISTS refresh_doctor_free_slot_report;
+CREATE PROCEDURE refresh_doctor_free_slot_report()
+BEGIN
+    DELETE FROM doctor_free_slot_report;
+    INSERT INTO doctor_free_slot_report
+    SELECT 
+        ST.staff_id,
+        ST.first_name AS staff_first_name,
+        ST.last_name AS staff_last_name,
+        S.schedule_date,
+        MAX(CASE WHEN N.slot_number = 1 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '09:00-10:00',
+        MAX(CASE WHEN N.slot_number = 2 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '10:00-11:00',
+        MAX(CASE WHEN N.slot_number = 3 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '11:00-12:00',
+        MAX(CASE WHEN N.slot_number = 4 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '12:00-13:00',
+        MAX(CASE WHEN N.slot_number = 5 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '13:00-14:00',
+        MAX(CASE WHEN N.slot_number = 6 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '14:00-15:00',
+        MAX(CASE WHEN N.slot_number = 7 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '15:00-16:00',
+        MAX(CASE WHEN N.slot_number = 8 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '16:00-17:00'
+    FROM staff ST
+    JOIN schedule S ON S.staff_id = ST.staff_id
+    CROSS JOIN (
+        SELECT 1 AS slot_number UNION ALL
+        SELECT 2 UNION ALL
+        SELECT 3 UNION ALL
+        SELECT 4 UNION ALL
+        SELECT 5 UNION ALL
+        SELECT 6 UNION ALL
+        SELECT 7 UNION ALL
+        SELECT 8
+    ) N
+    LEFT JOIN appointment A ON A.schedule_id = S.schedule_id AND A.slot_number = N.slot_number
+    WHERE ST.job_type = 'D'
+    GROUP BY ST.staff_id, ST.first_name, ST.last_name, S.schedule_date
+    ORDER BY S.schedule_date;
 END;

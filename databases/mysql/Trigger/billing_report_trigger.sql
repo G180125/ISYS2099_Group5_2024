@@ -36,7 +36,7 @@ BEGIN
 END;
 
 -- UPDATE, DELETER on schedule
-CREATE TRIGGER update_billing_report_after_schedule
+CREATE TRIGGER update_billing_report_after_schedule_update
 AFTER UPDATE ON schedule
 FOR EACH ROW
 BEGIN
