@@ -42,7 +42,7 @@ const fileController = {
 
       const fileMeta = {
         mysql_id: mysql_id,
-        type: dirTarget,
+        type: fileType,
       };
       
       await mongoService.uploadFile(file, dirTarget, fileMeta);
