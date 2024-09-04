@@ -1,11 +1,23 @@
 const { GridFSBucket } = require("mongodb");
-const mongoClient = require("../databases/mongoClient");
+// const mongoClient = require("../databases/mongoClient");
 const { Readable } = require("stream");
+const { MongoClient, ServerApiVersion } = require("mongodb");
+
+const uri = process.env.MONGO_URI;
+const connParams = {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+};
+// const mongoClient = new MongoClient(uri, connParams);
 
 const dbName = process.env.MONGO_DB_NAME;
 
 const mongoService = {
   uploadFile: async (file, dirTarget, metadata) => {
+    const mongoClient = new MongoClient(uri, connParams);
     try {
       await mongoClient.connect();
       const db = mongoClient.db(dbName);
@@ -15,10 +27,10 @@ const mongoService = {
           ? process.env.MONGO_BUCKET_STAFF
           : process.env.MONGO_BUCKET_TREATMENT;
       const fileName = `${Date.now()}-${file.originalname}`;
-    //   const metadata = {
-    //     mysql_id: "sql id",
-    //     type: "my type",
-    //   };
+      //   const metadata = {
+      //     mysql_id: "sql id",
+      //     type: "my type",
+      //   };
 
       let bucket = new GridFSBucket(db, {
         bucketName: bucketName,
@@ -48,6 +60,7 @@ const mongoService = {
   },
 
   getFileMeta: async (filters, dirTarget) => {
+    const mongoClient = new MongoClient(uri, connParams);
     try {
       await mongoClient.connect();
       const db = mongoClient.db(dbName);
@@ -71,6 +84,7 @@ const mongoService = {
   },
 
   getOneFile: async (fileTarget, dirTarget) => {
+    const mongoClient = new MongoClient(uri, connParams);
     try {
       await mongoClient.connect();
       const db = mongoClient.db(dbName);

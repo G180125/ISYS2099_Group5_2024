@@ -53,7 +53,7 @@ BEGIN
     END IF;
 
     -- Insert the new patient record using the new_user_id
-    INSERT INTO patient (user_id, date_of_birth, allergies)
+    INSERT INTO patient (patient_id, date_of_birth, allergies)
     VALUES (new_user_id, p_date_of_birth, p_allergies);
 
     -- Final check before committing the transaction
@@ -77,9 +77,9 @@ CREATE PROCEDURE search_patient_by_name(
     IN p_offset INT
 )
 BEGIN
-    SELECT * FROM patient_secure_view
-    WHERE (p_first_name IS NULL OR patient_first_name LIKE CONCAT('%', p_first_name, '%'))
-    AND (p_last_name IS NULL OR patient_last_name LIKE CONCAT('%', p_last_name, '%'))
+    SELECT * FROM patient_secure_report
+    WHERE (p_first_name IS NULL OR first_name LIKE CONCAT('%', p_first_name, '%'))
+    AND (p_last_name IS NULL OR last_name LIKE CONCAT('%', p_last_name, '%'))
     LIMIT p_limit OFFSET p_offset;
 END; -- //
 -- DELIMITER ;

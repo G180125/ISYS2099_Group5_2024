@@ -100,8 +100,8 @@ BEGIN
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
     BEGIN
         GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
-        SET p_role = NULL;
-        SET p_message = sql_error_message;
+        SET role = NULL;
+        SET message = sql_error_message;
     END;
 
     -- Check if the email exists in the user table
@@ -117,7 +117,7 @@ BEGIN
     END IF;
 
     IF EXISTS (SELECT 1 FROM patient WHERE user_id = user_id)THEN
-        SET role = 'patient'
+        SET role = 'patient';
         SELECT role, message;
         LEAVE this_proc;
     END IF;

@@ -13,23 +13,26 @@ const validGenders = ["f", "m", "o"];
 const patientController = {
     getAllPatients: async (req, res, next) => {
       try {
+        const role = req.role;
         const page = parseInt(req.query.page) || 1;  
         const limit = parseInt(req.query.limit) || 10; 
         const offset = (page - 1) * limit;
+
+        const pool = mysqlClient.getPool(role);
   
         // Query to fetch patients with pagination
-        const [results] = await mysqlClient.poolAdmin.query(`SELECT * FROM patient_secure_view LIMIT ? OFFSET ?`, [limit, offset]);
+        const [results] = await pool.query(`SELECT * FROM patient_secure_report LIMIT ? OFFSET ?`, [limit, offset]);
   
         // Optionally, fetch the total number of records for pagination metadata
-        const [countResult] = await mysqlClient.poolAdmin.query(`SELECT COUNT(*) as total FROM patient_secure_view`);
+        const [countResult] = await pool.query(`SELECT COUNT(*) as total FROM patient_secure_report`);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
   
         res.json({
           results,
           pagination: {
-            totalRecords,
-            totalPages,
+            totalRecords: totalRecords,
+            totalPages: totalPages,
             currentPage: page,
             pageSize: limit,
           }
@@ -42,15 +45,17 @@ const patientController = {
     getMyInfo: async (req, res, next) => {
       try {
         const id = req.id;
-
+        const role = req.role;
         if(!id || id == ""){
             return res
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST("Unauthentication").message });
         }
 
-        const [results] = await mysqlClient.poolPatient.query(
-          `SELECT * FROM patient_secure_view WHERE patient_id = ?`,
+        const pool = mysqlClient.getPool(role);
+
+        const [results] = await pool.query(
+          `SELECT * FROM patient_secure_report WHERE patient_id = ?`,
           [id],
         );
         if (results.length === 0) {
@@ -68,15 +73,17 @@ const patientController = {
     getPatientByID: async (req, res, next) => {
       try {
         const id = req.body.id;
-
+        const role = req.role;
         if(!id || id == ""){
             return res
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST("Unauthentication").message });
         }
 
-        const [results] = await mysqlClient.poolPatient.query(
-          `SELECT * FROM patient_secure_view WHERE patient_id = ?`,
+        const pool = mysqlClient.getPool(role);
+
+        const [results] = await pool.query(
+          `SELECT * FROM patient_secure_report WHERE patient_id = ?`,
           [id],
         );
         if (results.length === 0) {
@@ -95,6 +102,7 @@ const patientController = {
       try {
         const first_name = req.query.first_name;
         const last_name = req.query.last_name;
+        const role = req.role;
         console.log(`first name: ${first_name}`);
         console.log(`last name: ${last_name}`);
         const page = parseInt(req.query.page) || 1;  
@@ -106,9 +114,11 @@ const patientController = {
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST("Please provide the patient name for searching!").message });
         }
+
+        const pool = mysqlClient.getPool(role);
     
         const query = `CALL search_patient_by_name(?, ?, ?, ?)`;
-        const [results] = await mysqlClient.poolPatient.query(query, [first_name, last_name, limit, offset]); 
+        const [results] = await pool.query(query, [first_name, last_name, limit, offset]); 
 
         if (results.length === 0) {
           return res
@@ -117,16 +127,16 @@ const patientController = {
         }
     
         // Fetch total number of matching records for pagination metadata
-        const countQuery = `SELECT COUNT(*) as total FROM patient_secure_view WHERE first_name = ? AND last_name = ?`;
-        const [countResult] = await mysqlClient.poolPatient.query(countQuery, [first_name, last_name]);
+        const countQuery = `SELECT COUNT(*) as total FROM patient_secure_report WHERE first_name = ? AND last_name = ?`;
+        const [countResult] = await pool.query(countQuery, [first_name, last_name]);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
     
         return res.json({
           results,
           pagination: {
-            totalRecords,
-            totalPages,
+            totalRecords: totalRecords,
+            totalPages: totalPages,
             currentPage: page,
             pageSize: limit,
           }
@@ -139,6 +149,7 @@ const patientController = {
     updateMyInfo: async (req, res, next) => {
       try {
         const id = req.id;
+        const role = req.role;
         const {  newFirstName, newLastName, newDOB, newGender } = req.body;
 
         if(!id || id == ""){
@@ -146,6 +157,8 @@ const patientController = {
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST("Unauthentication").message });
         }
+
+        const pool = mysqlClient.getPool(role);
 
         const user = await mysqlService.getPatientByID(id);
         if (!user) {
@@ -194,7 +207,7 @@ const patientController = {
           updateQuery += updateFields.join(', ') + ' WHERE patient_id = ?';
           updateValues.push(id);
   
-          await mysqlClient.poolPatient.query(updateQuery, updateValues);
+          await pool.query(updateQuery, updateValues);
   
           res.json({
             message: `Patient updated successfully`,
@@ -218,12 +231,14 @@ const patientController = {
     deletePatientById: async (req, res, next) => {
       try {
         const id = req.body.id;
-
+        const role = req.role;
         if(!id || id == ""){
             return res
             .status(httpStatus.BAD_REQUEST().code)
             .json({ error: httpStatus.BAD_REQUEST("No Input For Id").message });
         }
+
+        const pool = mysqlClient.getPool(role);
 
         const user = await mysqlService.getPatientByID(id);
         if (!user) {
@@ -232,7 +247,7 @@ const patientController = {
             .json({ error: httpStatus.UNAUTHORIZED("No patient found").message });
         }
 
-        await mysqlClient.poolAdmin.query(`DELETE FROM patient WHERE patient_id = ?`, [
+        await pool.query(`DELETE FROM patient WHERE patient_id = ?`, [
           id,
         ]);
         res

@@ -21,19 +21,21 @@ const registerPatient = async (req, res, next) => {
 
     let result = 0; 
     let message = '';
-    let new_patient_id = 0; 
+    let newPatientId = 0; 
 
     const salt = genSaltSync(10);
     const hashedPassword = hashSync(password, salt);
 
-    const query = `CALL register_patient(?, ?, ?, ?, ?, ?, ?, @result, @message, @new_patient_id)`;
-    const [rows] = await mysqlClient.poolPatient.query(query, [null, null, email, hashedPassword, null, 'O', null]);
+    const pool = mysqlClient.getPool("patient");
+
+    const query = `CALL register_patient(?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
+    const [rows] = await pool.query(query, [null, null, email, hashedPassword, null, 'O', null]);
 
     console.log(rows);
 
     result = rows[0][0].result;
     message = rows[0][0].message;
-    newPatientId = rows[0][0].new_patient_id;
+    newPatientId = rows[0][0].newPatientId;
 
     if (result == 0) {
       return res
@@ -72,12 +74,14 @@ const registerStaff = async (req, res, next) => {
     let query;
     let rows;
 
+    const pool = mysqlClient.getPool("admin");
+
     if (role === "staff") {
-      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @new_patient_id)`;
-      [rows] = await mysqlClient.poolAdmin.query(query, [null, null, email, hashedPassword, 'O', 'D', 1, 1, 1]);
+      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
+      [rows] = await pool.query(query, [null, null, email, hashedPassword, 'O', 'D', 1, 1, 1]);
     } else if (role === "admin") {
-      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @new_patient_id)`;
-      [rows] = await mysqlClient.poolAdmin.query(query, [null, null, email, hashedPassword, 'O', 'A', 1, 0, 1]);
+      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
+      [rows] = await pool.query(query, [null, null, email, hashedPassword, 'O', 'A', 1, 0, 1]);
     } else {
       return res
         .status(httpStatus.BAD_REQUEST().code)

@@ -44,7 +44,7 @@ treatmentRouter.get(
 treatmentRouter.post(
     "/new",
     authenticate,
-    checkRoles(("staff")),
+    checkRoles(["staff"]),
     treatmentController.addTreatment
 );
 

@@ -46,7 +46,7 @@ BEGIN
     END IF;
 
     -- Insert the new staff record into the staff table
-    INSERT INTO staff (user_id, job_type, department_id, salary, manager_id)
+    INSERT INTO staff (staff_id, job_type, department_id, salary, manager_id)
     VALUES (new_user_id, s_job_type, s_department_id, s_salary, s_manager_id);
 
     -- Final check before committing the transaction
@@ -74,7 +74,7 @@ CREATE PROCEDURE list_staff_by_department(
 )
 BEGIN
     --  return the staff list by department
-    SELECT * FROM staff_secure_view 
+    SELECT * FROM staff_secure_report 
     WHERE department_id = s_department_id 
     AND (s_job_type IS NULL OR staff_job_type = s_job_type)
     ORDER BY department_id, last_name, first_name
@@ -89,12 +89,12 @@ CREATE PROCEDURE list_staff_order_by_name(
 )
 BEGIN
     IF p_order = 'ASC' THEN
-        SELECT * FROM staff_secure_view
-        ORDER BY staff_first_name, staff_last_name ASC
+        SELECT * FROM staff_secure_report
+        ORDER BY first_name, last_name ASC
         LIMIT p_limit OFFSET p_offset;
     ELSE
-        SELECT * FROM staff_secure_view
-        ORDER BY staff_first_name, staff_last_name DESC
+        SELECT * FROM staff_secure_report
+        ORDER BY first_name, last_name DESC
         LIMIT p_limit OFFSET p_offset;
     END IF;
 END $$
@@ -117,6 +117,7 @@ CREATE PROCEDURE update_staff(
     OUT result INT,
     OUT message VARCHAR(255)
 )
+this_proc:
 BEGIN
     DECLARE _rollback BOOL DEFAULT 0;
     DECLARE sql_error_message VARCHAR(255);
@@ -142,22 +143,30 @@ BEGIN
         LEAVE this_proc;
     END IF;
 
-    -- Update the staff record
+    -- Begin the update using COALESCE to update only if the parameter is not null
     UPDATE staff
-    SET job_type = s_job_type,
-        department_id = s_department_id,
-        salary = s_salary,
-        manager_id = s_manager_id
-    WHERE user_id = s_id;
+    SET 
+        first_name = COALESCE(s_first_name, first_name),
+        last_name = COALESCE(s_last_name, last_name),
+        gender = COALESCE(s_gender, gender),
+        job_type = COALESCE(s_job_type, job_type),
+        department_id = COALESCE(s_department_id, department_id),
+        salary = COALESCE(s_salary, salary),
+        manager_id = COALESCE(s_manager_id, manager_id)
+    WHERE staff_id = s_id;
 
+    -- Check if there was an error during the update
     IF _rollback THEN
         SET result = 0;
         ROLLBACK;
     ELSE
         SET result = 1;
-        SET message = 'Staff updated successfully';
+        SET message = 'Update successful';
         COMMIT;
     END IF;
+
+    -- Return the result and message
+    SELECT result, message;
 END;
 
 DROP PROCEDURE IF EXISTS view_staff_schedule;
@@ -169,7 +178,7 @@ CREATE PROCEDURE view_staff_schedule(
 )
 BEGIN
     SELECT *
-    FROM schedule
+    FROM doctor_free_slot_report
     WHERE staff_id = p_staff_id
     ORDER BY schedule_date
     LIMIT s_limit OFFSET s_offset;

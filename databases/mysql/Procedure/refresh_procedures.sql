@@ -1,7 +1,7 @@
-DROP PROCEDURE IF EXISTS refresh_patient_secure_view;
-CREATE PROCEDURE refresh_patient_secure_view()
+DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
+CREATE PROCEDURE refresh_patient_secure_report()
 BEGIN
-    DELETE FROM patient_secure_view;
+    DELETE FROM patient_secure_report;
     SELECT 
         U.user_id patient_id,
         U.first_name patient_first_name,
@@ -11,13 +11,13 @@ BEGIN
         U.gender patient_gender,
         P.allergies patient_allergies
     FROM patient P
-    JOIN user U ON P.user_id = U.user_id;
+    JOIN user U ON P.patient_id = U.user_id;
 END;
 
-DROP PROCEDURE IF EXISTS refresh_staff_secure_view;
-CREATE PROCEDURE refresh_staff_secure_view()
+DROP PROCEDURE IF EXISTS refresh_staff_secure_report;
+CREATE PROCEDURE refresh_staff_secure_report()
 BEGIN
-    DELETE FROM staff_secure_view;
+    DELETE FROM staff_secure_report;
     SELECT 
         U.user_id staff_id,
         U.first_name staff_first_name,
@@ -31,7 +31,7 @@ BEGIN
         M.last_name manager_last_name,
         M.email manager_email
     FROM staff S
-    JOIN user U ON S.user_id = U.user_id
+    JOIN user U ON S.staff_id = U.user_id
     JOIN department D ON S.department_id = D.department.id
     LEFT JOIN user M ON S.manager_id = M.user_id;
 END;
@@ -42,54 +42,25 @@ CREATE PROCEDURE refresh_treatment_report()
 BEGIN
     DELETE FROM treatment_report;
     INSERT INTO treatment_report
-    SELECT  P.patient_first_name, 
-        P.patient_last_name, 
-        P.patient_email,
+    SELECT  P.patient_id,
+        P.first_name AS patient_first_name, 
+        P.last_name AS patient_last_name, 
+        P.email AS patient_email,
+        T.treatment_id,
         T.treatment_name, 
         T.treatment_date, 
         T.status treatment_status,
-        ST.staff_first_name, 
-        ST.staff_last_name, 
-        ST.staff_job_type, 
+        ST.first_name AS staff_first_name, 
+        ST.last_name AS staff_last_name, 
+        ST.job_type, 
         D.department_name
     FROM treatment_record T
     JOIN appointment A ON T.appointment_id = A.appointment_id
-    JOIN patient_secure_view P ON A.patient_id = P.patient_id
+    JOIN patient_secure_report P ON A.patient_id = P.patient_id
     JOIN schedule S ON A.schedule_id = S.schedule_id
-    JOIN staff_secure_view ST ON S.staff_id = ST.staff_id
+    JOIN staff_secure_report ST ON S.staff_id = ST.staff_id
     JOIN department D ON ST.department_id = D.department_id
     ORDER BY T.status;
-END;
-
-DROP PROCEDURE IF EXISTS refresh_staff_job_change_report;
-CREATE PROCEDURE refresh_staff_job_change_report()
-BEGIN
-    DELETE FROM staff_job_change_report;
-    INSERT INTO staff_job_change_report
-    SELECT 
-        S.staff_first_name, 
-        S.staff_last_name, 
-        S.staff_email, 
-        S.staff_gender,
-        S.staff_salary,
-        S.staff_job_type, 
-        S.department_name AS staff_department_name,
-        M1.email AS staff_manager,
-        T.created_date,
-        T.note AS ticket_note,
-        T.status AS ticket_status,
-        T.first_name AS ticket_first_name,
-        T.last_name AS ticket_last_name,
-        T.gender AS ticket_gender,
-        T.job_type AS ticket_job_type,
-        D.department_name AS ticket_department_name,
-        M2.staff_email AS ticket_manager
-    FROM ticket T
-    JOIN staff_secure_view S ON T.creator = S.staff_id
-    LEFT JOIN staff_secure_view M1 ON S.manager_id = M1.staff_id
-    LEFT JOIN department D ON T.department_id = D.department_id
-    LEFT JOIN staff_secure_view M2 ON T.manager_id = M2.staff_id
-    ORDER BY T.created_date;
 END;
 
 DROP PROCEDURE IF EXISTS refresh_doctor_work_report;
@@ -109,9 +80,9 @@ BEGIN
         P.patient_last_name,
         A.status appointment_status
     FROM appointment A
-    JOIN patient_secure_view P ON A.patient_id = P.patient_id
+    JOIN patient_secure_report P ON A.patient_id = P.patient_id
     JOIN schedule S ON A.schedule_id = S.schedule_id
-    JOIN staff_secure_view ST ON S.staff_id = ST.staff_id
+    JOIN staff_secure_report ST ON S.staff_id = ST.staff_id
     JOIN department D ON ST.department_id = D.department_id
     ORDER BY S.schedule_date;
 END;
@@ -139,9 +110,9 @@ BEGIN
             SEPARATOR ', '
         ) AS treatment_list
     FROM appointment A
-    JOIN patient_secure_view P ON A.patient_id = P.patient_id
+    JOIN patient_secure_report P ON A.patient_id = P.patient_id
     JOIN schedule S ON A.schedule_id = S.schedule_id
-    JOIN staff_secure_view ST ON S.staff_id = ST.staff_id
+    JOIN staff_secure_report ST ON S.staff_id = ST.staff_id
     JOIN department D ON ST.department_id = D.department_id
     LEFT JOIN treatment_record T ON A.appointment_id = T.appointment_id
     GROUP BY 
@@ -155,6 +126,87 @@ BEGIN
         ST.staff_first_name,
         ST.staff_last_name,
         D.department_name,
-        P.patient_first_name,
-        P.patient_last_name;
+        P.first_name, 
+        P.last_name;
+END;
+
+DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
+CREATE PROCEDURE refresh_patient_secure_report()
+BEGIN
+    DELETE FROM patient_secure_report;
+    INSERT INTO patient_secure_report
+    SELECT 
+        patient_id,
+        first_name,
+        last_name,
+        email,
+        access_token,
+        date_of_birth,
+        gender,
+        allergies
+    FROM 
+        patient;
+END;
+
+DROP PROCEDURE IF EXISTS refresh_staff_secure_report;
+CREATE PROCEDURE refresh_staff_secure_report()
+BEGIN
+    DELETE FROM staff_secure_report;
+    INSERT INTO staff_secure_report
+    SELECT 
+        staff_id,
+        first_name,
+        last_name,
+        email,
+        access_token,
+        gender,
+        job_type,
+        department_id,
+        manager_id
+    FROM 
+        staff;
+END;
+
+DROP PROCEDURE IF EXISTS refresh_doctor_free_slot_report;
+CREATE PROCEDURE refresh_doctor_free_slot_report()
+BEGIN
+    DELETE FROM doctor_free_slot_report;
+    INSERT INTO doctor_free_slot_report
+    SELECT 
+        ST.staff_id,
+        ST.first_name AS staff_first_name,
+        ST.last_name AS staff_last_name,
+        S.schedule_date,
+        MAX(CASE WHEN N.slot_number = 1 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '09:00-10:00',
+        MAX(CASE WHEN N.slot_number = 2 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '10:00-11:00',
+        MAX(CASE WHEN N.slot_number = 3 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '11:00-12:00',
+        MAX(CASE WHEN N.slot_number = 4 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '12:00-13:00',
+        MAX(CASE WHEN N.slot_number = 5 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '13:00-14:00',
+        MAX(CASE WHEN N.slot_number = 6 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '14:00-15:00',
+        MAX(CASE WHEN N.slot_number = 7 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '15:00-16:00',
+        MAX(CASE WHEN N.slot_number = 8 THEN 
+            CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '16:00-17:00'
+    FROM staff ST
+    JOIN schedule S ON S.staff_id = ST.staff_id
+    CROSS JOIN (
+        SELECT 1 AS slot_number UNION ALL
+        SELECT 2 UNION ALL
+        SELECT 3 UNION ALL
+        SELECT 4 UNION ALL
+        SELECT 5 UNION ALL
+        SELECT 6 UNION ALL
+        SELECT 7 UNION ALL
+        SELECT 8
+    ) N
+    LEFT JOIN appointment A ON A.schedule_id = S.schedule_id AND A.slot_number = N.slot_number
+    WHERE ST.job_type = 'D'
+    GROUP BY ST.staff_id, ST.first_name, ST.last_name, S.schedule_date
+    ORDER BY S.schedule_date;
 END;

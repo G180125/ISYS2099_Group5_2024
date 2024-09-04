@@ -77,6 +77,19 @@ class Database {
       });
     });
   }
+
+  getPool(poolName) {
+    switch (poolName) {
+      case 'patient':
+        return this.poolPatient;
+      case 'admin':
+        return this.poolAdmin;
+      case 'staff':
+        return this.poolStaff;
+      default:
+        throw new Error(`Pool ${poolName} does not exist.`);
+    }
+  }
 }
 
 module.exports = new Database();
