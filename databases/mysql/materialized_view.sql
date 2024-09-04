@@ -174,6 +174,6 @@ CROSS JOIN (
     SELECT 8
 ) N
 LEFT JOIN appointment A ON A.schedule_id = S.schedule_id AND A.slot_number = N.slot_number
-WHERE ST.job_type = 'D'
+WHERE ST.job_type = 'D' AND S.schedule_date >= DATE(NOW()) 
 GROUP BY ST.staff_id, ST.first_name, ST.last_name, S.schedule_date
 ORDER BY S.schedule_date;
