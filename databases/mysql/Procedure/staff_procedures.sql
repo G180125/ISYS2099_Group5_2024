@@ -178,7 +178,7 @@ CREATE PROCEDURE view_staff_schedule(
 )
 BEGIN
     SELECT *
-    FROM doctor_free_slot_report
+    FROM schedule
     WHERE staff_id = p_staff_id
     ORDER BY schedule_date
     LIMIT s_limit OFFSET s_offset;

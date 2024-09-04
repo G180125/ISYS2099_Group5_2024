@@ -35,7 +35,7 @@ const registerPatient = async (req, res, next) => {
 
     result = rows[0][0].result;
     message = rows[0][0].message;
-    newPatientId = rows[0][0].newPatientId;
+    newPatientId = rows[0][0].new_user_id;
 
     if (result == 0) {
       return res
@@ -119,12 +119,12 @@ const login = async (req, res, next) => {
         .json({ error: httpStatus.BAD_REQUEST("Please provide email and password").message });
     }
 
-    const { role, message } = await models.getRoleByEmail(email);
+    const role = await models.getRoleByEmail(email);
 
     if (!role){
       return res
         .status(httpStatus.UNAUTHORIZED().code)
-        .json({ error: httpStatus.UNAUTHORIZED(message).message });
+        .json({ error: httpStatus.UNAUTHORIZED().message });
     }
 
     const user = await models.getUserByEmail(email);

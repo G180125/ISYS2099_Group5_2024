@@ -37,9 +37,11 @@ BEGIN
     ELSE
         SET result = 1;
         SET new_user_id = LAST_INSERT_ID(); 
-        COMMIT;
         SET message = 'User added successfully';
+        COMMIT;
     END IF;
+
+    SELECT result, message, new_user_id;
 END;
 
 DROP PROCEDURE IF EXISTS update_user;
@@ -82,6 +84,8 @@ BEGIN
         SET message = 'User updated successfully';
         COMMIT;
     END IF;
+
+    SELECT result, message;
 END;
 
 DROP PROCEDURE IF EXISTS get_user_role_by_email;
@@ -92,8 +96,7 @@ CREATE PROCEDURE get_user_role_by_email(
 )
 this_proc:
 BEGIN
-    DECLARE user_id INT DEFAULT NULL;
-    DECLARE staff_role ENUM('Admin', 'Doctor', 'Nurse');
+    DECLARE _user_id INT DEFAULT NULL;
     DECLARE sql_error_message VARCHAR(255);
 
      -- Handle SQL exceptions
@@ -105,24 +108,24 @@ BEGIN
     END;
 
     -- Check if the email exists in the user table
-    SELECT user_id INTO user_id
+    SELECT user_id INTO _user_id
     FROM user
     WHERE email = p_email;
 
-    IF user_id IS NULL THEN
+    IF _user_id IS NULL THEN
         SET role = NULL;
         SET message = "No User Found";
         SELECT role, message;
         LEAVE this_proc;
     END IF;
 
-    IF EXISTS (SELECT 1 FROM patient WHERE user_id = user_id)THEN
+    IF EXISTS (SELECT 1 FROM patient WHERE user_id = _user_id)THEN
         SET role = 'patient';
         SELECT role, message;
         LEAVE this_proc;
     END IF;
 
-    IF EXISTS (SELECT 1 FROM staff WHERE user_id = user_id AND job_type = 'a') THEN
+    IF EXISTS (SELECT 1 FROM staff WHERE user_id = _user_id AND job_type = 'A') THEN
         SET role = 'admin';
         SELECT role, message;
         LEAVE this_proc;

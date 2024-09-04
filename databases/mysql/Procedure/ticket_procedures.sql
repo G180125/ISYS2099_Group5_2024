@@ -191,15 +191,21 @@ CREATE PROCEDURE approve_ticket_for_update(
 )
 this_proc:
 BEGIN
-    DECLARE _rollback BOOL DEFAULT 0;
     DECLARE sql_error_message VARCHAR(255);
     DECLARE _creator INT;
+    DECLARE _first_name VARCHAR(255);
+    DECLARE _last_name VARCHAR(255);
+    DECLARE _gender CHAR(1);
+    DECLARE _job_type VARCHAR(255);
+    DECLARE _department_id INT;
+    DECLARE _salary DECIMAL(10,2);
+    DECLARE _manager_id INT;
+    DECLARE _ticket_status CHAR(1);
 
     -- Handler for SQL exceptions
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
     BEGIN
         GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
-        SET _rollback = 1;
         SET result = 0;
         SET message = sql_error_message;
         ROLLBACK;
@@ -207,13 +213,14 @@ BEGIN
 
     START TRANSACTION;
 
-    -- Lock the ticket for update and check if staff_id is the creator
-    SELECT creator 
-    INTO _creator 
+    -- Fetch all necessary details from the ticket
+    SELECT creator, first_name, last_name, gender, job_type, department_id, salary, manager_id, status
+    INTO _creator, _first_name, _last_name, _gender, _job_type, _department_id, _salary, _manager_id, _ticket_status
     FROM ticket 
     WHERE ticket_id = t_id 
     FOR UPDATE;
 
+    -- Check if ticket exists and is pending
     IF _creator IS NULL THEN
         SET result = 0;
         SET message = 'Ticket not found.';
@@ -221,43 +228,47 @@ BEGIN
         LEAVE this_proc;
     END IF;
 
-    -- Call the update_staff procedure with the values from the ticket
+    IF _ticket_status <> 'P' THEN
+        SET result = 0;
+        SET message = 'Cannot approve a non-pending ticket.';
+        ROLLBACK;
+        LEAVE this_proc;
+    END IF;
+
+    -- Call the update_staff procedure
     CALL update_staff(
         _creator,
-        (SELECT first_name FROM ticket WHERE ticket_id = t_id),
-        (SELECT last_name FROM ticket WHERE ticket_id = t_id),
-        (SELECT gender FROM ticket WHERE ticket_id = t_id),
-        (SELECT job_type FROM ticket WHERE ticket_id = t_id),
-        (SELECT department_id FROM ticket WHERE ticket_id = t_id),
-        (SELECT salary FROM ticket WHERE ticket_id = t_id),
-        (SELECT manager_id FROM ticket WHERE ticket_id = t_id),
+        _first_name,
+        _last_name,
+        _gender,
+        _job_type,
+        _department_id,
+        _salary,
+        _manager_id,
         result,
         message
     );
 
     IF result = 0 THEN 
-        SET _rollback = 1;
-    END IF; 
-
-    -- Check if any rollback was set
-    IF _rollback THEN
-        SET result = 0;
         ROLLBACK;
-    ELSE
-        UPDATE ticket
-        SET 
-            status = 'A',
-            handled_by = manager_id
-        WHERE ticket_id = t_id;
-
-        SET result = 1;
-        SET message = CONCAT('Ticket approval successful. ', message);
-        COMMIT;
+        LEAVE this_proc;
     END IF;
+
+    -- Update ticket status and handler
+    UPDATE ticket
+    SET 
+        status = 'A',
+        handled_by = admin_id
+    WHERE ticket_id = t_id;
+
+    SET result = 1;
+    SET message = CONCAT('Ticket approval successful. ', message);
+    COMMIT;
 
     -- Return the result and message
     SELECT result, message;
 END;
+
 
 DROP PROCEDURE IF EXISTS reject_ticket_for_update;
 CREATE PROCEDURE reject_ticket_for_update(
@@ -270,6 +281,7 @@ CREATE PROCEDURE reject_ticket_for_update(
 this_proc:
 BEGIN
     DECLARE _rollback BOOL DEFAULT 0;
+    DECLARE _ticket_status CHAR(1);
     DECLARE sql_error_message VARCHAR(255);
 
     -- Handler for SQL exceptions
@@ -285,10 +297,18 @@ BEGIN
     START TRANSACTION;
 
     -- Lock the ticket for update and check if staff_id is the creator
-    SELECT *
+    SELECT status
+    INTO _ticket_status
     FROM ticket 
     WHERE ticket_id = t_id 
     FOR UPDATE;
+
+    IF _ticket_status <> 'P' THEN
+        SET result = 0;
+        SET message = 'Cannot reject a non-pending ticket.';
+        ROLLBACK;
+        LEAVE this_proc;
+    END IF;
 
     -- Check if any rollback was set
     IF _rollback THEN

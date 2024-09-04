@@ -5,7 +5,7 @@ let database = {};
 database.getUserById = async (id) => {
   try {
     const [results] = await db.poolPatient.query(
-      `SELECT * FROM user WHERE ID = ?`,
+      `SELECT * FROM user WHERE user_id = ?`,
       [id]
     );
     return results[0];
@@ -85,10 +85,13 @@ database.getRoleByEmail = async (email) => {
       `CALL get_user_role_by_email(?, @role, @message)`,
       [email]
     );
+
+    console.log(rows);
+
     const role = rows[0][0].role;
     const message = rows[0][0].message;
 
-    return role, message;
+    return role;
   } catch (err) {
     console.error("error: " + err.stack);
     throw err;

@@ -68,16 +68,16 @@ CREATE PROCEDURE refresh_doctor_work_report()
 BEGIN
     DELETE FROM doctor_work_report;
     INSERT INTO doctor_work_report
-    SELECT ST.staff_first_name, 
-        ST.staff_last_name, 
-        ST.staff_email,
-        ST.staff_gender, 
-        ST.staff_job_type, 
+    SELECT ST.first_name, 
+        ST.last_name, 
+        ST.email,
+        ST.gender, 
+        ST.job_type, 
         S.schedule_date,
         A.slot_number time, 
         D.department_name,
-        P.patient_first_name, 
-        P.patient_last_name,
+        P.first_name, 
+        P.last_name,
         A.status appointment_status
     FROM appointment A
     JOIN patient_secure_report P ON A.patient_id = P.patient_id
@@ -99,11 +99,11 @@ BEGIN
         A.purpose,
         A.notes_before,
         A.notes_after,
-        ST.staff_first_name,
-        ST.staff_last_name,
+        ST.first_name,
+        ST.last_name,
         D.department_name,
-        P.patient_first_name,
-        P.patient_last_name,
+        P.first_name,
+        P.last_name,
         GROUP_CONCAT(
             CONCAT(T.treatment_name, ' (', T.treatment_date, ')')
             ORDER BY T.treatment_date
@@ -123,8 +123,8 @@ BEGIN
         A.purpose,
         A.notes_before,
         A.notes_after,
-        ST.staff_first_name,
-        ST.staff_last_name,
+        ST.first_name,
+        ST.last_name,
         D.department_name,
         P.first_name, 
         P.last_name;

@@ -115,6 +115,9 @@ const patientController = {
             .json({ error: httpStatus.BAD_REQUEST("Please provide the patient name for searching!").message });
         }
 
+        console.log("first name : ",first_name);
+        console.log("last name : ",last_name);
+
         const pool = mysqlClient.getPool(role);
     
         const query = `CALL search_patient_by_name(?, ?, ?, ?)`;
@@ -126,20 +129,8 @@ const patientController = {
             .json({ error: httpStatus.NOT_FOUND("No patient found").message });
         }
     
-        // Fetch total number of matching records for pagination metadata
-        const countQuery = `SELECT COUNT(*) as total FROM patient_secure_report WHERE first_name = ? AND last_name = ?`;
-        const [countResult] = await pool.query(countQuery, [first_name, last_name]);
-        const totalRecords = countResult[0].total;
-        const totalPages = Math.ceil(totalRecords / limit);
-    
         return res.json({
-          results,
-          pagination: {
-            totalRecords: totalRecords,
-            totalPages: totalPages,
-            currentPage: page,
-            pageSize: limit,
-          }
+          results: results[0],
         });
       } catch (error) {
         return next(error);
