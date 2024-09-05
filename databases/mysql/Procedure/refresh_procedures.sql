@@ -70,7 +70,6 @@ BEGIN
     LEFT JOIN department D ON S.department_id = D.department_id;
 END;
 
-
 DROP PROCEDURE IF EXISTS refresh_treatment_report;
 CREATE PROCEDURE refresh_treatment_report()
 BEGIN
@@ -80,21 +79,22 @@ BEGIN
         P.first_name AS patient_first_name, 
         P.last_name AS patient_last_name, 
         P.email AS patient_email,
-        T.treatment_id,
+        TR.treatment_id,
         T.treatment_name, 
-        T.treatment_date, 
-        T.status treatment_status,
+        TR.treatment_date, 
+        TR.status treatment_status,
         ST.first_name AS staff_first_name, 
         ST.last_name AS staff_last_name, 
         ST.job_type, 
         D.department_name
-    FROM treatment_record T
-    JOIN appointment A ON T.appointment_id = A.appointment_id
+    FROM treatment_record TR
+    JOIN treatment T ON TR.treatment_id = T.treatment_id
+    JOIN appointment A ON TR.appointment_id = A.appointment_id
     JOIN patient_secure_report P ON A.patient_id = P.patient_id
     JOIN schedule S ON A.schedule_id = S.schedule_id
     JOIN staff_secure_report ST ON S.staff_id = ST.staff_id
     JOIN department D ON ST.department_id = D.department_id
-    ORDER BY T.status;
+    ORDER BY TR.status;
 END;
 
 DROP PROCEDURE IF EXISTS refresh_doctor_work_report;
