@@ -369,7 +369,7 @@ const appointmentController = {
       const id = req.id;
       const { appointment_id } = req.body;
       
-      if(!appointment_id || !patient_id){
+      if(!appointment_id ){
         return res
           .status(httpStatus.BAD_REQUEST().code)
           .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
