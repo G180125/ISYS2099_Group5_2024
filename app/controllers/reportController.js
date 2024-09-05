@@ -22,12 +22,11 @@ const reportController = {
     // Function to get patient treatment history within a specific date range
     viewPatientTreatment: async (req, res, next) => {
         const role = req.role;
-        const { start_date, end_date, email } = req.params;
-
+        const { start_date, end_date, email } = req.query;
         if (!start_date || !end_date) {
             return res
             .status(httpStatus.BAD_REQUEST().code)
-            .json({ error: httpStatus.BAD_REQUEST("Both start_date and end_date parameters are required.").message });
+            .json({ error: httpStatus.BAD_REQUEST("Both start_date and end_date query parameters are required.").message });
         }
         
         // Set default values to NULL if they are not provided
@@ -64,7 +63,7 @@ const reportController = {
     // Function to get a doctor work within a specific date range
     viewDoctorWork: async (req, res, next) => {
         const role = req.role;
-        const { start_date, end_date, email } = req.params; 
+        const { start_date, end_date, email } = req.query; 
 
         if (!start_date || !end_date) {
             return res
@@ -114,7 +113,7 @@ const reportController = {
     // Function to get a staff job changes within a specific date range
     viewStaffJobChanges: async (req, res, next) => {
         const role = req.role;
-        const { start_date, end_date, email } = req.params;
+        const { start_date, end_date, email } = req.query;
 
         if (!start_date || !end_date) {
             return res
