@@ -152,9 +152,9 @@ BEGIN
 END; -- //
 -- DELIMITER ;
 
-DROP PROCEDURE IF EXISTS `add_patient_treatment`;
+DROP PROCEDURE IF EXISTS add_patient_treatment;
 CREATE PROCEDURE add_patient_treatment(
-	IN t_treatment_name VARCHAR(100),
+	IN t_treatment_id VARCHAR(100),
 	IN t_treatment_date DATE,
 	IN t_appointment_id INT,
 	OUT result INT,
@@ -178,10 +178,10 @@ BEGIN
     START TRANSACTION;
    
 	INSERT INTO treatment_record(
-		treatment_name, treatment_date, appointment_id, status
+		treatment_id, treatment_date, appointment_id, status
 	)
 	VALUES (
-		t_treatment_name, t_treatment_date, t_appointment_id, 'U'
+		t_treatment_id, t_treatment_date, t_appointment_id, 'U'
 	);
 	IF _rollback THEN
 		SET result = 0;

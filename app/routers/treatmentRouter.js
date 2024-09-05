@@ -37,7 +37,7 @@ treatmentRouter.get(
 
 // {{base_url}}/treatment/new
 // {
-//     "treatment_name":"chemotherapy",
+//     "treatment_id": "3",
 //     "treatment_date":"2024-09-15",
 //     "appointment_id":"3"
 // }

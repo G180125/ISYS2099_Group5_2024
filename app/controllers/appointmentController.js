@@ -35,14 +35,7 @@ const appointmentController = {
         ST.last_name AS staff_last_name,
         ST.gender AS staff_gender, 
         ST.job_type, 
-        D.department_name,
-        JSON_ARRAYAGG(
-            JSON_OBJECT(
-                'id', T.treatment_id,
-                'name', T.treatment_name,
-                'date', T.treatment_date
-            )
-        ) AS treatments
+        D.department_name
         FROM 
             appointment A
         JOIN 
@@ -53,8 +46,6 @@ const appointmentController = {
             staff_secure_report ST ON S.staff_id = ST.staff_id
         JOIN 
             department D ON ST.department_id = D.department_id
-        LEFT JOIN 
-            treatment_record T ON A.appointment_id = T.appointment_id
         GROUP BY 
             A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
         LIMIT ? OFFSET ?`;
@@ -104,14 +95,7 @@ const appointmentController = {
       ST.last_name AS staff_last_name,
       ST.staff_id, 
       ST.job_type, 
-      D.department_name,
-      JSON_ARRAYAGG(
-          JSON_OBJECT(
-              'id', T.treatment_id,
-              'name', T.treatment_name,
-              'date', T.treatment_date
-          )
-      ) AS treatments
+      D.department_name
       FROM 
           appointment A
       JOIN 
@@ -122,8 +106,6 @@ const appointmentController = {
           staff_secure_report ST ON S.staff_id = ST.staff_id
       JOIN 
           department D ON ST.department_id = D.department_id
-      LEFT JOIN 
-          treatment_record T ON A.appointment_id = T.appointment_id
       WHERE 
           A.patient_id = ?
       `;
@@ -194,14 +176,7 @@ const appointmentController = {
       ST.last_name AS staff_last_name,
       ST.gender AS staff_gender, 
       ST.job_type, 
-      D.department_name,
-      JSON_ARRAYAGG(
-          JSON_OBJECT(
-              'id', T.treatment_id,
-              'name', T.treatment_name,
-              'date', T.treatment_date
-          )
-      ) AS treatments
+      D.department_name
       FROM 
           appointment A
       JOIN 
@@ -212,8 +187,6 @@ const appointmentController = {
           staff_secure_report ST ON S.staff_id = ST.staff_id
       JOIN 
           department D ON ST.department_id = D.department_id
-      LEFT JOIN 
-          treatment_record T ON A.appointment_id = T.appointment_id
       WHERE 
           P.patient_id = ?
       GROUP BY 
@@ -367,9 +340,11 @@ const appointmentController = {
     try {
       const role = req.role;
       const id = req.id;
-      const { appointment_id } = req.body;
+      const appointment_id  = req.body;
       
-      if(!appointment_id || !patient_id){
+      console.log(appointment_id);
+
+      if(!appointment_id){
         return res
           .status(httpStatus.BAD_REQUEST().code)
           .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});

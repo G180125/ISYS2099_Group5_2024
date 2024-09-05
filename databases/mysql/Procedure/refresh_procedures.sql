@@ -147,7 +147,7 @@ BEGIN
             CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '15:00-16:00',
         MAX(CASE WHEN N.slot_number = 8 THEN 
             CASE WHEN A.slot_number IS NULL THEN 'available' ELSE 'busy' END END) AS '16:00-17:00'
-    FROM staff ST
+    FROM staff_secure_report ST
     JOIN schedule S ON S.staff_id = ST.staff_id
     CROSS JOIN (
         SELECT 1 AS slot_number UNION ALL

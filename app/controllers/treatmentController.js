@@ -149,11 +149,9 @@ const treatmentController = {
     addTreatment: async (req, res, next)=>{
         try{
             const role = req.role;
-            const { treatment_name, treatment_date, appointment_id } = req.body;
-            console.log(treatment_name);
-            console.log(treatment_date);
-            console.log(appointment_id)
-            if(!treatment_name || !treatment_date || !appointment_id){
+            const { treatment_id, treatment_date, appointment_id } = req.body;
+
+            if(!treatment_id || !treatment_date || !appointment_id){
                 return res
                         .status(httpStatus.BAD_REQUEST().code)
                         .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
@@ -162,7 +160,7 @@ const treatmentController = {
             const pool = mysqlClient.getPool(role);
 
             const query = `CALL add_patient_treatment(?,?,?, @result, @message)`;
-            const [rows] = await pool.query(query, [treatment_name,treatment_date,appointment_id]);
+            const [rows] = await pool.query(query, [treatment_id,treatment_date,appointment_id]);
             const result = rows[0][0].result;
             const message = rows[0][0].message;
             console.log(rows);
@@ -196,7 +194,7 @@ const treatmentController = {
             const pool = mysqlClient.getPool(role);
 
             const query = `UPDATE treatment_record SET status = 'M' WHERE record_id = ? and status = 'U'`;
-            const [rows] = await pool.query(query, [record_id]);
+            const [result] = await pool.query(query, [record_id]);
 
             if (result == 0) {
                 return res
