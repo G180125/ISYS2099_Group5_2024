@@ -17,7 +17,7 @@ ticketRouter.get(
     "/my",
     authenticate,
     checkRoles(["staff"]),
-    appointmentController.getAllTicketsByStaff
+    appointmentController.getMyTickets
 );
 
 // Create a ticket
