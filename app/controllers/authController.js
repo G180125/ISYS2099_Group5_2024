@@ -11,7 +11,7 @@ app.use(cookieParser());
 
 const registerPatient = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, f_name, l_name, gender, dob, allergies} = req.body;
 
     if (!email || !password) {
       return res
@@ -28,8 +28,11 @@ const registerPatient = async (req, res, next) => {
 
     const pool = mysqlClient.getPool("patient");
 
+    // const query = `CALL register_patient(?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
+    // const [rows] = await pool.query(query, [null, null, email, hashedPassword, null, 'O', null]);
+    
     const query = `CALL register_patient(?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
-    const [rows] = await pool.query(query, [null, null, email, hashedPassword, null, 'O', null]);
+    const [rows] = await pool.query(query, [f_name, l_name, email, hashedPassword, dob, gender || "O", allergies]);
 
     console.log(rows);
 
