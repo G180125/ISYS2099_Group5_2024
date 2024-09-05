@@ -279,7 +279,7 @@ const treatmentController = {
             const pool = mysqlClient.getPool(role);
 
             const query = `UPDATE treatment_record SET status = 'F' WHERE record_id = ? AND status = 'U'`;
-            const [rows] = await pool.query(query, [record_id]);
+            const [result] = await pool.query(query, [record_id]);
 
             if (result == 0) {
                 return res

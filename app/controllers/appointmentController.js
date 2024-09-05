@@ -2,6 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
+const { log } = require("console");
 
 const app = express();
 app.use(cookieParser());
@@ -340,9 +341,7 @@ const appointmentController = {
     try {
       const role = req.role;
       const id = req.id;
-      const appointment_id  = req.body;
-      
-      console.log(appointment_id);
+      const appointment_id  = req.body.appointment_id;
 
       if(!appointment_id){
         return res
@@ -352,7 +351,7 @@ const appointmentController = {
 
       const pool = mysqlClient.getPool(role);
 
-      const query = `CALL finsish_appointment(?,?, @result, @message)`;
+      const query = `CALL finish_appointment(?,?, @result, @message)`;
       const [rows] = await pool.query(query, [appointment_id, id]);
       // If there are multiple result sets, select the last one
       const result = rows[0][0].result;
