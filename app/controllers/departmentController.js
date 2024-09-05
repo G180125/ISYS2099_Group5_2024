@@ -18,7 +18,7 @@ const departmentController = {
 
             res
             .status(httpStatus.OK().code)
-            .json(results[0]);
+            .json(results);
         } catch (error) {
             return next(error);
         }
@@ -26,7 +26,7 @@ const departmentController = {
 
     getAllDoctorsByDepartment: async (req, res, next) => {
         try {
-            const { department_id } = req.params.id;
+            const department_id = req.params.id;
 
             const pool = mysqlClient.getPool("patient");
 
@@ -43,7 +43,7 @@ const departmentController = {
 
             res
             .status(httpStatus.OK().code)
-            .json(results[0]);
+            .json(results);
         } catch (error) {
             return next(error);
         }
