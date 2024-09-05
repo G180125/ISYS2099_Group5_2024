@@ -62,6 +62,60 @@ const treatmentController = {
         } 
     },
 
+    getTreatmentsByAppointment: async (req, res, next) => {
+        try{
+            const status = req.query.status;
+            const id = req.params.id;
+            const role = req.role;
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const offset = (page - 1) * limit;
+
+            let query = `
+                SELECT *
+                FROM treatment_report
+                WHERE appointment_id = ?`;
+
+            let countQuery = `
+                SELECT COUNT(*) as total
+                FROM treatment_report
+                WHERE appointment_id = ?`;
+
+            let queryParams = [id, limit, offset];
+            let countParams = [id];
+
+            if (status) {
+                query += ` AND treatment_status = ? LIMIT ? OFFSET ?`;
+                queryParams = [id, status, limit, offset];
+
+                countQuery += ` AND treatment_status = ?`;
+                countParams = [id, status];
+            } else {
+                query += ` LIMIT ? OFFSET ?`;
+            }
+
+            const pool = mysqlClient.getPool(role);
+
+            const [results] = await pool.query(query, queryParams);
+            const [countResult] = await pool.query(countQuery, countParams);
+
+            const totalRecords = countResult[0].total;
+            const totalPages = Math.ceil(totalRecords / limit);
+
+            res.json({
+                results: results,
+                pagination: {
+                    totalRecords: totalRecords,
+                    totalPages: totalPages,
+                    currentPage: page,
+                    pageSize: limit,
+                }
+            });
+        } catch (error) {
+            return next(error);
+        }
+    },
+
     getTreatmentsByPatient: async (req, res, next) => {
         try{
             const status = req.query.status;

@@ -13,10 +13,15 @@ treatmentRouter.get(
     treatmentController.getMyTreatments
 );
 
-// {{base_url}}/treatment/patient
-// {
-//     "id": "1"
-// }
+// {{base_url}}/treatment/appointment/8
+treatmentRouter.get(
+    "/appointment/:id",
+    authenticate,
+    checkRoles(["staff", "admin", "patient"]),
+    treatmentController.getTreatmentsByAppointment
+);
+
+// {{base_url}}/treatment/patient/41
 treatmentRouter.get(
     "/patient/:id",
     authenticate,
