@@ -254,14 +254,23 @@ INSERT INTO appointment (appointment_id, patient_id, schedule_id, slot_number, p
     (19, 59, 14, 4, 'Consultation', 'U'),
     (20, 60, 30, 5, 'Consultation', 'U');
 
-INSERT INTO treatment_record (treatment_id, treatment_name, treatment_date, appointment_id, status) VALUES
-    (1, 'X-ray', '2024-09-02', 1, 'U'),
-    (2, 'Endoscopy', '2024-09-04', 2, 'U'),
-    (3, 'Colonoscopy', '2024-09-05', 3, 'U'),
-    (4, 'X-ray', '2024-09-07', 4, 'U'),
-    (5, 'X-ray', '2024-09-10', 5, 'U'),
-    (6, 'Allergy Test', '2024-09-03', 6, 'U'),
-    (7, 'CT Scan', '2024-09-07', 7, 'U'),
-    (8, 'Ultrasound', '2024-09-09', 8, 'U'),
-    (9, 'Mammography', '2024-09-02', 7, 'U'),
-    (10, 'Colonoscopy', '2024-09-04', 6, 'U');
+INSERT INTO treatment(treatment_id, treatment_name, treatment_cost) VALUES
+    (1, 'X-ray', 100.00),
+    (2, 'Endoscopy', 500.00),
+    (3, 'Colonoscopy', 800.00),
+    (4, 'Allergy Test', 150.00),
+    (5, 'CT Scan', 1200.00),
+    (6, 'Ultrasound', 300.00),
+    (7, 'Mammography', 400.00);
+
+INSERT INTO treatment_record (record_id, treatment_id, treatment_date, appointment_id, status) VALUES
+    (1, 1, '2024-09-02', 1, 'U'),
+    (2, 2, '2024-09-04', 2, 'U'),
+    (3, 3, '2024-09-05', 3, 'U'),
+    (4, 1, '2024-09-07', 4, 'U'),
+    (5, 1, '2024-09-10', 5, 'U'),
+    (6, 4, '2024-09-03', 6, 'U'),
+    (7, 5, '2024-09-07', 7, 'U'),
+    (8, 6, '2024-09-09', 8, 'U'),
+    (9, 7, '2024-09-02', 7, 'U'),
+    (10, 3, '2024-09-04', 6, 'U');

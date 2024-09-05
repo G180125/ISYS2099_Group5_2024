@@ -48,4 +48,26 @@ treatmentRouter.post(
     treatmentController.addTreatment
 );
 
+// {{base_url}}/treatment/missing
+// {
+//     "appointment_id":"3"
+// }
+treatmentRouter.post(
+    "/missing",
+    authenticate,
+    checkRoles(["staff"]),
+    treatmentController.markTreatmentAsMissing
+);
+
+// {{base_url}}/treatment/finish
+// {
+//     "appointment_id":"3"
+// }
+treatmentRouter.post(
+    "/finish",
+    authenticate,
+    checkRoles(["staff"]),
+    treatmentController.finishTreatment
+);
+
 module.exports = treatmentRouter;

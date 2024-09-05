@@ -197,7 +197,7 @@ const patientController = {
             .json({ error: httpStatus.UNAUTHORIZED("No patient found").message });
         }
 
-        await pool.query(`DELETE FROM patient WHERE patient_id = ?`, [
+        await pool.query(`DELETE FROM user WHERE user_id = ?`, [
           id,
         ]);
         res

@@ -18,6 +18,7 @@ GRANT EXECUTE ON PROCEDURE hospital_management.list_staff_order_by_name TO 'grou
 GRANT EXECUTE ON PROCEDURE hospital_management.view_staff_schedule TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.add_patient_treatment TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.update_appointment TO 'group5_staff_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.finish_appointment TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.view_patient_treatment TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.refresh_treatment_report TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.refresh_doctor_work_report TO 'group5_staff_app_user'@'localhost';

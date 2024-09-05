@@ -33,21 +33,22 @@ SELECT  P.patient_id,
         P.first_name AS patient_first_name, 
         P.last_name AS patient_last_name, 
         P.email AS patient_email,
-        T.treatment_id,
+        TR.treatment_id,
         T.treatment_name, 
-        T.treatment_date, 
-        T.status treatment_status,
+        TR.treatment_date, 
+        TR.status treatment_status,
         ST.first_name staff_first_name, 
         ST.last_name staff_last_name, 
         ST.job_type, 
         D.department_name
-FROM treatment_record T
-JOIN appointment A ON T.appointment_id = A.appointment_id
+FROM treatment_record TR
+JOIN treatment T ON T.treatment_id = TR.treatment_id
+JOIN appointment A ON TR.appointment_id = A.appointment_id
 JOIN patient_secure_report P ON A.patient_id = P.patient_id
 JOIN schedule S ON A.schedule_id = S.schedule_id
 JOIN staff_secure_report ST ON S.staff_id = ST.staff_id
 JOIN department D ON ST.department_id = D.department_id
-ORDER BY T.status;
+ORDER BY TR.status;
 
 DROP TABLE IF EXISTS staff_job_change_report;
 CREATE TABLE staff_job_change_report AS
@@ -101,40 +102,33 @@ ORDER BY S.schedule_date;
 DROP TABLE IF EXISTS billing_report;
 CREATE TABLE billing_report AS
 SELECT A.appointment_id,
-       S.schedule_date appointment_date,
-       A.slot_number time,
-       A.status appointment_status,
+       S.schedule_date AS appointment_date,
+       A.slot_number AS time,
+       A.status AS appointment_status,
        A.purpose,
-       A.notes_before,
-       A.notes_after,
-       ST.first_name staff_first_name,
-       ST.last_name staff_last_name,
+       ST.first_name AS staff_first_name,
+       ST.last_name AS staff_last_name,
        D.department_name,
-       P.first_name patient_first_name,
-       P.last_name patient_last_name,
-       GROUP_CONCAT(
-        CONCAT(T.treatment_name, ' (', T.treatment_date, ')')
-        ORDER BY T.treatment_date
-        SEPARATOR ', '
-      ) AS treatment_list
+       P.first_name AS patient_first_name,
+       P.last_name AS patient_last_name,
+       COALESCE(SUM(T.treatment_cost), 0) AS total_cost
 FROM appointment A
 JOIN patient_secure_report P ON A.patient_id = P.patient_id
 JOIN schedule S ON A.schedule_id = S.schedule_id
 JOIN staff_secure_report ST ON S.staff_id = ST.staff_id
 JOIN department D ON ST.department_id = D.department_id
-LEFT JOIN treatment_record T ON A.appointment_id = T.appointment_id
+LEFT JOIN treatment_record TR ON A.appointment_id = TR.appointment_id
+LEFT JOIN treatment T ON TR.treatment_id = T.treatment_id
 GROUP BY 
-    A.appointment_id, 
+    A.appointment_id,
     S.schedule_date,
-    A.slot_number, 
-    A.status, 
+    A.slot_number,
+    A.status,
     A.purpose,
-    A.notes_before,
-    A.notes_after,
     ST.first_name,
     ST.last_name,
     D.department_name,
-    P.first_name, 
+    P.first_name,
     P.last_name;
 
 DROP TABLE IF EXISTS doctor_free_slot_report;

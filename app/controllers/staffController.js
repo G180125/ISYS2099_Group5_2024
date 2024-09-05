@@ -223,7 +223,7 @@ const staffController = {
       const role = req.role;
 
       const pool = mysqlClient.getPool(role);
-      await pool.query(`DELETE FROM staff WHERE staff_id = ?`, [
+      await pool.query(`DELETE FROM user WHERE user_id = ?`, [
         id,
       ]);
       res

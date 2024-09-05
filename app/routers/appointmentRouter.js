@@ -74,4 +74,15 @@ appointmentRouter.put(
   appointmentController.cancelAppointment
 );
 
+// {{base_url}}/appointment/finish
+// {
+//   "appointment_id":"4"
+// }
+appointmentRouter.put(
+  "/finish",
+  authenticate,
+  checkRoles(["doctor"]),
+  appointmentController.finishAppointment
+);
+
 module.exports = appointmentRouter;

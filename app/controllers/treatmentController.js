@@ -7,8 +7,6 @@ const mysqlClient = require("../databases/mysqlClient.js");
 const app = express();
 app.use(cookieParser());
 
-const treatment_list = ["hormone therapy", "chemotherapy"]
-
 const treatmentController = {
     getMyTreatments: async (req, res, next) => {
         try{
@@ -161,12 +159,6 @@ const treatmentController = {
                         .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
             }
 
-            if(!treatment_list.includes(treatment_name.toLowerCase())){
-                return res
-                .status(httpStatus.BAD_REQUEST().code)
-                .json({error: httpStatus.BAD_REQUEST("Invalid treatment!").message});
-            }
-
             const pool = mysqlClient.getPool(role);
 
             const query = `CALL add_patient_treatment(?,?,?, @result, @message)`;
@@ -184,6 +176,68 @@ const treatmentController = {
             return res
                 .status(httpStatus.OK().code)
                 .json({ message: message });
+            }
+        catch(err){
+            return next(err);
+        }
+    },
+
+    markTreatmentAsMissing: async (req, res, next)=>{
+        try{
+            const role = req.role;
+            const record_id = req.body.id;
+
+            if(!record_id){
+                return res
+                        .status(httpStatus.BAD_REQUEST().code)
+                        .json({error: httpStatus.BAD_REQUEST("No Input For Treatment Record").message});
+            }
+
+            const pool = mysqlClient.getPool(role);
+
+            const query = `UPDATE treatment_record SET status = 'M' WHERE record_id = ? and status = 'U'`;
+            const [rows] = await pool.query(query, [record_id]);
+
+            if (result == 0) {
+                return res
+                  .status(httpStatus.BAD_REQUEST().code)
+                  .json({ error: httpStatus.BAD_REQUEST(message).message });
+              }
+
+            return res
+                .status(httpStatus.OK().code)
+                .json({ message: 'Change Treatmemt Record Successfully' });
+            }
+        catch(err){
+            return next(err);
+        }
+    },
+
+    finishTreatment: async (req, res, next)=>{
+        try{
+            const role = req.role;
+            const record_id = req.body.id;
+
+            if(!record_id){
+                return res
+                        .status(httpStatus.BAD_REQUEST().code)
+                        .json({error: httpStatus.BAD_REQUEST("No Input For Treatment Record").message});
+            }
+
+            const pool = mysqlClient.getPool(role);
+
+            const query = `UPDATE treatment_record SET status = 'F' WHERE record_id = ? AND status = 'U'`;
+            const [rows] = await pool.query(query, [record_id]);
+
+            if (result == 0) {
+                return res
+                  .status(httpStatus.BAD_REQUEST().code)
+                  .json({ error: httpStatus.BAD_REQUEST(message).message });
+              }
+
+            return res
+                .status(httpStatus.OK().code)
+                .json({ message: 'Finish Treatmemt Record Successfully' });
             }
         catch(err){
             return next(err);

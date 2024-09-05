@@ -24,7 +24,6 @@ GRANT EXECUTE ON PROCEDURE hospital_management.approve_ticket_for_update TO 'gro
 GRANT EXECUTE ON PROCEDURE hospital_management.reject_ticket_for_update TO 'group5_admin_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.delete_ticket_for_update TO 'group5_admin_app_user'@'localhost';
 
-
 -- Granting TRIGGER privilege on all relevant TABLES to admin user
 GRANT TRIGGER ON hospital_management.user TO 'group5_admin_app_user'@'localhost';
 GRANT TRIGGER ON hospital_management.staff TO 'group5_admin_app_user'@'localhost';

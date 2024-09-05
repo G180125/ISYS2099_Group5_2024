@@ -361,6 +361,38 @@ const appointmentController = {
     } catch (error) {
       return next(error);
     }
+  },
+
+  finishAppointment: async (req, res, next) => {
+    try {
+      const role = req.role;
+      const id = req.id;
+      const { appointment_id } = req.body;
+      
+      if(!appointment_id || !patient_id){
+        return res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
+      }
+
+      const pool = mysqlClient.getPool(role);
+
+      const query = `CALL finsish_appointment(?,?, @result, @message)`;
+      const [rows] = await pool.query(query, [appointment_id, id]);
+      // If there are multiple result sets, select the last one
+      const result = rows[0][0].result;
+      const message = rows[0][0].message;
+
+      if (result == 0) {
+        throw new Error(message);
+      }
+
+      return res  
+          .status(httpStatus.OK().code)
+          .json({ message: message });
+    } catch (error) {
+      return next(error);
+    }
   }
 };
 
