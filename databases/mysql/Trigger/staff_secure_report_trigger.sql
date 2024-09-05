@@ -13,7 +13,7 @@ BEGIN
     CALL refresh_staff_secure_report();
 END;
 
-CREATE TRIGGER update_staff_secure_report_after_staff_insert
+CREATE TRIGGER update_staff_secure_report_after_staff_delete
 AFTER DELETE ON staff
 FOR EACH ROW
 BEGIN

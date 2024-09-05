@@ -97,7 +97,7 @@ const staffController = {
       const totalPages = Math.ceil(totalRecords / limit);
 
       res.json({
-        results: results[0],
+        results: results,
         pagination: {
           totalRecords: totalRecords,
           totalPages: totalPages,

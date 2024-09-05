@@ -56,7 +56,16 @@ const patientController = {
         const pool = mysqlClient.getPool(role);
 
         const [results] = await pool.query(
-          `SELECT * FROM patient_secure_report WHERE patient_id = ?`,
+          `SELECT 
+          P.user_id patient_id,
+          U.first_name,
+          U.last_name,
+          U.email,
+          P.date_of_birth,
+          U.gender,
+          P.allergies
+            FROM patient P
+            JOIN user U ON U.user_id = P.user_id WHERE U.user_id = ?`,
           [id],
         );
         if (results.length === 0) {
