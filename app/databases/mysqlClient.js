@@ -36,14 +36,6 @@ class Database {
       database: process.env.DB_MYSQL,
       connectionLimit: process.env.DB_CONNECTION_LIMIT,
     });
-
-    this.poolRoot = mysql.createPool({
-      host: process.env.DB_HOST,
-      user: 'root',
-      password: 'thangkhung1?',
-      database: process.env.DB_MYSQL,
-      connectionLimit: process.env.DB_CONNECTION_LIMIT,
-    });
   }
 
   connectDB() {
