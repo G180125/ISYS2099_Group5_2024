@@ -141,12 +141,8 @@ BEGIN
         LEAVE this_proc;
     END IF;
 
-    -- Begin the update using COALESCE to update only if the parameter is not null
     UPDATE staff
     SET 
-        first_name = COALESCE(s_first_name, first_name),
-        last_name = COALESCE(s_last_name, last_name),
-        gender = COALESCE(s_gender, gender),
         job_type = COALESCE(s_job_type, job_type),
         department_id = COALESCE(s_department_id, department_id),
         salary = COALESCE(s_salary, salary)
