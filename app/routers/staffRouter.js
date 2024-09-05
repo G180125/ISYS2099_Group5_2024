@@ -35,7 +35,7 @@ staffRouter.get(
 
 // Update my info
 staffRouter.put(
-    "",
+    "/",
     authenticate,
     checkRoles(["staff", "admin"]),
     staffController.updateMyInfo

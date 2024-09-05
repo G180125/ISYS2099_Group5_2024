@@ -123,7 +123,19 @@ const staffController = {
       const pool = mysqlClient.getPool(role);
 
       const [results] = await pool.query(
-        `SELECT * FROM staff_secure_report WHERE staff_id = ?`,
+        `SELECT 
+        S.user_id staff_id,
+        U.first_name,
+        U.last_name,
+        U.email,
+        U.gender,
+        S.job_type,
+        D.department_id,
+        D.department_name,
+        D.manager_id
+    FROM staff S
+    JOIN user U ON U.user_id = S.user_id
+    LEFT JOIN department D ON S.department_id = D.department_id WHERE S.user_id = ?`,
         [id],
       );
       if (results.length === 0) {
@@ -150,7 +162,19 @@ const staffController = {
       const pool = mysqlClient.getPool(role);
 
       const [results] = await pool.query(
-        `SELECT * FROM staff_secure_report WHERE staff_id = ?`,
+        `SELECT 
+        S.user_id staff_id,
+        U.first_name,
+        U.last_name,
+        U.email,
+        U.gender,
+        S.job_type,
+        D.department_id,
+        D.department_name,
+        D.manager_id
+    FROM staff S
+    JOIN user U ON U.user_id = S.user_id
+    LEFT JOIN department D ON S.department_id = D.department_id WHERE S.user_id = ?`,
         [id],
       );
       if (results.length === 0) {
