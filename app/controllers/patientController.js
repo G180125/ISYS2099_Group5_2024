@@ -152,7 +152,7 @@ const patientController = {
       try {
         const id = req.id;
         const role = req.role;
-        const {  newFirstName, newLastName, newDOB, newGender, allegies } = req.body;
+        const {  newFirstName, newLastName, newDOB, newGender, allergies } = req.body;
 
         if(!id || id == ""){
             return res
@@ -171,7 +171,7 @@ const patientController = {
   
         const [rows] = await pool.query(
           `CALL update_patient(?, ?, ?, ?, ?, ?, @result, @message);`,
-          [id, newFirstName, newLastName, newGender, newDOB, allegies] 
+          [id, newFirstName, newLastName, newGender, newDOB, allergies] 
         );
     
         const result = rows[0][0].result; 
