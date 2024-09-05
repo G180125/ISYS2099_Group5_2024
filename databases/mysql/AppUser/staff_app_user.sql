@@ -23,7 +23,6 @@ GRANT EXECUTE ON PROCEDURE hospital_management.view_patient_treatment TO 'group5
 GRANT EXECUTE ON PROCEDURE hospital_management.refresh_treatment_report TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.refresh_doctor_work_report TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.refresh_billing_report TO 'group5_staff_app_user'@'localhost';
-GRANT EXECUTE ON PROCEDURE hospital_management.refresh_staff_secure_report TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.create_ticket_for_update TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.update_ticket_for_update TO 'group5_staff_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.refresh_doctor_free_slot_report TO 'group5_staff_app_user'@'localhost';

@@ -17,7 +17,7 @@ departmentRouter.get(
 );
 
 departmentRouter.put(
-    "/update",
+    "",
     authenticate,
     checkRoles(["admin"]),
     departmentController.updateDepartment

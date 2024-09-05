@@ -208,14 +208,14 @@ BEGIN
 
     START TRANSACTION;
     
-    -- Check if the appointment exists, belongs to the patient, and is not already canceled
+    -- Check if the appointment exists, belongs to the patient, and is not already canceled or finished
     IF NOT EXISTS (
         SELECT 1
         FROM appointment A
         JOIN schedule S ON A.schedule_id = S.schedule_id
         WHERE A.appointment_id = a_appointment_id 
         AND S.staff_id = a_staff_id
-        AND A.status <> 'U'
+        AND A.status = 'U'
         FOR UPDATE
     ) THEN
         SET _rollback = 1;

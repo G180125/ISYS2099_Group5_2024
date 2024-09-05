@@ -228,7 +228,7 @@ const ticketController = {
 
             return res
                 .status(httpStatus.OK().code)
-                .json({ message: message });
+                .json({ message: 'Reject Ticket Successfully' });
         } catch (error) {
             return next(error);
         }
@@ -265,7 +265,7 @@ const ticketController = {
 
             return res
                 .status(httpStatus.OK().code)
-                .json({ message: message });
+                .json({ message: 'Delete Successfully' });
         } catch (error) {
             return next(error);
         }

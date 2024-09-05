@@ -62,6 +62,60 @@ const treatmentController = {
         } 
     },
 
+    getTreatmentsByAppointment: async (req, res, next) => {
+        try{
+            const status = req.query.status;
+            const id = req.params.id;
+            const role = req.role;
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const offset = (page - 1) * limit;
+
+            let query = `
+                SELECT *
+                FROM treatment_report
+                WHERE appointment_id = ?`;
+
+            let countQuery = `
+                SELECT COUNT(*) as total
+                FROM treatment_report
+                WHERE appointment_id = ?`;
+
+            let queryParams = [id, limit, offset];
+            let countParams = [id];
+
+            if (status) {
+                query += ` AND treatment_status = ? LIMIT ? OFFSET ?`;
+                queryParams = [id, status, limit, offset];
+
+                countQuery += ` AND treatment_status = ?`;
+                countParams = [id, status];
+            } else {
+                query += ` LIMIT ? OFFSET ?`;
+            }
+
+            const pool = mysqlClient.getPool(role);
+
+            const [results] = await pool.query(query, queryParams);
+            const [countResult] = await pool.query(countQuery, countParams);
+
+            const totalRecords = countResult[0].total;
+            const totalPages = Math.ceil(totalRecords / limit);
+
+            res.json({
+                results: results,
+                pagination: {
+                    totalRecords: totalRecords,
+                    totalPages: totalPages,
+                    currentPage: page,
+                    pageSize: limit,
+                }
+            });
+        } catch (error) {
+            return next(error);
+        }
+    },
+
     getTreatmentsByPatient: async (req, res, next) => {
         try{
             const status = req.query.status;
@@ -149,11 +203,9 @@ const treatmentController = {
     addTreatment: async (req, res, next)=>{
         try{
             const role = req.role;
-            const { treatment_name, treatment_date, appointment_id } = req.body;
-            console.log(treatment_name);
-            console.log(treatment_date);
-            console.log(appointment_id)
-            if(!treatment_name || !treatment_date || !appointment_id){
+            const { treatment_id, treatment_date, appointment_id } = req.body;
+
+            if(!treatment_id || !treatment_date || !appointment_id){
                 return res
                         .status(httpStatus.BAD_REQUEST().code)
                         .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
@@ -162,7 +214,7 @@ const treatmentController = {
             const pool = mysqlClient.getPool(role);
 
             const query = `CALL add_patient_treatment(?,?,?, @result, @message)`;
-            const [rows] = await pool.query(query, [treatment_name,treatment_date,appointment_id]);
+            const [rows] = await pool.query(query, [treatment_id,treatment_date,appointment_id]);
             const result = rows[0][0].result;
             const message = rows[0][0].message;
             console.log(rows);
@@ -196,7 +248,7 @@ const treatmentController = {
             const pool = mysqlClient.getPool(role);
 
             const query = `UPDATE treatment_record SET status = 'M' WHERE record_id = ? and status = 'U'`;
-            const [rows] = await pool.query(query, [record_id]);
+            const [result] = await pool.query(query, [record_id]);
 
             if (result == 0) {
                 return res
@@ -227,7 +279,7 @@ const treatmentController = {
             const pool = mysqlClient.getPool(role);
 
             const query = `UPDATE treatment_record SET status = 'F' WHERE record_id = ? AND status = 'U'`;
-            const [rows] = await pool.query(query, [record_id]);
+            const [result] = await pool.query(query, [record_id]);
 
             if (result == 0) {
                 return res

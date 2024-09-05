@@ -47,7 +47,7 @@ ticketRouter.put(
 //{ 
 //  "ticketId" : 1
 // }
-ticketRouter.post(
+ticketRouter.put(
     "/approve",
     authenticate,
     checkRoles(["admin"]),
@@ -59,7 +59,7 @@ ticketRouter.post(
 //  "ticketId" : 1,
 //  "note" : "reject because of  ..."
 // }    
-ticketRouter.post(
+ticketRouter.put(
     "/reject",
     authenticate,
     checkRoles(["admin"]),

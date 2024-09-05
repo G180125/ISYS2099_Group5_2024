@@ -2,6 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
+const { log } = require("console");
 
 const app = express();
 app.use(cookieParser());
@@ -35,14 +36,7 @@ const appointmentController = {
         ST.last_name AS staff_last_name,
         ST.gender AS staff_gender, 
         ST.job_type, 
-        D.department_name,
-        JSON_ARRAYAGG(
-            JSON_OBJECT(
-                'id', T.treatment_id,
-                'name', T.treatment_name,
-                'date', T.treatment_date
-            )
-        ) AS treatments
+        D.department_name
         FROM 
             appointment A
         JOIN 
@@ -53,8 +47,6 @@ const appointmentController = {
             staff_secure_report ST ON S.staff_id = ST.staff_id
         JOIN 
             department D ON ST.department_id = D.department_id
-        LEFT JOIN 
-            treatment_record T ON A.appointment_id = T.appointment_id
         GROUP BY 
             A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
         LIMIT ? OFFSET ?`;
@@ -104,14 +96,7 @@ const appointmentController = {
       ST.last_name AS staff_last_name,
       ST.staff_id, 
       ST.job_type, 
-      D.department_name,
-      JSON_ARRAYAGG(
-          JSON_OBJECT(
-              'id', T.treatment_id,
-              'name', T.treatment_name,
-              'date', T.treatment_date
-          )
-      ) AS treatments
+      D.department_name
       FROM 
           appointment A
       JOIN 
@@ -122,8 +107,6 @@ const appointmentController = {
           staff_secure_report ST ON S.staff_id = ST.staff_id
       JOIN 
           department D ON ST.department_id = D.department_id
-      LEFT JOIN 
-          treatment_record T ON A.appointment_id = T.appointment_id
       WHERE 
           A.patient_id = ?
       `;
@@ -160,7 +143,7 @@ const appointmentController = {
       const totalPages = Math.ceil(totalRecords / limit);
 
       res.json({
-        results: results[0],
+        results: results,
         pagination: {
           totalRecords: totalRecords,
           totalPages: totalPages,
@@ -194,14 +177,7 @@ const appointmentController = {
       ST.last_name AS staff_last_name,
       ST.gender AS staff_gender, 
       ST.job_type, 
-      D.department_name,
-      JSON_ARRAYAGG(
-          JSON_OBJECT(
-              'id', T.treatment_id,
-              'name', T.treatment_name,
-              'date', T.treatment_date
-          )
-      ) AS treatments
+      D.department_name
       FROM 
           appointment A
       JOIN 
@@ -212,8 +188,6 @@ const appointmentController = {
           staff_secure_report ST ON S.staff_id = ST.staff_id
       JOIN 
           department D ON ST.department_id = D.department_id
-      LEFT JOIN 
-          treatment_record T ON A.appointment_id = T.appointment_id
       WHERE 
           P.patient_id = ?
       GROUP BY 
@@ -367,9 +341,9 @@ const appointmentController = {
     try {
       const role = req.role;
       const id = req.id;
-      const { appointment_id } = req.body;
-      
-      if(!appointment_id ){
+      const appointment_id  = req.body.appointment_id;
+
+      if(!appointment_id){
         return res
           .status(httpStatus.BAD_REQUEST().code)
           .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
@@ -377,7 +351,7 @@ const appointmentController = {
 
       const pool = mysqlClient.getPool(role);
 
-      const query = `CALL finsish_appointment(?,?, @result, @message)`;
+      const query = `CALL finish_appointment(?,?, @result, @message)`;
       const [rows] = await pool.query(query, [appointment_id, id]);
       // If there are multiple result sets, select the last one
       const result = rows[0][0].result;

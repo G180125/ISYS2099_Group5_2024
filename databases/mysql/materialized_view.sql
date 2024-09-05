@@ -29,18 +29,20 @@ LEFT JOIN department D ON S.department_id = D.department_id;
 
 DROP TABLE IF EXISTS treatment_report;
 CREATE TABLE treatment_report AS
-SELECT  P.patient_id,
+SELECT  A.appointment_id,
+		P.patient_id,
         P.first_name AS patient_first_name, 
         P.last_name AS patient_last_name, 
         P.email AS patient_email,
+        TR.status AS treatment_status,
+        ST.first_name AS staff_first_name, 
+        ST.last_name AS staff_last_name, 
+        ST.job_type, 
+        D.department_name,
         TR.treatment_id,
         T.treatment_name, 
-        TR.treatment_date, 
-        TR.status treatment_status,
-        ST.first_name staff_first_name, 
-        ST.last_name staff_last_name, 
-        ST.job_type, 
-        D.department_name
+        TR.treatment_date,
+        T.treatment_cost
 FROM treatment_record TR
 JOIN treatment T ON T.treatment_id = TR.treatment_id
 JOIN appointment A ON TR.appointment_id = A.appointment_id
@@ -48,7 +50,20 @@ JOIN patient_secure_report P ON A.patient_id = P.patient_id
 JOIN schedule S ON A.schedule_id = S.schedule_id
 JOIN staff_secure_report ST ON S.staff_id = ST.staff_id
 JOIN department D ON ST.department_id = D.department_id
-ORDER BY TR.status;
+GROUP BY A.appointment_id,
+		P.patient_id,
+        P.first_name , 
+        P.last_name, 
+        P.email,
+        TR.status,
+        ST.first_name, 
+        ST.last_name, 
+        ST.job_type, 
+        D.department_name,
+        TR.treatment_id, 
+        T.treatment_name, 
+        TR.treatment_date,
+        T.treatment_cost;
 
 DROP TABLE IF EXISTS staff_job_change_report;
 CREATE TABLE staff_job_change_report AS

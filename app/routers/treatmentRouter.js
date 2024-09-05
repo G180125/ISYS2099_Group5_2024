@@ -13,10 +13,15 @@ treatmentRouter.get(
     treatmentController.getMyTreatments
 );
 
-// {{base_url}}/treatment/patient
-// {
-//     "id": "1"
-// }
+// {{base_url}}/treatment/appointment/8
+treatmentRouter.get(
+    "/appointment/:id",
+    authenticate,
+    checkRoles(["staff", "admin", "patient"]),
+    treatmentController.getTreatmentsByAppointment
+);
+
+// {{base_url}}/treatment/patient/41
 treatmentRouter.get(
     "/patient/:id",
     authenticate,
@@ -37,7 +42,7 @@ treatmentRouter.get(
 
 // {{base_url}}/treatment/new
 // {
-//     "treatment_name":"chemotherapy",
+//     "treatment_id": "3",
 //     "treatment_date":"2024-09-15",
 //     "appointment_id":"3"
 // }
@@ -52,7 +57,7 @@ treatmentRouter.post(
 // {
 //     "appointment_id":"3"
 // }
-treatmentRouter.post(
+treatmentRouter.put(
     "/missing",
     authenticate,
     checkRoles(["staff"]),
@@ -63,7 +68,7 @@ treatmentRouter.post(
 // {
 //     "appointment_id":"3"
 // }
-treatmentRouter.post(
+treatmentRouter.put(
     "/finish",
     authenticate,
     checkRoles(["staff"]),

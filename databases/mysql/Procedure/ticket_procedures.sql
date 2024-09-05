@@ -245,6 +245,7 @@ BEGIN
 
     IF result = 0 THEN 
         ROLLBACK;
+        SELECT result, message;
         LEAVE this_proc;
     END IF;
 
@@ -348,23 +349,23 @@ BEGIN
 
     START TRANSACTION;
 
-    -- Lock the ticket for update and check if staff_id is the creator
-    SELECT *
-    FROM ticket 
-    WHERE ticket_id = t_id 
-    FOR UPDATE;
+    IF EXISTS (SELECT * FROM ticket WHERE ticket_id = t_id FOR UPDATE) THEN
+        DELETE FROM ticket
+        WHERE ticket_id = t_id;
+        SET result = 1;
+        SET message = 'Ticket deleted ';
+        COMMIT;
+        SELECT result, message;
+        LEAVE this_proc;
+    ELSE 
+        SET _rollback = 1;
+    END IF; 
 
     -- Check if any rollback was set
     IF _rollback THEN
         SET result = 0;
+        SET message = 'No Ticket Found';
         ROLLBACK;
-    ELSE
-        DELETE FROM ticket
-        WHERE ticket_id = t_id;
-
-        SET result = 1;
-        SET message = CONCAT('Ticket deleted ', message);
-        COMMIT;
     END IF;
 
     -- Return the result and message
