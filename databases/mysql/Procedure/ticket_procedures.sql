@@ -364,7 +364,7 @@ BEGIN
     -- Check if any rollback was set
     IF _rollback THEN
         SET result = 0;
-        SET message = 'No Ticket Found'
+        SET message = 'No Ticket Found';
         ROLLBACK;
     END IF;
 
