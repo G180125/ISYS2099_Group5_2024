@@ -15,9 +15,9 @@ const staffController = {
   getAllStaffs: async (req, res, next) => {
     try {
       const role = req.role;
-      const job_type = req.body.job_type;
-      const department = req.body.department;
-      const order = req.body.order || 'ASC';
+      const job_type = req.query.job_type;
+      const department = req.query.department;
+      const order = req.query.order || 'ASC';
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
@@ -97,7 +97,7 @@ const staffController = {
       const totalPages = Math.ceil(totalRecords / limit);
 
       res.json({
-        results: results,
+        results: results[0],
         pagination: {
           totalRecords: totalRecords,
           totalPages: totalPages,
@@ -139,7 +139,7 @@ const staffController = {
 
   getStaffById: async (req, res, next) => {
     try {
-      const id = req.body.id;
+      const id = req.params.id;
       const role = req.role;
       if(!id || id == ""){
         return res
@@ -168,7 +168,7 @@ const staffController = {
     try {
       const id = req.id;
       const role = req.role;
-      const { firstName, lastName, gender, job_type, departmentId, salary, managerId } = req.body;
+      const { firstName, lastName, gender, job_type, departmentId, salary } = req.body;
 
       if(!id || id == ""){
           return res
@@ -187,8 +187,8 @@ const staffController = {
 
       const pool = mysqlClient.getPool(role);
 
-      const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, ?, @result, @message)`;
-      const [rows] = await pool.query(query, [id, firstName, lastName, gender, job_type, departmentId, salary, managerId]);
+      const query = `CALL update_staff(?, ?, ?, ?, ?, ?, ?, @result, @message)`;
+      const [rows] = await pool.query(query, [id, firstName, lastName, gender, job_type, departmentId, salary]);
 
       result = rows[0][0].result;
       message = rows[0][0].message;
@@ -206,8 +206,7 @@ const staffController = {
           gender: gender,
           job_type: job_type || null,
           department_id: departmentId || null,
-          salary: salary || null,
-          manager_id: managerId || null,
+          salary: salary || null
         };
         res
           .status(httpStatus.OK().code)

@@ -29,7 +29,7 @@ const patientController = {
         const totalPages = Math.ceil(totalRecords / limit);
   
         res.json({
-          results,
+          results: results[0],
           pagination: {
             totalRecords: totalRecords,
             totalPages: totalPages,
@@ -72,7 +72,7 @@ const patientController = {
 
     getPatientByID: async (req, res, next) => {
       try {
-        const id = req.body.id;
+        const id = req.params.id;
         const role = req.role;
         if(!id || id == ""){
             return res
@@ -141,7 +141,7 @@ const patientController = {
       try {
         const id = req.id;
         const role = req.role;
-        const {  newFirstName, newLastName, newDOB, newGender } = req.body;
+        const {  newFirstName, newLastName, newDOB, newGender, allegies } = req.body;
 
         if(!id || id == ""){
             return res
@@ -158,62 +158,21 @@ const patientController = {
             .json({ error: httpStatus.UNAUTHORIZED("No patient found").message });
         }
   
-        // Validate DOB (not after today)
-        if (newDOB && !moment(newDOB, 'YYYY-MM-DD', true).isBefore(moment())) {
+        const [rows] = await pool.query(
+          `CALL update_patient(?, ?, ?, ?, ?, ?, @result, @message);`,
+          [id, newFirstName, newLastName, newGender, newDOB, allegies] 
+        );
+    
+        const result = rows[0][0].result; 
+        const message = rows[0][0].message;
+    
+        if(result == 0){
           return res
-            .status(httpStatus.BAD_REQUEST().code)
-            .json({ error: httpStatus.BAD_REQUEST("The date of birth must be a valid date and not in the future").message });
-        }
-  
-        // Validate gender
-        if (newGender && !validGenders.includes(newGender.toLowerCase())) {
-          return res
-            .status(httpStatus.BAD_REQUEST().code)
-            .json({ error: httpStatus.BAD_REQUEST("Gender must be 'female', 'male', or 'other'").message });
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({ error: message });
         }
 
-        // Prepare update query based on provided fields
-        let updateQuery = 'UPDATE patient SET ';
-        const updateFields = [];
-        const updateValues = [];
-  
-        if (newFirstName) {
-          updateFields.push('first_name = ?');
-          updateValues.push(newFirstName);
-        }
-        if (newLastName) {
-          updateFields.push('last_name = ?');
-          updateValues.push(newLastName);
-        }
-        if (newDOB) {
-          updateFields.push('date_of_birth = ?');
-          updateValues.push(newDOB);
-        }
-        if (newGender) {
-          updateFields.push('gender = ?');
-          updateValues.push(newGender);
-        }
-  
-        if (updateFields.length > 0) {
-          updateQuery += updateFields.join(', ') + ' WHERE patient_id = ?';
-          updateValues.push(id);
-  
-          await pool.query(updateQuery, updateValues);
-  
-          res.json({
-            message: `Patient updated successfully`,
-            first_name: newFirstName,
-            last_name: newLastName,
-            dob: newDOB,
-            gender: newGender,
-            role: "patient",
-          });
-        } else {
-          res
-            .status(httpStatus.BAD_REQUEST().code)
-            .json({ error: httpStatus.BAD_REQUEST("No valid fields provided for update").message });
-        }
-  
+        return res.status(httpStatus.OK().code).json({ results: message });
       } catch (error) {
         return next(error);
       }

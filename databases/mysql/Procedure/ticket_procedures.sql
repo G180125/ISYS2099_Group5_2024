@@ -7,7 +7,6 @@ CREATE PROCEDURE create_ticket_for_update(
     IN new_salary DECIMAL(10, 2),    -- Nullable: new salary, or NULL if not updating
     IN new_job_type ENUM('D', 'N', 'A'), -- Nullable: new job type, or NULL if not updating
     IN new_department_id INT,        -- Nullable: new department ID, or NULL if not updating
-    IN new_manager_id  INT,
     IN notes TEXT,
     OUT result INT,
     OUT message VARCHAR(255)
@@ -31,8 +30,7 @@ BEGIN
     
     -- Check if all update inputs are NULL
     IF new_first_name IS NULL AND new_last_name IS NULL AND new_gender IS NULL AND 
-       new_salary IS NULL AND new_job_type IS NULL AND new_department_id IS NULL AND 
-       new_manager_id IS NULL THEN
+       new_salary IS NULL AND new_job_type IS NULL AND new_department_id IS NULL THEN
         SET result = 0;
         SET message = 'No values provided for update.';
         ROLLBACK;
@@ -77,10 +75,10 @@ BEGIN
         SET result = 0;
         ROLLBACK;
     ELSE
-		INSERT INTO ticket (first_name, last_name, gender, job_type, department_id, salary, manager_id, creator, created_date, handled_by, status, note)
-        VALUES (new_first_name, new_last_name, new_gender, new_job_type, new_department_id, new_salary, new_manager_id, staff_id, DATE(NOW()), NULL, 1, notes);
+		INSERT INTO ticket (first_name, last_name, gender, job_type, department_id, salary, creator, created_date, handled_by, status, note)
+        VALUES (new_first_name, new_last_name, new_gender, new_job_type, new_department_id, new_salary, staff_id, DATE(NOW()), NULL, 1, notes);
         SET result = 1;
-        SET message = 'Ticket creation successful for updates: ';
+        SET message = 'Ticket creation successful for updates';
         COMMIT;
     END IF;
 
@@ -98,7 +96,6 @@ CREATE PROCEDURE update_ticket_for_update(
     IN new_salary DECIMAL(10, 2),    -- Nullable: new salary, or NULL if not updating
     IN new_job_type ENUM('D', 'N', 'A'), -- Nullable: new job type, or NULL if not updating
     IN new_department_id INT,        -- Nullable: new department ID, or NULL if not updating
-    IN new_manager_id  INT,
     IN notes TEXT,
     OUT result INT,
     OUT message VARCHAR(255)
@@ -169,7 +166,6 @@ BEGIN
             salary = COALESCE(new_salary, salary),
             job_type = COALESCE(new_job_type, job_type),
             department_id = COALESCE(new_department_id, department_id),
-            manager_id = COALESCE(new_manager_id, manager_id),
             note = CONCAT(note, IFNULL(notes, ''))
         WHERE ticket_id = t_id;
 
@@ -199,7 +195,6 @@ BEGIN
     DECLARE _job_type VARCHAR(255);
     DECLARE _department_id INT;
     DECLARE _salary DECIMAL(10,2);
-    DECLARE _manager_id INT;
     DECLARE _ticket_status CHAR(1);
 
     -- Handler for SQL exceptions
@@ -214,8 +209,8 @@ BEGIN
     START TRANSACTION;
 
     -- Fetch all necessary details from the ticket
-    SELECT creator, first_name, last_name, gender, job_type, department_id, salary, manager_id, status
-    INTO _creator, _first_name, _last_name, _gender, _job_type, _department_id, _salary, _manager_id, _ticket_status
+    SELECT creator, first_name, last_name, gender, job_type, department_id, salary, status
+    INTO _creator, _first_name, _last_name, _gender, _job_type, _department_id, _salary, _ticket_status
     FROM ticket 
     WHERE ticket_id = t_id 
     FOR UPDATE;
@@ -244,7 +239,6 @@ BEGIN
         _job_type,
         _department_id,
         _salary,
-        _manager_id,
         result,
         message
     );

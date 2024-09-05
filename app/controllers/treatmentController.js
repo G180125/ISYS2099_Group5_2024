@@ -67,7 +67,7 @@ const treatmentController = {
     getTreatmentsByPatient: async (req, res, next) => {
         try{
             const status = req.query.status;
-            const id = req.body.id;
+            const id = req.params.id;
             const role = req.role;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
@@ -122,7 +122,7 @@ const treatmentController = {
         try{
             const role = req.role;
             const status = req.query.status;
-            const treatmentId = req.body.treatmentId;
+            const treatmentId = req.params.id;
 
             let query = `
                 SELECT *

@@ -22,7 +22,7 @@ patientRouter.get(
 
 // Get patient by id
 patientRouter.get(
-  "/id",
+  "/:id",
   authenticate,
   checkRoles(["staff", "admin"]),
   patientController.getPatientByID

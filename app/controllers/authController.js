@@ -77,20 +77,22 @@ const registerStaff = async (req, res, next) => {
     const pool = mysqlClient.getPool("admin");
 
     if (role === "staff") {
-      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
-      [rows] = await pool.query(query, [null, null, email, hashedPassword, 'O', 'D', 1, 1, 1]);
+      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
+      [rows] = await pool.query(query, [null, null, email, hashedPassword, 'O', 'D', 1, 1]);
     } else if (role === "admin") {
-      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
-      [rows] = await pool.query(query, [null, null, email, hashedPassword, 'O', 'A', 1, 0, 1]);
+      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
+      [rows] = await pool.query(query, [null, null, email, hashedPassword, 'O', 'A', 1, 0]);
     } else {
       return res
         .status(httpStatus.BAD_REQUEST().code)
         .json({ error: httpStatus.BAD_REQUEST("Invalid role provided").message });
     }
 
+    console.log(rows);
+
     result = rows[0][0].result;
     message = rows[0][0].message;
-    newStaffId = rows[0][0].new_staff_id;
+    newStaffId = rows[0][0].new_user_id;
 
     if (result == 0) {
       return res

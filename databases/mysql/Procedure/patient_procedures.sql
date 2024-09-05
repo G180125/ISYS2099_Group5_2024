@@ -68,6 +68,74 @@ BEGIN
     END IF;
 END;
 
+DROP PROCEDURE IF EXISTS update_patient;
+CREATE PROCEDURE update_patient(
+    IN p_id INT,
+    IN p_first_name VARCHAR(100),
+    IN p_last_name VARCHAR(100),
+    IN p_gender ENUM('M', 'F', 'O'),
+    IN p_date_of_birth DATE,
+    IN p_allergies TEXT,
+    OUT result INT,
+    OUT message VARCHAR(255)
+)
+this_proc:
+BEGIN
+    DECLARE _rollback BOOL DEFAULT 0;
+    DECLARE sql_error_message VARCHAR(255);
+
+    -- Declare the handler for SQL exceptions
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = sql_error_message;
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    -- Call the update_user procedure to update common user fields
+    CALL update_user(p_id, p_first_name, p_last_name, p_gender, result, message);
+
+    -- Check if updating user was successful
+    IF result = 0 THEN
+        ROLLBACK;
+        SELECT result, message;
+        LEAVE this_proc;
+    END IF;
+
+    -- Validate the date of birth is not after today
+    IF p_date_of_birth > CURDATE() THEN
+        SET result = 0;
+        SET message = 'Invalid date of birth';
+        ROLLBACK;
+        SELECT result, message;
+        LEAVE this_proc;
+    END IF;
+
+    -- Update the patient-specific fields
+    UPDATE patient
+    SET 
+        date_of_birth = COALESCE(p_date_of_birth, date_of_birth),
+        allergies = COALESCE(p_allergies, allergies)
+    WHERE user_id = p_id;
+
+    -- Check if there was an error during the update
+    IF _rollback THEN
+        SET result = 0;
+        ROLLBACK;
+    ELSE
+        SET result = 1;
+        SET message = 'Patient updated successfully';
+        COMMIT;
+    END IF;
+
+    -- Return the result and message
+    SELECT result, message;
+END;
+
 DROP PROCEDURE IF EXISTS search_patient_by_name;
 -- DELIMITER //
 CREATE PROCEDURE search_patient_by_name(

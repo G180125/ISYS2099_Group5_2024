@@ -22,7 +22,7 @@ const reportController = {
     // Function to get patient treatment history within a specific date range
     viewPatientTreatment: async (req, res, next) => {
         const role = req.role;
-        const { start_date, end_date, email } = req.body; // Assuming dates are provided as query parameters
+        const { start_date, end_date, email } = req.params;
 
         if (!start_date || !end_date) {
             return res
@@ -64,7 +64,7 @@ const reportController = {
     // Function to get a doctor work within a specific date range
     viewDoctorWork: async (req, res, next) => {
         const role = req.role;
-        const { start_date, end_date, email } = req.body; // Assuming dates are provided as query parameters
+        const { start_date, end_date, email } = req.params; 
 
         if (!start_date || !end_date) {
             return res
@@ -114,7 +114,7 @@ const reportController = {
     // Function to get a staff job changes within a specific date range
     viewStaffJobChanges: async (req, res, next) => {
         const role = req.role;
-        const { start_date, end_date, email } = req.body; // Assuming dates are provided as query parameters
+        const { start_date, end_date, email } = req.params;
 
         if (!start_date || !end_date) {
             return res

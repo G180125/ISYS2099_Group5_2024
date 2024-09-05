@@ -28,7 +28,7 @@ appointmentRouter.get(
 //   "id": "2"
 // }
 appointmentRouter.get(
-  "/patient",
+  "/patient/:id",
   authenticate,
   checkRoles(["staff", "admin"]),
   appointmentController.getAppointmentsByPatient

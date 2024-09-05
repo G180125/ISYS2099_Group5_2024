@@ -27,7 +27,7 @@ const ticketController = {
             const totalPages = Math.ceil(totalRecords / limit);
 
             res.json({
-                results,
+                results: results[0],
                 pagination: {
                     totalRecords: totalRecords,
                     totalPages: totalPages,
@@ -97,6 +97,8 @@ const ticketController = {
             const [rows] = await pool.query(query, [
                 staffId, newFirstName, newLastName, newGender, newSalary, newJobType, newDepartmentID, newManagerId, notes
             ]);
+
+            console.log(rows);
 
             const message = rows[0][0].message;
             const result = rows[0][0].result;

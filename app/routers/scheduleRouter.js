@@ -18,7 +18,7 @@ scheduleRouter.get(
 //     "staff_id": "1"
 // }
 scheduleRouter.get(
-  "/staff",
+  "/staff/:id",
   authenticate,
   checkRoles(["patient", "admin", "staff"]),
   scheduleController.getAllSchedulesByStaff

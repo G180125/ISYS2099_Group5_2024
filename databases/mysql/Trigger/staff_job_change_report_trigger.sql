@@ -30,10 +30,10 @@ BEGIN
         S.last_name AS staff_last_name, 
         S.email AS staff_email, 
         S.gender AS staff_gender,
-        S.salary AS staff_salary,
+        ST.salary AS staff_salary,
         S.job_type AS staff_job_type, 
-        D1.department_name AS staff_department_name,
-        M1.email AS staff_manager,
+        M1.department_name AS staff_department_name,
+        M1.manager_id AS staff_manager,
         NEW.ticket_id,
         NEW.created_date,
         NEW.note AS ticket_note,
@@ -42,13 +42,12 @@ BEGIN
         NEW.last_name AS ticket_last_name,
         NEW.gender AS ticket_gender,
         NEW.job_type AS ticket_job_type,
-        D2.department_name AS ticket_department_name,
-        M2.email AS ticket_manager
-    FROM staff S
-    JOIN department D1 ON S.department_id = D1.department_id
-    LEFT JOIN staff M1 ON S.manager_id = M1.staff_id
-    LEFT JOIN department D2 ON NEW.department_id = D2.department_id
-    LEFT JOIN staff M2 ON NEW.manager_id = M2.staff_id
+        D.department_name AS ticket_department_name,
+        D.manager_id AS ticket_manager_id
+    FROM staff_secure_report S
+    JOIN staff ST ON ST.user_id = S.staff_id
+    LEFT JOIN staff_secure_report M1 ON S.manager_id = M1.staff_id
+    LEFT JOIN department D ON NEW.department_id = D.department_id
     WHERE S.staff_id = NEW.creator;
 END;
 
@@ -64,8 +63,7 @@ BEGIN
         ticket_last_name = NEW.last_name,
         ticket_gender = NEW.gender,
         ticket_job_type = NEW.job_type,
-        ticket_department_name = (SELECT department_name FROM department WHERE department_id = NEW.department_id),
-        ticket_manager = (SELECT email FROM staff WHERE staff_id = NEW.manager_id)
+        ticket_department_name = (SELECT department_name FROM department WHERE department_id = NEW.department_id)
     WHERE ticket_id = NEW.ticket_id;
 END;
 

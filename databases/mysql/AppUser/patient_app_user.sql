@@ -12,6 +12,8 @@ GRANT INSERT, UPDATE ON hospital_management.appointment TO 'group5_patient_app_u
 
 -- Granting EXECUTE privilege on PROCEDURES to staff user
 GRANT EXECUTE ON PROCEDURE hospital_management.add_new_user TO 'group5_patient_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.update_user TO 'group5_patient_app_user'@'localhost';
+GRANT EXECUTE ON PROCEDURE hospital_management.update_patient TO 'group5_patient_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.get_user_role_by_email TO 'group5_patient_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.register_patient TO 'group5_patient_app_user'@'localhost';
 GRANT EXECUTE ON PROCEDURE hospital_management.search_patient_by_name TO 'group5_patient_app_user'@'localhost';

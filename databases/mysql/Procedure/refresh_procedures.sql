@@ -2,6 +2,43 @@ DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
 CREATE PROCEDURE refresh_patient_secure_report()
 BEGIN
     DELETE FROM patient_secure_report;
+    INSERT INTO patient_secure_report
+    SELECT 
+        P.user_id patient_id,
+        U.first_name,
+        U.last_name,
+        U.email,
+        P.date_of_birth,
+        U.gender,
+        P.allergies
+    FROM patient P
+    JOIN user U ON U.user_id = P.user_id;
+END;
+
+DROP PROCEDURE IF EXISTS refresh_staff_secure_report;
+CREATE PROCEDURE refresh_staff_secure_report()
+BEGIN
+    DELETE FROM staff_secure_report;
+    INSERT INTO staff_secure_report
+    SELECT 
+        S.user_id staff_id,
+        U.first_name,
+        U.last_name,
+        U.email,
+        U.gender,
+        S.job_type,
+        D.department_id,
+        D.department_name,
+        D.manager_id
+    FROM staff S
+    JOIN user U ON U.user_id = S.user_id
+    LEFT JOIN department D ON S.department_id = D.department_id;
+END;
+
+DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
+CREATE PROCEDURE refresh_patient_secure_report()
+BEGIN
+    DELETE FROM patient_secure_report;
     SELECT 
         U.user_id patient_id,
         U.first_name patient_first_name,
@@ -19,21 +56,18 @@ CREATE PROCEDURE refresh_staff_secure_report()
 BEGIN
     DELETE FROM staff_secure_report;
     SELECT 
-        U.user_id staff_id,
-        U.first_name staff_first_name,
-        U.last_name staff_last_name,
-        U.email staff_email,
-        U.gender staff_gender,
-        S.job_type staff_job_type,
+        S.user_id staff_id,
+        U.first_name,
+        U.last_name,
+        U.email,
+        U.gender,
+        S.job_type,
         D.department_id,
         D.department_name,
-        M.first_name manager_first_name,
-        M.last_name manager_last_name,
-        M.email manager_email
+        D.manager_id
     FROM staff S
-    JOIN user U ON S.staff_id = U.user_id
-    JOIN department D ON S.department_id = D.department.id
-    LEFT JOIN user M ON S.manager_id = M.user_id;
+    JOIN user U ON U.user_id = S.user_id
+    LEFT JOIN department D ON S.department_id = D.department_id;
 END;
 
 
@@ -130,42 +164,6 @@ BEGIN
         P.last_name;
 END;
 
-DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
-CREATE PROCEDURE refresh_patient_secure_report()
-BEGIN
-    DELETE FROM patient_secure_report;
-    INSERT INTO patient_secure_report
-    SELECT 
-        patient_id,
-        first_name,
-        last_name,
-        email,
-        access_token,
-        date_of_birth,
-        gender,
-        allergies
-    FROM 
-        patient;
-END;
-
-DROP PROCEDURE IF EXISTS refresh_staff_secure_report;
-CREATE PROCEDURE refresh_staff_secure_report()
-BEGIN
-    DELETE FROM staff_secure_report;
-    INSERT INTO staff_secure_report
-    SELECT 
-        staff_id,
-        first_name,
-        last_name,
-        email,
-        access_token,
-        gender,
-        job_type,
-        department_id,
-        manager_id
-    FROM 
-        staff;
-END;
 
 DROP PROCEDURE IF EXISTS refresh_doctor_free_slot_report;
 CREATE PROCEDURE refresh_doctor_free_slot_report()

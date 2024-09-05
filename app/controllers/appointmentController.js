@@ -160,7 +160,7 @@ const appointmentController = {
       const totalPages = Math.ceil(totalRecords / limit);
 
       res.json({
-        results: results,
+        results: results[0],
         pagination: {
           totalRecords: totalRecords,
           totalPages: totalPages,
@@ -177,7 +177,7 @@ const appointmentController = {
     try {
       const role = req.role;
       const status = req.query.status;
-      const id = req.body.id;
+      const id = req.params.id;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
@@ -209,7 +209,7 @@ const appointmentController = {
       JOIN 
           schedule S ON A.schedule_id = S.schedule_id
       JOIN 
-          staff ST ON S.staff_id = ST.staff_id
+          staff_secure_report ST ON S.staff_id = ST.staff_id
       JOIN 
           department D ON ST.department_id = D.department_id
       LEFT JOIN 
@@ -249,7 +249,7 @@ const appointmentController = {
       const totalPages = Math.ceil(totalRecords / limit);
 
       res.json({
-        results: results,
+        results: results[0],
         pagination: {
           totalRecords: totalRecords,
           totalPages: totalPages,

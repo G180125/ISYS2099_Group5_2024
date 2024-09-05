@@ -43,7 +43,7 @@ database.deleteUserToken = async (id) => {
 database.getPatientByID = async (id) => {
   try {
     const [results] = await db.poolPatient.query(
-      `SELECT * FROM patient WHERE patient_id = ?`,
+      `SELECT * FROM patient WHERE user_id = ?`,
       [id]
     );
     return results[0];
@@ -56,7 +56,7 @@ database.getPatientByID = async (id) => {
 database.getStaffByID = async (id) => {
   try {
     const [results] = await db.poolStaff.query(
-      `SELECT * FROM staff WHERE staff_id = ? AND job_type <> 'A'`,
+      `SELECT * FROM staff_secure_report WHERE staff_id = ? AND job_type <> 'A'`,
       [id]
     );
     return results[0];
@@ -69,7 +69,7 @@ database.getStaffByID = async (id) => {
 database.getAdminByID = async (id) => {
   try {
     const [results] = await db.poolAdmin.query(
-      `SELECT * FROM staff WHERE staff_id = ? AND job_type='A'`,
+      `SELECT * FROM staff_secure_report WHERE staff_id = ? AND job_type='A'`,
       [id]
     );
     return results[0];

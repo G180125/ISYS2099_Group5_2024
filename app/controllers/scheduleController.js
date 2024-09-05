@@ -42,7 +42,7 @@ const scheduleController = {
       const totalPages = Math.ceil(totalRecords / limit);
 
       res.json({
-        results,
+        results: results[0],
         pagination: {
           totalRecords: totalRecords,
           totalPages: totalPages,
@@ -58,7 +58,7 @@ const scheduleController = {
   getAllSchedulesByStaff: async (req, res, next) => {
     try {
       const role = req.role;
-      const staffId = req.body.staff_id;
+      const staffId = req.params.id;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
@@ -80,7 +80,7 @@ const scheduleController = {
       }
 
       res.json({
-        results
+        results: results[0],
       });
     } catch (error) {
       return next(error);

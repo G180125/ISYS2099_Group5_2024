@@ -7,7 +7,6 @@ ALTER TABLE user ADD INDEX idx_user_last_name (last_name);
 ALTER TABLE staff ADD INDEX idx_staff_department_job_type (department_id, job_type); -- Index for faster search staff by department, job_type 
 ALTER TABLE staff ADD INDEX idx_staff_department (department_id); -- Index for faster search staff by department
 ALTER TABLE staff ADD INDEX idx_staff_job_type (job_type); 
-ALTER TABLE staff ADD INDEX idx_staff_manager (manager_id); -- Index for faster search staff by manager
 
 -- SCHEDULE TABLE
 ALTER TABLE schedule ADD INDEX idx_staff_id (staff_id); 

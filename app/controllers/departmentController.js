@@ -18,7 +18,7 @@ const departmentController = {
 
             res
             .status(httpStatus.OK().code)
-            .json(results);
+            .json(results[0]);
         } catch (error) {
             return next(error);
         }
@@ -26,14 +26,7 @@ const departmentController = {
 
     getAllDoctorsByDepartment: async (req, res, next) => {
         try {
-            const { department_name } = req.body;
-
-            // Check if department_name is provided
-            if (!department_name) {
-            return res
-                .status(httpStatus.BAD_REQUEST().code)
-                .json({ error: httpStatus.BAD_REQUEST("No Input For Department").message });
-            }
+            const { department_id } = req.params.id;
 
             const pool = mysqlClient.getPool("patient");
 
@@ -43,14 +36,14 @@ const departmentController = {
             SELECT S.first_name, S.last_name, D.department_name
             FROM staff_secure_report S
             JOIN department D ON S.department_id = D.department_id
-            WHERE S.job_type = 'D' AND D.department_name = ?
+            WHERE S.job_type = 'D' AND D.department_id = ?
             `,
-            [department_name]
+            [department_id]
             );
 
             res
             .status(httpStatus.OK().code)
-            .json(results);
+            .json(results[0]);
         } catch (error) {
             return next(error);
         }

@@ -18,7 +18,7 @@ treatmentRouter.get(
 //     "id": "1"
 // }
 treatmentRouter.get(
-    "/patient",
+    "/patient/:id",
     authenticate,
     checkRoles(["staff", "admin"]),
     treatmentController.getTreatmentsByPatient
@@ -29,7 +29,7 @@ treatmentRouter.get(
 //     "treatmentId": "1"
 // }
 treatmentRouter.get(
-    "/id",
+    "/:id",
     authenticate,
     checkRoles(["patient", "staff", "admin"]),
     treatmentController.getTreatmentById

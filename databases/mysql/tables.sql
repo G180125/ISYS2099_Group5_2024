@@ -10,12 +10,12 @@
     CREATE TABLE IF NOT EXISTS user 
     (
         user_id INT AUTO_INCREMENT,
-        first_name VARCHAR(100),
-        last_name VARCHAR(100),
+        first_name VARCHAR(100) NOT NULL,
+        last_name VARCHAR(100) NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
         password VARCHAR(100) NOT NULL, 
         access_token VARCHAR(255),
-        gender ENUM('M', 'F', 'O'),
+        gender ENUM('M', 'F', 'O') NOT NULL,
         CONSTRAINT user_pk PRIMARY KEY (user_id)
     ) ENGINE = InnoDB;
 
@@ -34,7 +34,9 @@
     (
         department_id  INT AUTO_INCREMENT,
         department_name VARCHAR(100),
-        CONSTRAINT department_pk PRIMARY KEY (department_id)
+        manager_id     INT,
+        CONSTRAINT department_pk PRIMARY KEY (department_id),
+        CONSTRAINT manager_fk FOREIGN KEY (manager_id) REFERENCES user(user_id)
     ) ENGINE = InnoDB;
 
     -- Staff table
@@ -44,11 +46,9 @@
         job_type       ENUM('D', 'N', 'A'),  
         department_id  INT,
         salary         DECIMAL(10, 2),
-        manager_id     INT,
         CONSTRAINT staff_pk PRIMARY KEY (user_id),
         CONSTRAINT staff_user_fk FOREIGN KEY (user_id) REFERENCES user(user_id),
         CONSTRAINT staff_department_fk FOREIGN KEY (department_id) REFERENCES department(department_id),
-        CONSTRAINT staff_manager_fk FOREIGN KEY (manager_id) REFERENCES staff(user_id),
         CONSTRAINT chk_staff_salary CHECK (salary > 0)
     ) ENGINE = InnoDB;
 
@@ -88,7 +88,6 @@
         job_type       ENUM('D', 'N', 'A'),   
         department_id  INT,
         salary         DECIMAL(10, 2),
-        manager_id     INT,
         creator        INT NOT NULL,
         created_date   DATE NOT NULL,
         handled_by     INT,

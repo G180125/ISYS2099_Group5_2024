@@ -13,7 +13,6 @@ CREATE PROCEDURE add_new_staff (
     IN s_job_type ENUM('D', 'N', 'A'),
     IN s_department_id INT,
     IN s_salary DECIMAL(10, 2),
-    IN s_manager_id INT,
     OUT result INT,
     OUT message VARCHAR(255),
     OUT new_staff_id INT
@@ -46,8 +45,8 @@ BEGIN
     END IF;
 
     -- Insert the new staff record into the staff table
-    INSERT INTO staff (staff_id, job_type, department_id, salary, manager_id)
-    VALUES (new_user_id, s_job_type, s_department_id, s_salary, s_manager_id);
+    INSERT INTO staff (user_id, job_type, department_id, salary)
+    VALUES (new_user_id, s_job_type, s_department_id, s_salary);
 
     -- Final check before committing the transaction
     IF _rollback THEN
@@ -76,7 +75,7 @@ BEGIN
     --  return the staff list by department
     SELECT * FROM staff_secure_report 
     WHERE department_id = s_department_id 
-    AND (s_job_type IS NULL OR staff_job_type = s_job_type)
+    AND (s_job_type IS NULL OR job_type = s_job_type)
     ORDER BY department_id, last_name, first_name
     LIMIT s_limit OFFSET s_offset;
 END;
@@ -113,7 +112,6 @@ CREATE PROCEDURE update_staff(
     IN s_job_type ENUM('D', 'N', 'A'),
     IN s_department_id INT,
     IN s_salary DECIMAL(10, 2),
-    IN s_manager_id INT,
     OUT result INT,
     OUT message VARCHAR(255)
 )
@@ -151,8 +149,7 @@ BEGIN
         gender = COALESCE(s_gender, gender),
         job_type = COALESCE(s_job_type, job_type),
         department_id = COALESCE(s_department_id, department_id),
-        salary = COALESCE(s_salary, salary),
-        manager_id = COALESCE(s_manager_id, manager_id)
+        salary = COALESCE(s_salary, salary)
     WHERE staff_id = s_id;
 
     -- Check if there was an error during the update

@@ -22,10 +22,10 @@ SELECT
     S.job_type,
     D.department_id,
     D.department_name,
-    S.manager_id
+    D.manager_id
 FROM staff S
 JOIN user U ON U.user_id = S.user_id
-JOIN department D ON S.department_id = D.department_id;
+LEFT JOIN department D ON S.department_id = D.department_id;
 
 DROP TABLE IF EXISTS treatment_report;
 CREATE TABLE treatment_report AS
@@ -60,7 +60,7 @@ SELECT
     ST.salary AS staff_salary,
     S.job_type AS staff_job_type, 
     M1.department_name AS staff_department_name,
-    M1.email AS staff_manager,
+    S.manager_id AS staff_manager,
     T.ticket_id,
     T.created_date,
     T.note AS ticket_note,
@@ -70,13 +70,12 @@ SELECT
     T.gender AS ticket_gender,
     T.job_type AS ticket_job_type,
     D.department_name AS ticket_department_name,
-    M2.staff_id AS ticket_manager
+    D.manager_id AS ticket_manager
 FROM ticket T
 JOIN staff_secure_report S ON T.creator = S.staff_id
 JOIN staff ST ON T.creator = ST.user_id
 LEFT JOIN staff_secure_report M1 ON S.manager_id = M1.staff_id
 LEFT JOIN department D ON T.department_id = D.department_id
-LEFT JOIN staff_secure_report M2 ON T.manager_id = M2.staff_id
 ORDER BY T.created_date;
 
 DROP TABLE IF EXISTS doctor_work_report;
