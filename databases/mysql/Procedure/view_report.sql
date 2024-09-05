@@ -85,7 +85,7 @@ BEGIN
 		SELECT *
 		FROM doctor_work_report DR
 		WHERE DR.schedule_date BETWEEN start_date AND end_date
-		AND email = DR.staff_email;			
+		AND email = DR.email;			
 	END IF;
 			
     -- Commit or rollback based on the transaction status

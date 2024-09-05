@@ -27,7 +27,7 @@ staffRouter.get(
 
 // Get staff by id
 staffRouter.get(
-    "/id",
+    "/:id",
     authenticate,
     checkRoles(["patient", "admin", "staff"]),
     staffController.getStaffById

@@ -18,10 +18,17 @@ scheduleRouter.get(
 //     "staff_id": "1"
 // }
 scheduleRouter.get(
-  "/staff",
+  "/staff/:id",
   authenticate,
   checkRoles(["patient", "admin", "staff"]),
   scheduleController.getAllSchedulesByStaff
+);
+
+scheduleRouter.get(
+  "/doctor",
+  authenticate,
+  checkRoles(["patient", "admin", "staff"]),
+  scheduleController.getAllSchedulesOfDoctors
 );
 
 module.exports = scheduleRouter;

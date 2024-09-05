@@ -1,27 +1,33 @@
-const model = require("../services/mysqlService");
+const models = require("../services/mysqlService");
 const httpStatus = require("../utils/httpStatus");
+
+// Define role hierarchy
+const roleHierarchy = ['admin', 'staff', 'patient'];
 
 const checkRoles = (allowedRoles) => {
   return async (req, res, next) => {
     try {
       const { id, role } = req;
 
-      console.log(`role: ${role}`);
-
+      // Check if the current role is in the allowed roles
       if (allowedRoles.includes(role)) {
-        let user;
-        if (role === "patient") {
-          user = await model.getPatientByID(id);
-        } else if (role === "staff") {
-          user = await model.getStaffByID(id);
-        } else {
-          user = await model.getAdminByID(id);
-        }
+        const user = models.getUserById(id)
 
         if (user) {
           console.log("Grant Permission");
+
+          // Determine the role to assign based on allowed roles
+          let assignedRole;
+          if (allowedRoles.length === 1) {
+            assignedRole = allowedRoles[0];
+          } else {
+            // Sort allowedRoles based on roleHierarchy and get the lowest role
+            allowedRoles.sort((a, b) => roleHierarchy.indexOf(a) - roleHierarchy.indexOf(b));
+            assignedRole = allowedRoles[0];
+          }
+
           req.id = id;
-          req.role = role;
+          req.role = assignedRole; 
           return next();
         }
       }

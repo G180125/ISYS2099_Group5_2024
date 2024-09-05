@@ -28,7 +28,7 @@ appointmentRouter.get(
 //   "id": "2"
 // }
 appointmentRouter.get(
-  "/patient",
+  "/patient/:id",
   authenticate,
   checkRoles(["staff", "admin"]),
   appointmentController.getAppointmentsByPatient
@@ -72,6 +72,17 @@ appointmentRouter.put(
   authenticate,
   checkRoles(["patient"]),
   appointmentController.cancelAppointment
+);
+
+// {{base_url}}/appointment/finish
+// {
+//   "appointment_id":"4"
+// }
+appointmentRouter.put(
+  "/finish",
+  authenticate,
+  checkRoles(["doctor"]),
+  appointmentController.finishAppointment
 );
 
 module.exports = appointmentRouter;

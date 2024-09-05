@@ -17,7 +17,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (origin === WHITE_CORS || !origin) {
+      if (whilelisted_cors.find((elem) => elem === origin) !== undefined || !origin) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -37,7 +37,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ENDPOINT 
 const SERVER_PORT = process.env.SERVER_PORT || 2099;
-const WHITE_CORS = `http://localhost:${SERVER_PORT}`;
+const whilelisted_cors = [`http://localhost:${SERVER_PORT}`, `http://localhost:5173`];
 const API_PREFIX = '/hospital_management/api/v1';
 
 // basic test

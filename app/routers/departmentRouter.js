@@ -10,7 +10,7 @@ departmentRouter.get(
 
 // Get all doctors by department
 departmentRouter.get(
-    "/doctor",
+    "/doctor/:id",
     departmentController.getAllDoctorsByDepartment
 );
 

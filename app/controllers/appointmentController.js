@@ -20,6 +20,7 @@ const timeSlotMap = {
 const appointmentController = {
   getAllAppointments: async (req, res, next) => {
     try{    
+        const role = req.role;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
@@ -28,7 +29,8 @@ const appointmentController = {
         `SELECT 
         A.appointment_id, 
         S.schedule_date, 
-        A.slot_number, 
+        A.slot_number,
+        A.purpose,
         ST.first_name AS staff_first_name, 
         ST.last_name AS staff_last_name,
         ST.gender AS staff_gender, 
@@ -44,11 +46,11 @@ const appointmentController = {
         FROM 
             appointment A
         JOIN 
-            patient P ON A.patient_id = P.patient_id
+            patient_secure_report P ON A.patient_id = P.patient_id
         JOIN 
             schedule S ON A.schedule_id = S.schedule_id
         JOIN 
-            staff ST ON S.staff_id = ST.staff_id
+            staff_secure_report ST ON S.staff_id = ST.staff_id
         JOIN 
             department D ON ST.department_id = D.department_id
         LEFT JOIN 
@@ -57,17 +59,19 @@ const appointmentController = {
             A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
         LIMIT ? OFFSET ?`;
 
-        const [results] = await mysqlClient.poolAdmin.query(query, [limit, offset]);
+        const pool = mysqlClient.getPool(role);
 
-        const [countResult] = await mysqlClient.poolAdmin.query(`SELECT COUNT(*) as total FROM appointment`);
+        const [results] = await pool.query(query, [limit, offset]);
+
+        const [countResult] = await pool.query(`SELECT COUNT(*) as total FROM appointment`);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
 
         res.json({
           results,
           pagination: {
-            totalRecords,
-            totalPages,
+            totalRecords: totalRecords,
+            totalPages: totalPages,
             currentPage: page,
             pageSize: limit,
           }
@@ -79,6 +83,7 @@ const appointmentController = {
 
   getMyAppoinments: async (req, res, next) => {
     try {
+      const role = req.role;
       const status = req.query.status || null;
       const id = req.id;
       const page = parseInt(req.query.page) || 1;
@@ -93,9 +98,11 @@ const appointmentController = {
       A.appointment_id, 
       S.schedule_date, 
       A.slot_number, 
+      A.purpose,
+      A.status,
       ST.first_name AS staff_first_name, 
       ST.last_name AS staff_last_name,
-      ST.gender AS staff_gender, 
+      ST.staff_id, 
       ST.job_type, 
       D.department_name,
       JSON_ARRAYAGG(
@@ -108,24 +115,23 @@ const appointmentController = {
       FROM 
           appointment A
       JOIN 
-          patient P ON A.patient_id = P.patient_id
+        patient_secure_report P ON A.patient_id = P.patient_id
       JOIN 
           schedule S ON A.schedule_id = S.schedule_id
       JOIN 
-          staff ST ON S.staff_id = ST.staff_id
+          staff_secure_report ST ON S.staff_id = ST.staff_id
       JOIN 
           department D ON ST.department_id = D.department_id
       LEFT JOIN 
           treatment_record T ON A.appointment_id = T.appointment_id
       WHERE 
-          P.patient_id = ?
+          A.patient_id = ?
       `;
 
       let countQuery = 
         `SELECT COUNT(*) as total
         FROM appointment A
-        JOIN patient P ON A.patient_id = P.patient_id
-        WHERE P.patient_id = ?`;
+        WHERE A.patient_id = ?`;
 
       let queryParams = [id, limit, offset];
       let countParams = [id];
@@ -145,17 +151,19 @@ const appointmentController = {
       queryParams = [id, limit, offset];
       }
 
-      const [results] = await mysqlClient.poolPatient.query(query, queryParams);
-      const [countResult] = await mysqlClient.poolPatient.query(countQuery, countParams);
+      const pool = mysqlClient.getPool(role);
+
+      const [results] = await pool.query(query, queryParams);
+      const [countResult] = await pool.query(countQuery, countParams);
 
       const totalRecords = countResult[0].total;
       const totalPages = Math.ceil(totalRecords / limit);
 
       res.json({
-        results: results,
+        results: results[0],
         pagination: {
-          totalRecords,
-          totalPages,
+          totalRecords: totalRecords,
+          totalPages: totalPages,
           currentPage: page,
           pageSize: limit,
         }
@@ -167,8 +175,9 @@ const appointmentController = {
 
   getAppointmentsByPatient: async (req, res, next) => {
     try {
+      const role = req.role;
       const status = req.query.status;
-      const id = req.body.id;
+      const id = req.params.id;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
@@ -179,6 +188,7 @@ const appointmentController = {
       A.appointment_id, 
       S.schedule_date, 
       A.slot_number, 
+      A.purpose,
       A.status,
       ST.first_name AS staff_first_name, 
       ST.last_name AS staff_last_name,
@@ -195,11 +205,11 @@ const appointmentController = {
       FROM 
           appointment A
       JOIN 
-          patient P ON A.patient_id = P.patient_id
+          patient_secure_report P ON A.patient_id = P.patient_id
       JOIN 
           schedule S ON A.schedule_id = S.schedule_id
       JOIN 
-          staff ST ON S.staff_id = ST.staff_id
+          staff_secure_report ST ON S.staff_id = ST.staff_id
       JOIN 
           department D ON ST.department_id = D.department_id
       LEFT JOIN 
@@ -213,36 +223,36 @@ const appointmentController = {
       let countQuery = 
         `SELECT COUNT(*) as total
         FROM appointment A
-        JOIN patient P ON A.patient_id = P.patient_id
-        WHERE P.patient_id = ?`;
+        WHERE A.patient_id = ?`;
 
       let queryParams = [id, limit, offset];
       let countParams = [id];
-  
 
       // Append LIMIT and OFFSET based on the condition
       if (status) {
-      query += ` AND A.status = ? LIMIT ? OFFSET ?`;
-      queryParams = [id, status, limit, offset];
+        query += ` AND A.status = ? LIMIT ? OFFSET ?`;
+        queryParams = [id, status, limit, offset];
 
-      countQuery += ` AND A.status = ?`;
-      countParams = [id, status];
+        countQuery += ` AND A.status = ?`;
+        countParams = [id, status];
       } else {
-      query += ` LIMIT ? OFFSET ?`;
-      queryParams = [id, limit, offset];
+        query += ` LIMIT ? OFFSET ?`;
+        queryParams = [id, limit, offset];
       }
 
-      const [results] = await mysqlClient.poolPatient.query(query, queryParams);
-      const [countResult] = await mysqlClient.poolPatient.query(countQuery, countParams);
+      const pool = mysqlClient.getPool(role);
+
+      const [results] = await pool.query(query, queryParams);
+      const [countResult] = await pool.query(countQuery, countParams);
 
       const totalRecords = countResult[0].total;
       const totalPages = Math.ceil(totalRecords / limit);
 
       res.json({
-        results: results,
+        results: results[0],
         pagination: {
-          totalRecords,
-          totalPages,
+          totalRecords: totalRecords,
+          totalPages: totalPages,
           currentPage: page,
           pageSize: limit,
         }
@@ -254,6 +264,7 @@ const appointmentController = {
 
   bookAppointment: async (req, res, next) => {
     try {
+      const role = req.role;
       const { patientID, doctorID, date, slotNumber, purpose } = req.body;
 
       if(!patientID || !doctorID || !date || !slotNumber){
@@ -261,9 +272,11 @@ const appointmentController = {
           .status(httpStatus.BAD_REQUEST().code)
           .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
       }
+
+      const pool = mysqlClient.getPool(role);
       
       const query = `CALL book_an_appointment(?,?,?,?,?, @result, @message)`;
-      const [rows] = await mysqlClient.poolPatient.query(query, [patientID, doctorID, date, slotNumber, purpose]);
+      const [rows] = await pool.query(query, [patientID, doctorID, date, slotNumber, purpose]);
 
       // If there are multiple result sets, select the last one
       const result = rows[0][0].result;
@@ -285,6 +298,7 @@ const appointmentController = {
 
   updateAppointment: async (req, res, next) => {
     try {
+      const role = req.role;
       const { appointmentId, date, timeSlot } = req.body;
 
       if(!appointmentId || !date || !timeSlot){
@@ -292,9 +306,11 @@ const appointmentController = {
           .status(httpStatus.BAD_REQUEST().code)
           .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
       }
-      
+
+      const pool = mysqlClient.getPool(role);
+
       const query = `CALL update_appointment(?,?,?, @result, @message)`;
-      const [rows] = await mysqlClient.poolStaff.query(query, [appointmentId,date,timeSlot]);
+      const [rows] = await pool.query(query, [appointmentId,date,timeSlot]);
       // If there are multiple result sets, select the last one
       const result = rows[0][0].result;
       const message = rows[0][0].message;
@@ -315,6 +331,7 @@ const appointmentController = {
 
   cancelAppointment: async (req, res, next) => {
     try {
+      const role = req.role;
       const patient_id = req.id;
       const { appointment_id } = req.body;
       
@@ -323,10 +340,45 @@ const appointmentController = {
           .status(httpStatus.BAD_REQUEST().code)
           .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
       }
-        console.log(appointment_id);
-        console.log(patient_id);
+      console.log(appointment_id);
+      console.log(patient_id);
+
+      const pool = mysqlClient.getPool(role);
+
       const query = `CALL cancel_appointment(?,?, @result, @message)`;
-      const [rows] = await mysqlClient.poolPatient.query(query, [appointment_id,patient_id]);
+      const [rows] = await pool.query(query, [appointment_id,patient_id]);
+      // If there are multiple result sets, select the last one
+      const result = rows[0][0].result;
+      const message = rows[0][0].message;
+
+      if (result == 0) {
+        throw new Error(message);
+      }
+
+      return res  
+          .status(httpStatus.OK().code)
+          .json({ message: message });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  finishAppointment: async (req, res, next) => {
+    try {
+      const role = req.role;
+      const id = req.id;
+      const { appointment_id } = req.body;
+      
+      if(!appointment_id || !patient_id){
+        return res
+          .status(httpStatus.BAD_REQUEST().code)
+          .json({error: httpStatus.BAD_REQUEST("Invalid number of inputs").message});
+      }
+
+      const pool = mysqlClient.getPool(role);
+
+      const query = `CALL finsish_appointment(?,?, @result, @message)`;
+      const [rows] = await pool.query(query, [appointment_id, id]);
       // If there are multiple result sets, select the last one
       const result = rows[0][0].result;
       const message = rows[0][0].message;

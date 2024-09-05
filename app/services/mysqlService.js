@@ -2,13 +2,38 @@ const db = require("../databases/mysqlClient");
 
 let database = {};
 
-database.getPatientByEmail = async (email) => {
+database.getUserById = async (id) => {
   try {
     const [results] = await db.poolPatient.query(
-      `SELECT * FROM patient WHERE email = ?`,
+      `SELECT * FROM user WHERE user_id = ?`,
+      [id]
+    );
+    return results[0];
+  } catch (err) {
+    console.error("error: " + err.stack);
+    throw err;
+  }
+};
+
+database.getUserByEmail = async (email) => {
+  try {
+    const [results] = await db.poolPatient.query(
+      `SELECT * FROM user WHERE email = ?`,
       [email]
     );
     return results[0];
+  } catch (err) {
+    console.error("error: " + err.stack);
+    throw err;
+  }
+};
+
+database.deleteUserToken = async (id) => {
+  try {
+    await db.poolPatient.query(
+      `UPDATE user SET access_token = NULL WHERE user_id = ?`,
+      [id]
+    );
   } catch (err) {
     console.error("error: " + err.stack);
     throw err;
@@ -18,33 +43,8 @@ database.getPatientByEmail = async (email) => {
 database.getPatientByID = async (id) => {
   try {
     const [results] = await db.poolPatient.query(
-      `SELECT * FROM patient WHERE patient_id = ?`,
+      `SELECT * FROM patient WHERE user_id = ?`,
       [id]
-    );
-    return results[0];
-  } catch (err) {
-    console.error("error: " + err.stack);
-    throw err;
-  }
-};
-
-database.deletePatientToken = async (id) => {
-  try {
-    await db.poolPatient.query(
-      `UPDATE patient SET access_token = NULL WHERE patient_id = ?`,
-      [id]
-    );
-  } catch (err) {
-    console.error("error: " + err.stack);
-    throw err;
-  }
-};
-
-database.getStaffByEmail = async (email) => {
-  try {
-    const [results] = await db.poolStaff.query(
-      `SELECT * FROM staff WHERE email = ? AND job_type <> 'A'`,
-      [email]
     );
     return results[0];
   } catch (err) {
@@ -56,34 +56,8 @@ database.getStaffByEmail = async (email) => {
 database.getStaffByID = async (id) => {
   try {
     const [results] = await db.poolStaff.query(
-      `SELECT * FROM staff WHERE staff_id = ? AND job_type <> 'A'`,
+      `SELECT * FROM staff_secure_report WHERE staff_id = ? AND job_type <> 'A'`,
       [id]
-    );
-    return results[0];
-  } catch (err) {
-    console.error("error: " + err.stack);
-    throw err;
-  }
-};
-
-
-database.deleteStaffToken = async (id) => {
-  try {
-    await db.poolStaff.query(
-      `UPDATE staff SET access_token = NULL WHERE staff_id = ? AND job_type <> 'A'`,
-      [id]
-    );
-  } catch (err) {
-    console.error("error: " + err.stack);
-    throw err;
-  }
-};
-
-database.getAdminByEmail = async (email) => {
-  try {
-    const [results] = await db.poolAdmin.query(
-      `SELECT * FROM staff WHERE email = ? AND job_type='A'`,
-      [email]
     );
     return results[0];
   } catch (err) {
@@ -95,7 +69,7 @@ database.getAdminByEmail = async (email) => {
 database.getAdminByID = async (id) => {
   try {
     const [results] = await db.poolAdmin.query(
-      `SELECT * FROM staff WHERE staff_id = ? AND job_type='A'`,
+      `SELECT * FROM staff_secure_report WHERE staff_id = ? AND job_type='A'`,
       [id]
     );
     return results[0];
@@ -105,25 +79,22 @@ database.getAdminByID = async (id) => {
   }
 };
 
-database.deleteAdminToken = async (id) => {
+database.getRoleByEmail = async (email) => {
   try {
-    await db.poolAdmin.query(
-      `UPDATE staff SET access_token = NULL WHERE staff_id = ? AND job_type='A'`,
-      [id]
+    const [rows] = await db.poolPatient.query(
+      `CALL get_user_role_by_email(?, @role, @message)`,
+      [email]
     );
+
+    console.log(rows);
+
+    const role = rows[0][0].role;
+    const message = rows[0][0].message;
+
+    return role;
   } catch (err) {
     console.error("error: " + err.stack);
     throw err;
-  }
-};
-
-database.getUserByRole = async (role, id) => {
-  if (role === "patient") {
-    return database.getPatientByID(id);
-  } else if (role === "staff") {
-    return database.getStaffByID(id);
-  } else if (role === "admin") {
-    return database.getAdminByID(id);
   }
 };
 

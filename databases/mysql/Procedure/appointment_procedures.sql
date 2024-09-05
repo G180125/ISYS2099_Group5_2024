@@ -4,28 +4,15 @@ This procedure retrieves the working schedules of all doctors within a specified
 */
 DROP PROCEDURE IF EXISTS view_all_doctor_schedules_in_duration;
 CREATE PROCEDURE view_all_doctor_schedules_in_duration(
-    IN a_date DATE,
-    IN a_start_time TIME, 
-    IN a_end_time TIME
+    IN a_start_date DATE,
+    IN a_end_date DATE
 )
 BEGIN
-    -- Get all doctors who are scheduled on the specified date
-    SELECT
-        s.staff_id,
-        CONCAT(st.first_name, ' ', st.last_name) AS doctor_name,
-        CASE
-            WHEN ap.appointment_id IS NOT NULL THEN 'Busy'
-            WHEN sch.schedule_id IS NULL THEN 'Day Off'
-            ELSE 'Available'
-        END AS status
-    FROM
-        staff st
-    LEFT JOIN
-        schedule sch ON st.staff_id = sch.staff_id AND sch.schedule_date = a_date
-    LEFT JOIN
-        appointment ap ON sch.schedule_id = ap.schedule_id AND ap.start_time >= a_start_time AND ap.end_time <= a_end_time
-    WHERE
-        st.job_type = 'D';
+    -- Get all doctors who are scheduled within the specified date range
+    SELECT *
+    FROM doctor_free_slot_report 
+    WHERE schedule_date BETWEEN a_start_date AND a_end_date
+    ORDER BY schedule_date, staff_first_name, staff_last_name;
 END;
 
 DROP PROCEDURE IF EXISTS book_an_appointment;
@@ -42,6 +29,7 @@ this_proc:
 BEGIN
     DECLARE _rollback BOOL DEFAULT 0;
     DECLARE sql_error_message VARCHAR(255);
+    DECLARE is_doctor INT DEFAULT 0;
     DECLARE available_schedule_id INT;
 
     -- Declare the handler for SQL exceptions
@@ -55,6 +43,20 @@ BEGIN
     END;
 
     START TRANSACTION;
+
+    -- check if the doctor id input is actually a doctor
+    SELECT COUNT(*) INTO is_doctor
+    FROM staff 
+    WHERE user_id = a_doctor_id AND job_type = 'D';
+
+    IF is_doctor = 0 THEN
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = 'This staff is not a doctor';
+        ROLLBACK;
+        SELECT result, message;
+        LEAVE this_proc;
+    END IF;
 
     -- Check for the doctor's availability on the updated date
     SELECT schedule_id INTO available_schedule_id
@@ -121,10 +123,7 @@ BEGIN
     SELECT result, message;
 END;
 
-
-
-DROP PROCEDURE IF EXISTS `cancel_appointment`;
-
+DROP PROCEDURE IF EXISTS cancel_appointment;
 CREATE PROCEDURE cancel_appointment(
     IN a_appointment_id INT,
     IN a_patient_id INT,
@@ -178,6 +177,66 @@ BEGIN
         COMMIT;
         SET result = 1;
         SET message = 'Appointment canceled successfully';
+    END IF;
+
+    -- Return the result and message
+    SELECT result, message;
+END;
+
+DROP PROCEDURE IF EXISTS finish_appointment;
+CREATE PROCEDURE finish_appointment(
+    IN a_appointment_id INT,
+    IN a_staff_id INT,
+    OUT result INT,
+    OUT message VARCHAR(255)
+)
+this_proc:
+BEGIN
+    DECLARE _rollback BOOL DEFAULT 0;
+    DECLARE sql_error_message VARCHAR(255);
+
+    -- Declare the handler for SQL exceptions
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+    BEGIN
+        GET DIAGNOSTICS CONDITION 1 sql_error_message = MESSAGE_TEXT;
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = sql_error_message;
+        ROLLBACK;
+        SELECT result, message;
+    END;
+
+    START TRANSACTION;
+    
+    -- Check if the appointment exists, belongs to the patient, and is not already canceled
+    IF NOT EXISTS (
+        SELECT 1
+        FROM appointment A
+        JOIN schedule S ON A.schedule_id = S.schedule_id
+        WHERE A.appointment_id = a_appointment_id 
+        AND S.staff_id = a_staff_id
+        AND A.status <> 'U'
+        FOR UPDATE
+    ) THEN
+        SET _rollback = 1;
+        SET result = 0;
+        SET message = 'The appointment is not found, already canceled, already finished or does not belong to the doctor';
+        ROLLBACK;
+        SELECT result, message;
+        LEAVE this_proc;
+    END IF;
+   
+    UPDATE appointment
+    SET status = 'F'
+    WHERE appointment_id = a_appointment_id;
+   
+    -- Commit or rollback based on the transaction status
+    IF _rollback THEN
+        ROLLBACK;
+    ELSE 
+        COMMIT;
+        SET result = 1;
+        SET message = 'Appointment finished successfully';
     END IF;
 
     -- Return the result and message

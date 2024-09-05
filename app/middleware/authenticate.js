@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const { setCookie, introspect } = require("../utils");
-const { getUserByRole } = require("../services/mysqlService");
+const { getUserById } = require("../services/mysqlService");
 const httpStatus = require("../utils/httpStatus");
 
 const authenticate = async (req, res, next) => {
@@ -26,18 +26,14 @@ const authenticate = async (req, res, next) => {
         .json({ error: httpStatus.UNAUTHORIZED("Invalid token").message });
     }
 
-    console.log("\n");
-    console.log(`email with the token ${payload.email}`);
-
     // Get user by role
-    const user = await getUserByRole(payload.role, payload.id);
+    const user = await getUserById(payload.id);
 
     if (!user || !user.access_token) {
       return res
         .status(httpStatus.FORBIDDEN().code)
         .json({ error: httpStatus.FORBIDDEN("Authentication Invalid").message });
     }
-
     
     // Set new token cookies
     setCookie(res, accessToken);

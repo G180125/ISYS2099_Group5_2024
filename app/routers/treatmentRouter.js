@@ -18,7 +18,7 @@ treatmentRouter.get(
 //     "id": "1"
 // }
 treatmentRouter.get(
-    "/patient",
+    "/patient/:id",
     authenticate,
     checkRoles(["staff", "admin"]),
     treatmentController.getTreatmentsByPatient
@@ -29,7 +29,7 @@ treatmentRouter.get(
 //     "treatmentId": "1"
 // }
 treatmentRouter.get(
-    "/id",
+    "/:id",
     authenticate,
     checkRoles(["patient", "staff", "admin"]),
     treatmentController.getTreatmentById
@@ -44,8 +44,30 @@ treatmentRouter.get(
 treatmentRouter.post(
     "/new",
     authenticate,
-    checkRoles(("staff")),
+    checkRoles(["staff"]),
     treatmentController.addTreatment
+);
+
+// {{base_url}}/treatment/missing
+// {
+//     "appointment_id":"3"
+// }
+treatmentRouter.post(
+    "/missing",
+    authenticate,
+    checkRoles(["staff"]),
+    treatmentController.markTreatmentAsMissing
+);
+
+// {{base_url}}/treatment/finish
+// {
+//     "appointment_id":"3"
+// }
+treatmentRouter.post(
+    "/finish",
+    authenticate,
+    checkRoles(["staff"]),
+    treatmentController.finishTreatment
 );
 
 module.exports = treatmentRouter;
