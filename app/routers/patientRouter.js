@@ -20,14 +20,6 @@ patientRouter.get(
   patientController.getMyInfo
 );
 
-// Get patient by id
-patientRouter.get(
-  "/:id",
-  authenticate,
-  checkRoles(["staff", "admin"]),
-  patientController.getPatientByID
-);
-
 // Get patient by name
 // {prefix}/patient/search?first_name=Paul&last_name=Buck
 patientRouter.get(
@@ -36,6 +28,15 @@ patientRouter.get(
   checkRoles(["admin", "staff"]),
   patientController.getPatientByname
 );
+
+// Get patient by id
+patientRouter.get(
+  "/:id",
+  authenticate,
+  checkRoles(["staff", "admin"]),
+  patientController.getPatientByID
+);
+
 
 // Update my info
 // {

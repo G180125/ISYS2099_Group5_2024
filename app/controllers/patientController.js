@@ -4,6 +4,7 @@ const mysqlClient = require("../databases/mysqlClient");
 const moment = require('moment');
 const httpStatus = require("../utils/httpStatus.js");
 const mysqlService = require("../services/mysqlService");
+const { configDotenv } = require("dotenv");
 
 const app = express();
 app.use(cookieParser());
@@ -29,7 +30,7 @@ const patientController = {
         const totalPages = Math.ceil(totalRecords / limit);
   
         res.json({
-          results: results[0],
+          results: results,
           pagination: {
             totalRecords: totalRecords,
             totalPages: totalPages,
@@ -100,6 +101,7 @@ const patientController = {
   
     getPatientByname: async (req, res, next) => {
       try {
+        console.log('wtf???');
         const first_name = req.query.first_name;
         const last_name = req.query.last_name;
         const role = req.role;
