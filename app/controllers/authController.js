@@ -59,9 +59,9 @@ const registerPatient = async (req, res, next) => {
 
 const registerStaff = async (req, res, next) => {
   try {
-    const { email, password, role } = req.body;
+    const { email, password, job_type, f_name, l_name, gender, department_id, salary } = req.body;
 
-    if (!email || !role || !password) {
+    if (!email || !job_type || !password) {
       return res
         .status(httpStatus.BAD_REQUEST().code)
         .json({ error: httpStatus.BAD_REQUEST("Please provide email, password, and role").message });
@@ -73,24 +73,12 @@ const registerStaff = async (req, res, next) => {
 
     const salt = genSaltSync(10);
     const hashedPassword = hashSync(password, salt);
-
-    let query;
-    let rows;
-
     const pool = mysqlClient.getPool("admin");
-
-    if (role === "staff") {
-      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
-      [rows] = await pool.query(query, [null, null, email, hashedPassword, 'O', 'D', 1, 1]);
-    } else if (role === "admin") {
-      query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
-      [rows] = await pool.query(query, [null, null, email, hashedPassword, 'O', 'A', 1, 0]);
-    } else {
-      return res
-        .status(httpStatus.BAD_REQUEST().code)
-        .json({ error: httpStatus.BAD_REQUEST("Invalid role provided").message });
-    }
-
+    
+    const query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
+    const [rows] = await pool.query(query, [f_name, l_name, email, hashedPassword, gender, job_type, department_id, salary || 1]);
+    const role = (job_type === 'admin') ? 'admin' : 'staff';
+    
     console.log(rows);
 
     result = rows[0][0].result;
