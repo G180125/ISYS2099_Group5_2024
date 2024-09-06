@@ -1,11 +1,5 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
 const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
-const { log } = require("console");
-
-const app = express();
-app.use(cookieParser());
 
 const timeSlotMap = {
   1: "9:00-10:00",

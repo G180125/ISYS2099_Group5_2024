@@ -1,10 +1,5 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
 const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
-
-const app = express();
-app.use(cookieParser());
 
 const scheduleController = {
   getAllSchedules: async (req, res, next) => {

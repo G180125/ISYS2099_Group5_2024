@@ -1,12 +1,6 @@
 
-const cookieParser = require("cookie-parser");
-const express = require("express");
 const mysqlClient = require("../databases/mysqlClient");
-const moment = require('moment');
 const httpStatus = require("../utils/httpStatus.js");
-
-const app = express();
-app.use(cookieParser());
 
 const validGenders = ["F", "M", "O"];
 const validjob_types = ["D", "N", "A"];
@@ -124,18 +118,18 @@ const staffController = {
 
       const [results] = await pool.query(
         `SELECT 
-        S.user_id staff_id,
-        U.first_name,
-        U.last_name,
-        U.email,
-        U.gender,
-        S.job_type,
-        D.department_id,
-        D.department_name,
-        D.manager_id
-    FROM staff S
-    JOIN user U ON U.user_id = S.user_id
-    LEFT JOIN department D ON S.department_id = D.department_id WHERE S.user_id = ?`,
+          S.user_id staff_id,
+          U.first_name,
+          U.last_name,
+          U.email,
+          U.gender,
+          S.job_type,
+          D.department_id,
+          D.department_name,
+          D.manager_id
+        FROM staff S
+        JOIN user U ON U.user_id = S.user_id
+        LEFT JOIN department D ON S.department_id = D.department_id WHERE S.user_id = ?`,
         [id],
       );
       if (results.length === 0) {
@@ -163,18 +157,18 @@ const staffController = {
 
       const [results] = await pool.query(
         `SELECT 
-        S.user_id staff_id,
-        U.first_name,
-        U.last_name,
-        U.email,
-        U.gender,
-        S.job_type,
-        D.department_id,
-        D.department_name,
-        D.manager_id
-    FROM staff S
-    JOIN user U ON U.user_id = S.user_id
-    LEFT JOIN department D ON S.department_id = D.department_id WHERE S.user_id = ?`,
+            S.user_id staff_id,
+            U.first_name,
+            U.last_name,
+            U.email,
+            U.gender,
+            S.job_type,
+            D.department_id,
+            D.department_name,
+            D.manager_id
+        FROM staff S
+        JOIN user U ON U.user_id = S.user_id
+        LEFT JOIN department D ON S.department_id = D.department_id WHERE S.user_id = ?`,
         [id],
       );
       if (results.length === 0) {

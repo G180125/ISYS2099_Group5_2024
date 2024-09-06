@@ -1,11 +1,5 @@
-
-const cookieParser = require("cookie-parser");
-const express = require("express");
 const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
-
-const app = express();
-app.use(cookieParser());
 
 const departmentController = {
     getAllDepartments: async (req, res, next) => {
@@ -95,7 +89,6 @@ const departmentController = {
             return res
                 .status(httpStatus.OK().code)
                 .json({ message: "Department updated successfully." });
-    
         } catch (error) {
             return next(error);
         }
