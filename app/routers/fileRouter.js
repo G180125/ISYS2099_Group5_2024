@@ -26,4 +26,6 @@ fileRouter.get("/meta/:bucket", fileController.getFileMeta);
 // .../files/content/staff/:filename
 fileRouter.get("/content/:bucket/:filename", fileController.getOneFile);
 
+fileRouter.get("/staff_avatar/:id", fileController.getStaffAvatar);
+
 module.exports = fileRouter;

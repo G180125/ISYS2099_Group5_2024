@@ -44,7 +44,7 @@ const fileController = {
         mysql_id: mysql_id,
         type: fileType,
       };
-      
+
       await mongoService.uploadFile(file, dirTarget, fileMeta);
 
       return res.status(StatusCodes.OK).json({
@@ -85,7 +85,33 @@ const fileController = {
     } catch (err) {
       next(err);
     }
-    
+  },
+
+  getStaffAvatar: async (req, res, next) => {
+    try {
+      const mysql_id = req.params.id;
+      const bucket = "staff";
+      const filters = {
+        "metadata.mysql_id": mysql_id,
+        "metadata.type": "Avatar",
+      };
+
+      const arr = await mongoService.getFileMeta(filters, bucket);
+
+      if (arr.length == 0)
+        throw new Error(`No staff avatar found with id ${mysql_id}`);
+
+      const fileTarget = arr[arr.length - 1].filename;
+      const fileBuf = await mongoService.getOneFile(fileTarget, bucket);
+      const fileBuf64 = Buffer.from(fileBuf).toString("base64");
+
+      return res.status(StatusCodes.ACCEPTED).json({
+        filename: fileTarget,
+        base64: fileBuf64,
+      });
+    } catch (err) {
+      return next(err);
+    }
   },
 };
 
