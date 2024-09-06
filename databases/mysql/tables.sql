@@ -6,6 +6,13 @@ DROP DATABASE IF EXISTS hospital_management;
 CREATE DATABASE IF NOT EXISTS hospital_management;
 USE hospital_management;
 
+-- Access Token
+CREATE TABLE IF NOT EXISTS access_token 
+(
+    access_token VARCHAR(255),
+    CONSTRAINT access_token_pk PRIMARY KEY (access_token)
+) ENGINE = InnoDB;
+
 -- User table
 CREATE TABLE IF NOT EXISTS user 
 (
@@ -13,8 +20,7 @@ CREATE TABLE IF NOT EXISTS user
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(100) NOT NULL, 
-    access_token VARCHAR(255),
+    password VARCHAR(100) NOT NULL,
     gender ENUM('M', 'F', 'O') NOT NULL,
     CONSTRAINT user_pk PRIMARY KEY (user_id)
 ) ENGINE = InnoDB;

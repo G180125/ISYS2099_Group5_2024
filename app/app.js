@@ -8,7 +8,7 @@ const path = require("path");
 const helmet = require("helmet");
 const { errorHandler } = require("./controllers/errorController");
 const httpStatus = require("./utils/httpStatus");
-const { authRouter, patientRouter, staffRouter, scheduleRouter, appointmentRouter, treatmentRouter, departmentRouter, reportRouter, fileRouter, ticketRouter } = require("./routers");
+const { authRouter, patientRouter, staffRouter, scheduleRouter, appointmentRouter, treatmentRecordRouter, departmentRouter, reportRouter, fileRouter, ticketRouter, treatmentRouter } = require("./routers");
 const app = express();
 
 // SECURE HTTP HEADERS
@@ -53,6 +53,7 @@ app.use(`${API_PREFIX}/patient`, patientRouter);
 app.use(`${API_PREFIX}/staff`, staffRouter);
 app.use(`${API_PREFIX}/schedule`, scheduleRouter);
 app.use(`${API_PREFIX}/appointment`, appointmentRouter);
+app.use(`${API_PREFIX}/treatment_record`, treatmentRecordRouter);
 app.use(`${API_PREFIX}/treatment`, treatmentRouter);
 app.use(`${API_PREFIX}/files`, fileRouter);
 app.use(`${API_PREFIX}/department`, departmentRouter);

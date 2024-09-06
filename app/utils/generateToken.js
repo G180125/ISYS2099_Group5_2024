@@ -18,13 +18,10 @@ const generateToken = (id, role) => {
       { expiresIn: "1d" },
     );
 
-    console.log("\n");
-    console.log(`User for tokens: ${id}`);
-
     // Store the refresh token in the database
     db.poolPatient.query(
-      "UPDATE user SET access_token = ? WHERE user_id = ? ",
-      [accessToken, id],
+      "INSERT INTO access_token (access_token) VALUES (?); ",
+      [accessToken],
   );
 
     return { accessToken };

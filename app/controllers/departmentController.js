@@ -1,11 +1,5 @@
-
-const cookieParser = require("cookie-parser");
-const express = require("express");
 const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
-
-const app = express();
-app.use(cookieParser());
 
 const departmentController = {
     getAllDepartments: async (req, res, next) => {
@@ -89,13 +83,12 @@ const departmentController = {
             if (results.affectedRows === 0) {
                 return res
                     .status(httpStatus.NOT_FOUND().code)
-                    .json({ error: "No department found with the provided ID." });
+                    .json({ error: "No department found or No manager found." });
             }
     
             return res
                 .status(httpStatus.OK().code)
                 .json({ message: "Department updated successfully." });
-    
         } catch (error) {
             return next(error);
         }

@@ -1,11 +1,5 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
 const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
-const { log } = require("console");
-
-const app = express();
-app.use(cookieParser());
 
 const timeSlotMap = {
   1: "9:00-10:00",
@@ -47,8 +41,6 @@ const appointmentController = {
             staff_secure_report ST ON S.staff_id = ST.staff_id
         JOIN 
             department D ON ST.department_id = D.department_id
-        GROUP BY 
-            A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
         LIMIT ? OFFSET ?`;
 
         const pool = mysqlClient.getPool(role);
@@ -123,14 +115,13 @@ const appointmentController = {
       // Append LIMIT and OFFSET based on the condition
       if (status) {
       query += ` AND A.status = ? 
-                GROUP BY A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
                 LIMIT ? OFFSET ?`;
       queryParams = [id, status, limit, offset];
 
       countQuery += ` AND A.status = ?`;
       countParams = [id, status];
       } else {
-      query += `GROUP BY A.appointment_id, S.schedule_date, A.slot_number, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name LIMIT ? OFFSET ?`;
+      query += ` LIMIT ? OFFSET ?`;
       queryParams = [id, limit, offset];
       }
 
@@ -190,8 +181,6 @@ const appointmentController = {
           department D ON ST.department_id = D.department_id
       WHERE 
           P.patient_id = ?
-      GROUP BY 
-          A.appointment_id, S.schedule_date, A.slot_number, A.status, ST.first_name, ST.last_name, ST.gender, ST.job_type, D.department_name
       `;
 
       let countQuery = 

@@ -3,7 +3,7 @@ CREATE TRIGGER staff_insert_trigger
 AFTER INSERT ON staff
 FOR EACH ROW
 BEGIN
-    INSERT INTO temp_staff_secure_report
+    INSERT INTO staff_secure_report
     (staff_id, first_name, last_name, email, gender, job_type, department_id, department_name, manager_id)
     VALUES (NEW.user_id, 
             (SELECT first_name FROM user WHERE user_id = NEW.user_id),
@@ -21,7 +21,7 @@ CREATE TRIGGER staff_update_trigger
 AFTER UPDATE ON staff
 FOR EACH ROW
 BEGIN
-    UPDATE temp_staff_secure_report
+    UPDATE staff_secure_report
     SET first_name = (SELECT first_name FROM user WHERE user_id = NEW.user_id),
         last_name = (SELECT last_name FROM user WHERE user_id = NEW.user_id),
         email = (SELECT email FROM user WHERE user_id = NEW.user_id),
@@ -38,7 +38,7 @@ CREATE TRIGGER staff_delete_trigger
 AFTER DELETE ON staff
 FOR EACH ROW
 BEGIN
-    DELETE FROM temp_staff_secure_report
+    DELETE FROM staff_secure_report
     WHERE staff_id = OLD.user_id;
 END;
 
@@ -60,7 +60,7 @@ CREATE TRIGGER department_update_trigger
 AFTER UPDATE ON department
 FOR EACH ROW
 BEGIN
-    UPDATE temp_staff_secure_report
+    UPDATE staff_secure_report
     SET department_name = NEW.department_name,
         manager_id = NEW.manager_id
     WHERE department_id = NEW.department_id;

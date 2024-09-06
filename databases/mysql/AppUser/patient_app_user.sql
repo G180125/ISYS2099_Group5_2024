@@ -9,6 +9,7 @@ GRANT SELECT ON hospital_management.* TO 'group5_patient_app_user'@'localhost';
 GRANT INSERT, UPDATE ON hospital_management.user TO 'group5_patient_app_user'@'localhost';
 GRANT INSERT, UPDATE ON hospital_management.patient TO 'group5_patient_app_user'@'localhost';
 GRANT INSERT, UPDATE ON hospital_management.appointment TO 'group5_patient_app_user'@'localhost';
+GRANT INSERT, DELETE ON hospital_management.access_token TO 'group5_patient_app_user'@'localhost';
 
 -- Granting EXECUTE privilege on PROCEDURES to staff user
 GRANT EXECUTE ON PROCEDURE hospital_management.add_new_user TO 'group5_patient_app_user'@'localhost';

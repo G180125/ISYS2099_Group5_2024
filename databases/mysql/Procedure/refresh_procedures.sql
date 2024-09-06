@@ -1,36 +1,36 @@
-DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
-CREATE PROCEDURE refresh_patient_secure_report()
-BEGIN
-    DELETE FROM patient_secure_report;
-    INSERT INTO patient_secure_report
-    SELECT 
-        U.user_id patient_id,
-        U.first_name patient_first_name,
-        U.last_name patient_last_name,
-        U.email patient_email,
-        P.date_of_birth patient_dob,
-        U.gender patient_gender,
-        P.allergies patient_allergies
-    FROM patient P
-    JOIN user U ON P.patient_id = U.user_id;
-END;
+-- DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
+-- CREATE PROCEDURE refresh_patient_secure_report()
+-- BEGIN
+--     DELETE FROM patient_secure_report;
+--     INSERT INTO patient_secure_report
+--     SELECT 
+--         U.user_id patient_id,
+--         U.first_name patient_first_name,
+--         U.last_name patient_last_name,
+--         U.email patient_email,
+--         P.date_of_birth patient_dob,
+--         U.gender patient_gender,
+--         P.allergies patient_allergies
+--     FROM patient P
+--     JOIN user U ON P.patient_id = U.user_id;
+-- END;
 
-DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
-CREATE PROCEDURE refresh_patient_secure_report()
-BEGIN
-    DELETE FROM patient_secure_report;
-    INSERT INTO patient_secure_report
-    SELECT 
-        U.user_id patient_id,
-        U.first_name patient_first_name,
-        U.last_name patient_last_name,
-        U.email patient_email,
-        P.date_of_birth patient_dob,
-        U.gender patient_gender,
-        P.allergies patient_allergies
-    FROM patient P
-    JOIN user U ON P.patient_id = U.user_id;
-END;
+-- DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
+-- CREATE PROCEDURE refresh_patient_secure_report()
+-- BEGIN
+--     DELETE FROM patient_secure_report;
+--     INSERT INTO patient_secure_report
+--     SELECT 
+--         U.user_id patient_id,
+--         U.first_name patient_first_name,
+--         U.last_name patient_last_name,
+--         U.email patient_email,
+--         P.date_of_birth patient_dob,
+--         U.gender patient_gender,
+--         P.allergies patient_allergies
+--     FROM patient P
+--     JOIN user U ON P.patient_id = U.user_id;
+-- END;
 
 DROP PROCEDURE IF EXISTS refresh_treatment_report;
 CREATE PROCEDURE refresh_treatment_report()
@@ -111,6 +111,7 @@ BEGIN
        ST.first_name AS staff_first_name,
        ST.last_name AS staff_last_name,
        D.department_name,
+       P.patient_id,
        P.first_name AS patient_first_name,
        P.last_name AS patient_last_name,
        COALESCE(SUM(T.treatment_cost), 0) AS total_cost
@@ -130,6 +131,7 @@ BEGIN
         ST.first_name,
         ST.last_name,
         D.department_name,
+        P.patient_id,
         P.first_name,
         P.last_name;
 END;

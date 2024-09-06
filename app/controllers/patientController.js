@@ -1,13 +1,6 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
 const mysqlClient = require("../databases/mysqlClient");
-const moment = require('moment');
 const httpStatus = require("../utils/httpStatus.js");
 const mysqlService = require("../services/mysqlService");
-const { configDotenv } = require("dotenv");
-
-const app = express();
-app.use(cookieParser());
 
 const validGenders = ["f", "m", "o"];
 
