@@ -50,7 +50,7 @@ app.get(`${API_PREFIX}`, (req, res) => {
 app.use(`${API_PREFIX}/auth`, authRouter);
 app.use(`${API_PREFIX}/patient`, patientRouter);
 app.use(`${API_PREFIX}/staff`, staffRouter);
-app.use(`${API_PREFIX}/schedule`, scheduleRouter);g
+app.use(`${API_PREFIX}/schedule`, scheduleRouter);
 app.use(`${API_PREFIX}/appointment`, appointmentRouter);
 app.use(`${API_PREFIX}/treatment_record`, treatmentRecordRouter);
 app.use(`${API_PREFIX}/treatment`, treatmentRouter);

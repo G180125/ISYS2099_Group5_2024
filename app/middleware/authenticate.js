@@ -27,8 +27,8 @@ const authenticate = async (req, res, next) => {
 
     // Get user by role
     const user = await getUserById(payload.id);
-
-    if (!user || !hasToken(accessToken) ) {
+    const isValid = await hasToken(accessToken);
+    if (!user || !isValid ) {
       return res
         .status(httpStatus.FORBIDDEN().code)
         .json({ error: httpStatus.FORBIDDEN("Authentication Invalid").message });

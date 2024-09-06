@@ -10,7 +10,7 @@ database.hasToken = async (access_token) => {
       [access_token]
     );
     
-    if (results[0].access_token != null){
+    if (results.length > 0 && results[0].access_token != null){
       return true;
     } 
 
