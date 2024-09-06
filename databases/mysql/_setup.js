@@ -118,7 +118,6 @@ async function setupDb() {
       `${pathPrefix}/Procedure/view_report_procedures.sql`,
       `${pathPrefix}/Procedure/staff_procedures.sql`,
       `${pathPrefix}/Procedure/ticket_procedures.sql`,
-      `${pathPrefix}/Procedure/ticket_procedures.sql`,
       `${pathPrefix}/insert_data.sql`,
       `${pathPrefix}/Procedure/refresh_procedures.sql`,
       `${pathPrefix}/Trigger/billing_report_trigger.sql`,

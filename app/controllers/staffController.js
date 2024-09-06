@@ -124,6 +124,7 @@ const staffController = {
           U.email,
           U.gender,
           S.job_type,
+          S.salary,
           D.department_id,
           D.department_name,
           D.manager_id
