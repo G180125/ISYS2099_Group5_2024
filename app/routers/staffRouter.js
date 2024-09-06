@@ -42,11 +42,11 @@ staffRouter.put(
   );
 
 // Delete a staff
-staffRouter.delete(
-    "",
-    authenticate,
-    checkRoles(["admin"]),
-    staffController.deleteStaffById
-  );
+// staffRouter.delete(
+//     "",
+//     authenticate,
+//     checkRoles(["admin"]),
+//     staffController.deleteStaffById
+//   );
 
 module.exports = staffRouter;

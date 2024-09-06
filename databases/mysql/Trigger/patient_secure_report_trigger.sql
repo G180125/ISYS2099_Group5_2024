@@ -9,8 +9,8 @@ BEGIN
             (SELECT first_name FROM user WHERE user_id = NEW.user_id),
             (SELECT last_name FROM user WHERE user_id = NEW.user_id),
             (SELECT email FROM user WHERE user_id = NEW.user_id),
-            (SELECT gender FROM user WHERE user_id = NEW.user_id),
             NEW.date_of_birth, 
+            (SELECT gender FROM user WHERE user_id = NEW.user_id),
             NEW.allergies);
 END;
 

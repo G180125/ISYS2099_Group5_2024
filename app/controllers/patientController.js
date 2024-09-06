@@ -21,7 +21,7 @@ const patientController = {
         const [countResult] = await pool.query(`SELECT COUNT(*) as total FROM patient_secure_report`);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
-  
+        
         res.json({
           results: results,
           pagination: {

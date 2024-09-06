@@ -118,7 +118,6 @@ async function setupDb() {
       `${pathPrefix}/Procedure/view_report_procedures.sql`,
       `${pathPrefix}/Procedure/staff_procedures.sql`,
       `${pathPrefix}/Procedure/ticket_procedures.sql`,
-      `${pathPrefix}/insert_data.sql`,
       `${pathPrefix}/Procedure/refresh_procedures.sql`,
       `${pathPrefix}/Trigger/billing_report_trigger.sql`,
       `${pathPrefix}/Trigger/doctor_work_report_trigger.sql`,
@@ -131,6 +130,7 @@ async function setupDb() {
       `${pathPrefix}/AppUser/admin_app_user.sql`,
       `${pathPrefix}/AppUser/staff_app_user.sql`,
       `${pathPrefix}/AppUser/patient_app_user.sql`,
+      `${pathPrefix}/insert_data.sql`,
     ];
     // }
 
