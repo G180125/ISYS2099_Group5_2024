@@ -10,13 +10,13 @@
 			"name": "Authentication",
 			"item": [
 				{
-					"name": "Login Admin",
+					"name": "Login Patient",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"eve.williams@hospital.management.com\",\n    \"password\": \"test\"\n}",
+							"raw": "{\n    \"email\": \"paul@gmail.com\",\n    \"password\": \"test\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -64,13 +64,13 @@
 					"response": []
 				},
 				{
-					"name": "Login Patient",
+					"name": "Login Admin",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"paul@gmail.com\",\n    \"password\": \"test\"\n}",
+							"raw": "{\n    \"email\": \"eve.williams@hospital.management.com\",\n    \"password\": \"test\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -85,34 +85,6 @@
 							"path": [
 								"auth",
 								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Register Staff",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"johon4o@gmail.com\",\n    \"password\": \"test\",\n    \"job_type\": \"N\",\n    \"department_id\" : 4,\n    \"f_name\": \"joun\",\n    \"l_name\": \"gfe\",\n    \"gender\": \"M\",\n    \"salary\" : 69\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/auth/staff/new",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"auth",
-								"staff",
-								"new"
 							]
 						}
 					},
@@ -140,6 +112,34 @@
 							"path": [
 								"auth",
 								"patient",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Staff",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"johon4o@gmail.com\",\n    \"password\": \"test\",\n    \"job_type\": \"N\",\n    \"department_id\" : 4,\n    \"f_name\": \"joun\",\n    \"l_name\": \"gfe\",\n    \"gender\": \"M\",\n    \"salary\" : 69\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/staff/new",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"staff",
 								"new"
 							]
 						}
@@ -671,13 +671,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/appointment/patient?status=U",
+							"raw": "{{base_url}}/appointment/patient/41?status=U",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"appointment",
-								"patient"
+								"patient",
+								"41"
 							],
 							"query": [
 								{
@@ -733,7 +734,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"appointmentId\":\"21\",\n    \"date\":\"2024-09-13\",\n    \"timeSlot\":\"3\"\n}",
+							"raw": "{\n    \"appointmentId\":\"21\",\n    \"date\":\"2024-09-13\",\n    \"timeSlot\":\"4\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -760,7 +761,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"appointment_id\":\"20\"\n}",
+							"raw": "{\n    \"appointment_id\":\"21\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -787,7 +788,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"appointment_id\":\"20\"\n}",
+							"raw": "{\n    \"appointment_id\":\"8\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -795,13 +796,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/appointment/cancel",
+							"raw": "{{base_url}}/appointment/finish",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"appointment",
-								"cancel"
+								"finish"
 							]
 						}
 					},
@@ -810,7 +811,7 @@
 			]
 		},
 		{
-			"name": "Treatment",
+			"name": "Treatment Record",
 			"item": [
 				{
 					"name": "Get my treatments",
@@ -830,13 +831,44 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/treatment/my",
+							"raw": "{{base_url}}/treatment_record/my",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"treatment",
+								"treatment_record",
 								"my"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get treatments from appointment id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/treatment_record/appointment/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"treatment_record",
+								"appointment",
+								"2"
 							]
 						}
 					},
@@ -860,13 +892,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/treatment/patient",
+							"raw": "{{base_url}}/treatment_record/patient/42",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"treatment",
-								"patient"
+								"treatment_record",
+								"patient",
+								"42"
 							]
 						}
 					},
@@ -890,13 +923,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/treatment/id",
+							"raw": "{{base_url}}/treatment_record/3",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"treatment",
-								"id"
+								"treatment_record",
+								"3"
 							]
 						}
 					},
@@ -909,7 +942,153 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"treatment_name\":\"chemotherapy\",\n    \"treatment_date\":\"2024-09-15\",\n    \"appointment_id\":\"21\"\n}",
+							"raw": "{\n    \"treatment_id\": \"3\",\n    \"treatment_date\":\"2024-09-15\",\n    \"appointment_id\":\"3\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/treatment_record/new",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"treatment_record",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Treatment mark missing",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/treatment_record/missing",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"treatment_record",
+								"missing"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Treatment mark finish",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\" : 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/treatment_record/finish",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"treatment_record",
+								"finish"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Treatment",
+			"item": [
+				{
+					"name": "Get all treatment",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/treatment/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"treatment",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get treatments by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"treatmentId\": \"5\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/treatment/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"treatment",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Treatment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"treatment_name\":\"Mental Treatment\",\n    \"treatment_cost\": \"10000\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -930,13 +1109,13 @@
 					"response": []
 				},
 				{
-					"name": "Mark Treatment missing",
+					"name": "Update treatment",
 					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"treatment_name\":\"chemotherapy\",\n    \"treatment_date\":\"2024-09-15\",\n    \"appointment_id\":\"21\"\n}",
+							"raw": "{\n    \"treatment_id\": \"13\",\n    \"treatment_name\": \"Teeth Fixing\",\n    \"treatment_cost\": \"3010\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -944,26 +1123,26 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/treatment/new",
+							"raw": "{{base_url}}/treatment/",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"treatment",
-								"new"
+								""
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Mark Treatment missing Copy",
+					"name": "Mark Treatment mark finish",
 					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"treatment_name\":\"chemotherapy\",\n    \"treatment_date\":\"2024-09-15\",\n    \"appointment_id\":\"21\"\n}",
+							"raw": "{\n    \"id\" : 2\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -971,13 +1150,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/treatment/new",
+							"raw": "{{base_url}}/treatment/finish",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"treatment",
-								"new"
+								"finish"
 							]
 						}
 					},
@@ -999,7 +1178,7 @@
 								{
 									"key": "fileTarget",
 									"type": "file",
-									"src": "/mnt/data/Media/Wallpaper/static/mountain6.jpg"
+									"src": "/mnt/data/Media/Wallpaper/official/manuel-cosentino-7IO8Uei5TzA-unsplash.jpg"
 								},
 								{
 									"key": "dirTarget",
@@ -1137,13 +1316,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/department/doctor",
+							"raw": "{{base_url}}/department/doctor/2",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"department",
-								"doctor"
+								"doctor",
+								"2"
 							]
 						}
 					},
@@ -1151,15 +1331,12 @@
 				},
 				{
 					"name": "Update department",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
-						"method": "GET",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"department_name\" : \"Cardiologist\"\n}",
+							"raw": "{\n    \"department_id\": 1,\n    \"department_name\": \"Mental Health\",\n    \"manager_id\": 100\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1167,13 +1344,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/department/doctor",
+							"raw": "{{base_url}}/department/",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"department",
-								"doctor"
+								""
 							]
 						}
 					},
@@ -1202,7 +1379,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/report/patient?start_date=xxx&end_date=xxx&",
+							"raw": "{{base_url}}/report/patient?start_date=2024-01-01&end_date=2024-12-12&email=jennifer@gmail.com",
 							"host": [
 								"{{base_url}}"
 							],
@@ -1213,15 +1390,15 @@
 							"query": [
 								{
 									"key": "start_date",
-									"value": "xxx"
+									"value": "2024-01-01"
 								},
 								{
 									"key": "end_date",
-									"value": "xxx"
+									"value": "2024-12-12"
 								},
 								{
-									"key": "",
-									"value": null
+									"key": "email",
+									"value": "jennifer@gmail.com"
 								}
 							]
 						}
@@ -1246,7 +1423,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/report/doctor/work",
+							"raw": "{{base_url}}/report/doctor/work?start_date=2024-01-01&end_date=2024-12-12&email=eve.brown@hospital.management.com",
 							"host": [
 								"{{base_url}}"
 							],
@@ -1254,6 +1431,20 @@
 								"report",
 								"doctor",
 								"work"
+							],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-12-12"
+								},
+								{
+									"key": "email",
+									"value": "eve.brown@hospital.management.com"
+								}
 							]
 						}
 					},
@@ -1277,7 +1468,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/report/doctor/job_changes",
+							"raw": "{{base_url}}/report/doctor/job_changes?start_date=2024-01-01&end_date=2024-12-12&email=eve.brown@hospital.management.com",
 							"host": [
 								"{{base_url}}"
 							],
@@ -1285,6 +1476,44 @@
 								"report",
 								"doctor",
 								"job_changes"
+							],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-12-12"
+								},
+								{
+									"key": "email",
+									"value": "eve.brown@hospital.management.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get billing",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/report/billing?appointment_id=6",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"report",
+								"billing"
+							],
+							"query": [
+								{
+									"key": "appointment_id",
+									"value": "6"
+								}
 							]
 						}
 					},
@@ -1338,7 +1567,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n    \"newFirstName\": \"Truong 3\", \n    \"newLastName\" : \"Nhan 4\", \n    \"newGender\": \"O\", \n    \"newManagerId\": \"3\", \n    \"newSalary\": \"2000\", \n    \"newJobType\": \"N\", \n    \"newDepartmentID\": \"4\", \n    \"notes\" : \"I am re-considering my career path\" \n}",
+							"raw": "{ \n    \"newFirstName\": \"Truong 33\", \n    \"newLastName\" : \"Nhan 4\", \n    \"newGender\": \"O\", \n    \"newManagerId\": \"3\", \n    \"newSalary\": \"2000\", \n    \"newJobType\": \"N\", \n    \"newDepartmentID\": \"4\", \n    \"notes\" : \"I am re-considering my career path\" \n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1361,11 +1590,11 @@
 				{
 					"name": "Approve ticket",
 					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n    \"ticketId\" : 1\n}",
+							"raw": "{ \n    \"ticketId\" : 2\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1388,11 +1617,11 @@
 				{
 					"name": "Reject ticket",
 					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n    \"ticketId\" : 1,\n    \"note\" : \"reject because of  ...\"\n}",
+							"raw": "{ \n    \"ticketId\" : 4,\n    \"note\" : \"reject because of  ...\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
