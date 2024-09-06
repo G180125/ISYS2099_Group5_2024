@@ -138,6 +138,7 @@ BEGIN
     -- Check if updating user was successful
     IF result = 0 THEN
         ROLLBACK;
+        SELECT result, message;
         LEAVE this_proc;
     END IF;
 
