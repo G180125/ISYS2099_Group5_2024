@@ -53,7 +53,7 @@ const staffController = {
       const totalPages = Math.ceil(totalRecords / limit);
   
       res.json({
-        results: results[0],
+        results: results[0][0],
         pagination: {
           totalRecords: totalRecords,
           totalPages: totalPages,
@@ -214,22 +214,30 @@ const staffController = {
       console.log("message: " , message);
 
       if (result == 0) {
-        res
+        return res
           .status(httpStatus.BAD_REQUEST().code)
           .json({ error: httpStatus.BAD_REQUEST(message).message });
-      } else {
-        const responseData = {
-          first_name: firstName,
-          last_name: lastName,
-          gender: gender,
-          job_type: job_type || null,
-          department_id: departmentId || null,
-          salary: salary || null
-        };
-        res
-          .status(httpStatus.OK().code)
-          .json(httpStatus.OK(`Staff ${id} updated successfully`, responseData).data);
-      }
+      } 
+      
+      return res
+        .status(httpStatus.OK().code)
+        .json({
+          message : message
+        });
+      // else {
+      
+      //   const responseData = {
+      //     first_name: firstName,
+      //     last_name: lastName,
+      //     gender: gender,
+      //     job_type: job_type || null,
+      //     department_id: departmentId || null,
+      //     salary: salary || null
+      //   };
+      //   res
+      //     .status(httpStatus.OK().code)
+      //     .json(httpStatus.OK(`Staff ${id} updated successfully`, responseData).data);
+      // }
     } catch (error) {
       return next(error);
     }
