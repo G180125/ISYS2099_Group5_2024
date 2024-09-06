@@ -1,36 +1,36 @@
-DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
-CREATE PROCEDURE refresh_patient_secure_report()
-BEGIN
-    DELETE FROM patient_secure_report;
-    INSERT INTO patient_secure_report
-    SELECT 
-        U.user_id patient_id,
-        U.first_name patient_first_name,
-        U.last_name patient_last_name,
-        U.email patient_email,
-        P.date_of_birth patient_dob,
-        U.gender patient_gender,
-        P.allergies patient_allergies
-    FROM patient P
-    JOIN user U ON P.patient_id = U.user_id;
-END;
+-- DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
+-- CREATE PROCEDURE refresh_patient_secure_report()
+-- BEGIN
+--     DELETE FROM patient_secure_report;
+--     INSERT INTO patient_secure_report
+--     SELECT 
+--         U.user_id patient_id,
+--         U.first_name patient_first_name,
+--         U.last_name patient_last_name,
+--         U.email patient_email,
+--         P.date_of_birth patient_dob,
+--         U.gender patient_gender,
+--         P.allergies patient_allergies
+--     FROM patient P
+--     JOIN user U ON P.patient_id = U.user_id;
+-- END;
 
-DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
-CREATE PROCEDURE refresh_patient_secure_report()
-BEGIN
-    DELETE FROM patient_secure_report;
-    INSERT INTO patient_secure_report
-    SELECT 
-        U.user_id patient_id,
-        U.first_name patient_first_name,
-        U.last_name patient_last_name,
-        U.email patient_email,
-        P.date_of_birth patient_dob,
-        U.gender patient_gender,
-        P.allergies patient_allergies
-    FROM patient P
-    JOIN user U ON P.patient_id = U.user_id;
-END;
+-- DROP PROCEDURE IF EXISTS refresh_patient_secure_report;
+-- CREATE PROCEDURE refresh_patient_secure_report()
+-- BEGIN
+--     DELETE FROM patient_secure_report;
+--     INSERT INTO patient_secure_report
+--     SELECT 
+--         U.user_id patient_id,
+--         U.first_name patient_first_name,
+--         U.last_name patient_last_name,
+--         U.email patient_email,
+--         P.date_of_birth patient_dob,
+--         U.gender patient_gender,
+--         P.allergies patient_allergies
+--     FROM patient P
+--     JOIN user U ON P.patient_id = U.user_id;
+-- END;
 
 DROP PROCEDURE IF EXISTS refresh_treatment_report;
 CREATE PROCEDURE refresh_treatment_report()

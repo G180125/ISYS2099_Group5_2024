@@ -146,15 +146,16 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   try {
-    const validRoles = ["patient", "staff", "admin"]; 
-
+    const { accessToken } = req.cookies;
+    console.log("logout: ");
+    console.log(accessToken);
     // Check if the role is valid
-    if (validRoles.includes(req.role)) {
-      await models.deleteUserToken(req.id);
+    if (accessToken) {
+      await models.deleteToken(accessToken);
     } else {
       return res
         .status(httpStatus.UNAUTHORIZED().code)
-        .json({ error: httpStatus.UNAUTHORIZED("User not found").message });
+        .json({ error: httpStatus.UNAUTHORIZED("Token not found").message });
     }
 
     // Clear the cookie

@@ -111,7 +111,6 @@ async function setupDb() {
     scripts = [
       `${pathPrefix}/tables.sql`,
       `${pathPrefix}/index.sql`,
-      
       `${pathPrefix}/Procedure/user_procedures.sql`,
       `${pathPrefix}/Procedure/appointment_procedures.sql`,
       `${pathPrefix}/Procedure/patient_procedures.sql`,
