@@ -1,11 +1,5 @@
-
-const cookieParser = require("cookie-parser");
-const express = require("express");
 const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
-
-const app = express();
-app.use(cookieParser());
 
 const departmentController = {
     getAllDepartments: async (req, res, next) => {
@@ -18,7 +12,7 @@ const departmentController = {
 
             res
             .status(httpStatus.OK().code)
-            .json(results[0]);
+            .json(results);
         } catch (error) {
             return next(error);
         }
@@ -26,7 +20,7 @@ const departmentController = {
 
     getAllDoctorsByDepartment: async (req, res, next) => {
         try {
-            const { department_id } = req.params.id;
+            const department_id = req.params.id;
 
             const pool = mysqlClient.getPool("patient");
 
@@ -43,7 +37,7 @@ const departmentController = {
 
             res
             .status(httpStatus.OK().code)
-            .json(results[0]);
+            .json(results);
         } catch (error) {
             return next(error);
         }
@@ -89,14 +83,15 @@ const departmentController = {
             if (results.affectedRows === 0) {
                 return res
                     .status(httpStatus.NOT_FOUND().code)
-                    .json({ error: "No department found with the provided ID." });
+                    .json({ error: "No department found or No manager found." });
             }
     
             return res
                 .status(httpStatus.OK().code)
                 .json({ message: "Department updated successfully." });
-    
         } catch (error) {
+            if (error.message.includes('foreign key'))
+                return next(new Error('No department found or No manager found.'));
             return next(error);
         }
     },    

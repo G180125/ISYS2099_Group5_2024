@@ -49,19 +49,6 @@ appointmentRouter.post(
   appointmentController.bookAppointment
 );
 
-// {{base_url}}/appointment/
-// {
-//   "appointmentId":"3",
-//   "date":"2024-09-12",
-//   "timeSlot":"2"
-// }
-appointmentRouter.put(
-  "",
-  authenticate,
-  checkRoles(["staff"]),
-  appointmentController.updateAppointment
-);
-
 // {{base_url}}/appointment/cancel
 // {
 //   "patient_id":"3",
@@ -81,8 +68,21 @@ appointmentRouter.put(
 appointmentRouter.put(
   "/finish",
   authenticate,
-  checkRoles(["doctor"]),
+  checkRoles(["staff"]),
   appointmentController.finishAppointment
+);
+
+// {{base_url}}/appointment/
+// {
+//   "appointmentId":"3",
+//   "date":"2024-09-12",
+//   "timeSlot":"2"
+// }
+appointmentRouter.put(
+  "",
+  authenticate,
+  checkRoles(["staff"]),
+  appointmentController.updateAppointment
 );
 
 module.exports = appointmentRouter;

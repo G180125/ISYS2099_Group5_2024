@@ -8,8 +8,12 @@ const path = require("path");
 const helmet = require("helmet");
 const { errorHandler } = require("./controllers/errorController");
 const httpStatus = require("./utils/httpStatus");
-const { authRouter, patientRouter, staffRouter, scheduleRouter, appointmentRouter, treatmentRouter, departmentRouter, reportRouter, fileRouter, ticketRouter } = require("./routers");
+const { authRouter, patientRouter, staffRouter, scheduleRouter, appointmentRouter, treatmentRecordRouter, departmentRouter, reportRouter, fileRouter, ticketRouter, treatmentRouter } = require("./routers");
 const app = express();
+
+const SERVER_PORT = process.env.SERVER_PORT || 2099;
+const whilelisted_cors = [`http://localhost:${SERVER_PORT}`, `http://localhost:5173`];
+const API_PREFIX = '/hospital_management/api/v1';
 
 // SECURE HTTP HEADERS
 app.set("trust proxy", true);
@@ -35,11 +39,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // STATIC FILES
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ENDPOINT 
-const SERVER_PORT = process.env.SERVER_PORT || 2099;
-const whilelisted_cors = [`http://localhost:${SERVER_PORT}`, `http://localhost:5173`];
-const API_PREFIX = '/hospital_management/api/v1';
-
 // basic test
 app.get(`${API_PREFIX}`, (req, res) => {
   return res
@@ -53,6 +52,7 @@ app.use(`${API_PREFIX}/patient`, patientRouter);
 app.use(`${API_PREFIX}/staff`, staffRouter);
 app.use(`${API_PREFIX}/schedule`, scheduleRouter);
 app.use(`${API_PREFIX}/appointment`, appointmentRouter);
+app.use(`${API_PREFIX}/treatment_record`, treatmentRecordRouter);
 app.use(`${API_PREFIX}/treatment`, treatmentRouter);
 app.use(`${API_PREFIX}/files`, fileRouter);
 app.use(`${API_PREFIX}/department`, departmentRouter);

@@ -214,52 +214,34 @@ BEGIN
     FROM ticket 
     WHERE ticket_id = t_id 
     FOR UPDATE;
-
-    -- Check if ticket exists and is pending
-    IF _creator IS NULL THEN
-        SET result = 0;
-        SET message = 'Ticket not found.';
+    
+    -- cook section
+    -- check if ticket exists
+    IF NOT EXISTS (SELECT status FROM ticket WHERE ticket_id = t_id) THEN
         ROLLBACK;
-        LEAVE this_proc;
-    END IF;
-
-    IF _ticket_status <> 'P' THEN
+        SET result = 0;
+        SET message = 'Ticket not found';
+        
+    -- check if ticket is non-pending
+    ELSEIF EXISTS (SELECT status FROM ticket WHERE ticket_id = t_id AND status <> 'P') THEN
+        ROLLBACK;
         SET result = 0;
         SET message = 'Cannot approve a non-pending ticket.';
-        ROLLBACK;
-        LEAVE this_proc;
+        
+    -- if fine, udpate_staff + return result
+    ELSE
+        CALL update_staff( _creator, _first_name, _last_name, 
+                            _gender, _job_type, _department_id, 
+                            _salary, result, message);
+        UPDATE ticket
+            SET status = 'A', handled_by = admin_id
+            WHERE ticket_id = t_id;
+        COMMIT;
+        
+        SET result = 1;
+        SET message = 'Ticket approval successful';
     END IF;
-
-    -- Call the update_staff procedure
-    CALL update_staff(
-        _creator,
-        _first_name,
-        _last_name,
-        _gender,
-        _job_type,
-        _department_id,
-        _salary,
-        result,
-        message
-    );
-
-    IF result = 0 THEN 
-        ROLLBACK;
-        LEAVE this_proc;
-    END IF;
-
-    -- Update ticket status and handler
-    UPDATE ticket
-    SET 
-        status = 'A',
-        handled_by = admin_id
-    WHERE ticket_id = t_id;
-
-    SET result = 1;
-    SET message = CONCAT('Ticket approval successful. ', message);
-    COMMIT;
-
-    -- Return the result and message
+    
     SELECT result, message;
 END;
 
@@ -290,24 +272,22 @@ BEGIN
 
     START TRANSACTION;
 
-    -- Lock the ticket for update and check if staff_id is the creator
-    SELECT status
-    INTO _ticket_status
-    FROM ticket 
-    WHERE ticket_id = t_id 
-    FOR UPDATE;
-
-    IF _ticket_status <> 'P' THEN
-        SET result = 0;
-        SET message = 'Cannot reject a non-pending ticket.';
+    -- check if ticket exists
+    IF NOT EXISTS (SELECT status FROM ticket WHERE ticket_id = t_id) THEN
         ROLLBACK;
+        SET result = 0;
+        SET message = 'Ticket not found';
+        SELECT result, message;
         LEAVE this_proc;
     END IF;
 
     -- Check if any rollback was set
-    IF _rollback THEN
-        SET result = 0;
+    -- check if pending
+    IF EXISTS (SELECT status FROM ticket WHERE ticket_id = t_id AND status <> 'P') THEN
         ROLLBACK;
+        
+        SET result = 0;
+        SET message = 'Cannot reject a non-pending ticket.';
     ELSE
         UPDATE ticket
         SET 
@@ -315,10 +295,10 @@ BEGIN
             handled_by = admin_id,
             note = note
         WHERE ticket_id = t_id;
-
+        COMMIT;
+        
         SET result = 1;
         SET message = CONCAT('Ticket rejected ', message);
-        COMMIT;
     END IF;
 
     -- Return the result and message
@@ -348,23 +328,23 @@ BEGIN
 
     START TRANSACTION;
 
-    -- Lock the ticket for update and check if staff_id is the creator
-    SELECT *
-    FROM ticket 
-    WHERE ticket_id = t_id 
-    FOR UPDATE;
+    IF EXISTS (SELECT * FROM ticket WHERE ticket_id = t_id FOR UPDATE) THEN
+        DELETE FROM ticket
+        WHERE ticket_id = t_id;
+        SET result = 1;
+        SET message = 'Ticket deleted ';
+        COMMIT;
+        SELECT result, message;
+        LEAVE this_proc;
+    ELSE 
+        SET _rollback = 1;
+    END IF; 
 
     -- Check if any rollback was set
     IF _rollback THEN
         SET result = 0;
+        SET message = 'No Ticket Found';
         ROLLBACK;
-    ELSE
-        DELETE FROM ticket
-        WHERE ticket_id = t_id;
-
-        SET result = 1;
-        SET message = CONCAT('Ticket deleted ', message);
-        COMMIT;
     END IF;
 
     -- Return the result and message

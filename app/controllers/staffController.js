@@ -1,12 +1,6 @@
 
-const cookieParser = require("cookie-parser");
-const express = require("express");
 const mysqlClient = require("../databases/mysqlClient");
-const moment = require('moment');
 const httpStatus = require("../utils/httpStatus.js");
-
-const app = express();
-app.use(cookieParser());
 
 const validGenders = ["F", "M", "O"];
 const validjob_types = ["D", "N", "A"];
@@ -42,7 +36,7 @@ const staffController = {
         countQuery = `SELECT COUNT(*) as total FROM staff_secure_report WHERE department_id = ?`;
         [countResult] = await pool.query(countQuery, [department]);
       } else if (job_type) {
-        query = `SELECT * FROM staff_secure_report WHERE job_type = ? ORDER BY name ${order} LIMIT ? OFFSET ?`;
+        query = `SELECT * FROM staff_secure_report WHERE job_type = ? LIMIT ? OFFSET ?`;
         results = await pool.query(query, [job_type, limit, offset]);
 
         countQuery = `SELECT COUNT(*) as total FROM staff_secure_report WHERE job_type = ?`;
@@ -59,7 +53,7 @@ const staffController = {
       const totalPages = Math.ceil(totalRecords / limit);
   
       res.json({
-        results: results[0],
+        results: results[0][0],
         pagination: {
           totalRecords: totalRecords,
           totalPages: totalPages,
@@ -97,7 +91,7 @@ const staffController = {
       const totalPages = Math.ceil(totalRecords / limit);
 
       res.json({
-        results: results[0],
+        results: results,
         pagination: {
           totalRecords: totalRecords,
           totalPages: totalPages,
@@ -123,7 +117,20 @@ const staffController = {
       const pool = mysqlClient.getPool(role);
 
       const [results] = await pool.query(
-        `SELECT * FROM staff_secure_report WHERE staff_id = ?`,
+        `SELECT 
+          S.user_id staff_id,
+          U.first_name,
+          U.last_name,
+          U.email,
+          U.gender,
+          S.job_type,
+          S.salary,
+          D.department_id,
+          D.department_name,
+          D.manager_id
+        FROM staff S
+        JOIN user U ON U.user_id = S.user_id
+        LEFT JOIN department D ON S.department_id = D.department_id WHERE S.user_id = ?`,
         [id],
       );
       if (results.length === 0) {
@@ -150,7 +157,19 @@ const staffController = {
       const pool = mysqlClient.getPool(role);
 
       const [results] = await pool.query(
-        `SELECT * FROM staff_secure_report WHERE staff_id = ?`,
+        `SELECT 
+            S.user_id staff_id,
+            U.first_name,
+            U.last_name,
+            U.email,
+            U.gender,
+            S.job_type,
+            D.department_id,
+            D.department_name,
+            D.manager_id
+        FROM staff S
+        JOIN user U ON U.user_id = S.user_id
+        LEFT JOIN department D ON S.department_id = D.department_id WHERE S.user_id = ?`,
         [id],
       );
       if (results.length === 0) {
@@ -196,22 +215,30 @@ const staffController = {
       console.log("message: " , message);
 
       if (result == 0) {
-        res
+        return res
           .status(httpStatus.BAD_REQUEST().code)
           .json({ error: httpStatus.BAD_REQUEST(message).message });
-      } else {
-        const responseData = {
-          first_name: firstName,
-          last_name: lastName,
-          gender: gender,
-          job_type: job_type || null,
-          department_id: departmentId || null,
-          salary: salary || null
-        };
-        res
-          .status(httpStatus.OK().code)
-          .json(httpStatus.OK(`Staff ${id} updated successfully`, responseData).data);
-      }
+      } 
+      
+      return res
+        .status(httpStatus.OK().code)
+        .json({
+          message : message
+        });
+      // else {
+      
+      //   const responseData = {
+      //     first_name: firstName,
+      //     last_name: lastName,
+      //     gender: gender,
+      //     job_type: job_type || null,
+      //     department_id: departmentId || null,
+      //     salary: salary || null
+      //   };
+      //   res
+      //     .status(httpStatus.OK().code)
+      //     .json(httpStatus.OK(`Staff ${id} updated successfully`, responseData).data);
+      // }
     } catch (error) {
       return next(error);
     }

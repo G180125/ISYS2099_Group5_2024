@@ -1,6 +1,5 @@
-/* eslint-disable no-undef */
 const { setCookie, introspect } = require("../utils");
-const { getUserById } = require("../services/mysqlService");
+const { hasToken, getUserById } = require("../services/mysqlService");
 const httpStatus = require("../utils/httpStatus");
 
 const authenticate = async (req, res, next) => {
@@ -28,8 +27,8 @@ const authenticate = async (req, res, next) => {
 
     // Get user by role
     const user = await getUserById(payload.id);
-
-    if (!user || !user.access_token) {
+    const isValid = await hasToken(accessToken);
+    if (!user || !isValid ) {
       return res
         .status(httpStatus.FORBIDDEN().code)
         .json({ error: httpStatus.FORBIDDEN("Authentication Invalid").message });

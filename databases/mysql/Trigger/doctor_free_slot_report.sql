@@ -28,7 +28,7 @@ BEGIN
     CALL refresh_doctor_free_slot_report();
 END;
 
-CREATE TRIGGER update_doctor_free_slot_report_after_schedule_update
+CREATE TRIGGER update_doctor_free_slot_report_after_schedule_update1
 AFTER UPDATE ON schedule
 FOR EACH ROW
 BEGIN

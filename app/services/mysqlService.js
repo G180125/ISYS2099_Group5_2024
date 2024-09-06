@@ -1,6 +1,25 @@
+const { log } = require("console");
 const db = require("../databases/mysqlClient");
 
 let database = {};
+
+database.hasToken = async (access_token) => {
+  try {
+    const [results] = await db.poolPatient.query(
+      `SELECT * FROM access_token WHERE access_token = ?`,
+      [access_token]
+    );
+    
+    if (results.length > 0 && results[0].access_token != null){
+      return true;
+    } 
+
+    return false;
+  } catch (err) {
+    console.error("error: " + err.stack);
+    throw err;
+  }
+};
 
 database.getUserById = async (id) => {
   try {
@@ -28,11 +47,11 @@ database.getUserByEmail = async (email) => {
   }
 };
 
-database.deleteUserToken = async (id) => {
+database.deleteToken = async (access_token) => {
   try {
     await db.poolPatient.query(
-      `UPDATE user SET access_token = NULL WHERE user_id = ?`,
-      [id]
+      `DELETE FROM access_token where access_token = ?`,
+      [access_token]
     );
   } catch (err) {
     console.error("error: " + err.stack);

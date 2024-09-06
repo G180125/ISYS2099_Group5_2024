@@ -110,23 +110,27 @@ async function setupDb() {
     // if (process.argv.length === 2) {
     scripts = [
       `${pathPrefix}/tables.sql`,
+      `${pathPrefix}/materialized_view.sql`,
       `${pathPrefix}/index.sql`,
       `${pathPrefix}/Procedure/user_procedures.sql`,
       `${pathPrefix}/Procedure/appointment_procedures.sql`,
       `${pathPrefix}/Procedure/patient_procedures.sql`,
-      `${pathPrefix}/Procedure/view_report.sql`,
+      `${pathPrefix}/Procedure/view_report_procedures.sql`,
       `${pathPrefix}/Procedure/staff_procedures.sql`,
       `${pathPrefix}/Procedure/ticket_procedures.sql`,
-      `${pathPrefix}/insert_data.sql`,
-      `${pathPrefix}/materialized_view.sql`,
       `${pathPrefix}/Procedure/refresh_procedures.sql`,
       `${pathPrefix}/Trigger/billing_report_trigger.sql`,
       `${pathPrefix}/Trigger/doctor_work_report_trigger.sql`,
       `${pathPrefix}/Trigger/staff_job_change_report_trigger.sql`,
       `${pathPrefix}/Trigger/treatment_report_trigger.sql`,
+      `${pathPrefix}/Trigger/bussiness_logic_trigger.sql`,
+      `${pathPrefix}/Trigger/doctor_free_slot_report.sql`,
+      `${pathPrefix}/Trigger/patient_secure_report_trigger.sql`,
+      `${pathPrefix}/Trigger/staff_secure_report_trigger.sql`,
       `${pathPrefix}/AppUser/admin_app_user.sql`,
       `${pathPrefix}/AppUser/staff_app_user.sql`,
       `${pathPrefix}/AppUser/patient_app_user.sql`,
+      `${pathPrefix}/insert_data.sql`,
     ];
     // }
 

@@ -1,6 +1,8 @@
 const express = require("express");
 const departmentRouter = express.Router();
 const departmentController = require("../controllers/departmentController");
+const { authenticate } = require("../middleware/authenticate");
+const checkRoles = require("../middleware/checkRoles");
 
 // Get all departments
 departmentRouter.get(
@@ -13,5 +15,13 @@ departmentRouter.get(
     "/doctor/:id",
     departmentController.getAllDoctorsByDepartment
 );
+
+departmentRouter.put(
+    "",
+    authenticate,
+    checkRoles(["admin"]),
+    departmentController.updateDepartment
+);
+
 
 module.exports = departmentRouter;

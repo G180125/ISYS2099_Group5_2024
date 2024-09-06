@@ -43,5 +43,17 @@ reportRouter.get(
   reportController.viewStaffJobChanges
 );
 
+//get billing
+// {
+//   "start_date": "2024-09-02",
+//   "end_date": "2024-09-15",
+//   "email": "eve.brown@hospital.management.com"
+// }
+reportRouter.get(
+  "/billing",
+  authenticate, 
+  checkRoles(["admin", "staff", "patient"]), 
+  reportController.viewBilling
+);
 
 module.exports = reportRouter;

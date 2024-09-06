@@ -1,12 +1,6 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
 const mysqlClient = require("../databases/mysqlClient");
-const moment = require('moment');
 const httpStatus = require("../utils/httpStatus.js");
 const mysqlService = require("../services/mysqlService");
-
-const app = express();
-app.use(cookieParser());
 
 const validGenders = ["f", "m", "o"];
 
@@ -27,9 +21,9 @@ const patientController = {
         const [countResult] = await pool.query(`SELECT COUNT(*) as total FROM patient_secure_report`);
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / limit);
-  
+        
         res.json({
-          results: results[0],
+          results: results,
           pagination: {
             totalRecords: totalRecords,
             totalPages: totalPages,
@@ -55,7 +49,16 @@ const patientController = {
         const pool = mysqlClient.getPool(role);
 
         const [results] = await pool.query(
-          `SELECT * FROM patient_secure_report WHERE patient_id = ?`,
+          `SELECT 
+          P.user_id patient_id,
+          U.first_name,
+          U.last_name,
+          U.email,
+          P.date_of_birth,
+          U.gender,
+          P.allergies
+            FROM patient P
+            JOIN user U ON U.user_id = P.user_id WHERE U.user_id = ?`,
           [id],
         );
         if (results.length === 0) {
@@ -100,6 +103,7 @@ const patientController = {
   
     getPatientByname: async (req, res, next) => {
       try {
+        console.log('wtf???');
         const first_name = req.query.first_name;
         const last_name = req.query.last_name;
         const role = req.role;
@@ -141,7 +145,7 @@ const patientController = {
       try {
         const id = req.id;
         const role = req.role;
-        const {  newFirstName, newLastName, newDOB, newGender, allegies } = req.body;
+        const {  newFirstName, newLastName, newDOB, newGender, allergies } = req.body;
 
         if(!id || id == ""){
             return res
@@ -160,7 +164,7 @@ const patientController = {
   
         const [rows] = await pool.query(
           `CALL update_patient(?, ?, ?, ?, ?, ?, @result, @message);`,
-          [id, newFirstName, newLastName, newGender, newDOB, allegies] 
+          [id, newFirstName, newLastName, newGender, newDOB, allergies] 
         );
     
         const result = rows[0][0].result; 

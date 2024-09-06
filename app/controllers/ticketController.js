@@ -1,9 +1,5 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
 const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
-const app = express();
-app.use(cookieParser());
 
 const ticketController = {
     getAllTickets: async (req, res, next) => {
@@ -27,7 +23,7 @@ const ticketController = {
             const totalPages = Math.ceil(totalRecords / limit);
 
             res.json({
-                results: results[0],
+                results: results,
                 pagination: {
                     totalRecords: totalRecords,
                     totalPages: totalPages,
@@ -40,7 +36,7 @@ const ticketController = {
         }
     },
 
-    getAllTicketsByStaff: async (req, res, next) => {
+    getMyTickets: async (req, res, next) => {
         try {
             const role = req.role;
             const id = req.id;
@@ -80,7 +76,7 @@ const ticketController = {
         try {
             const staffId = req.id;
             const role = req.role;
-            const { newFirstName, newLastName, newGender, newManagerId, newSalary, newJobType, newDepartmentID, notes } = req.body;
+            const { newFirstName, newLastName, newGender, newSalary, newJobType, newDepartmentID, notes } = req.body;
 
             if (!staffId) {
                 return res
@@ -91,11 +87,11 @@ const ticketController = {
             const pool = mysqlClient.getPool(role);
 
             const query = `
-                CALL create_ticket_for_update(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message);
+                CALL create_ticket_for_update(?, ?, ?, ?, ?, ?, ?, ?, @result, @message);
             `;
 
             const [rows] = await pool.query(query, [
-                staffId, newFirstName, newLastName, newGender, newSalary, newJobType, newDepartmentID, newManagerId, notes
+                staffId, newFirstName, newLastName, newGender, newSalary, newJobType, newDepartmentID, notes
             ]);
 
             console.log(rows);
@@ -121,7 +117,7 @@ const ticketController = {
         try {
             const staffId = req.id;
             const role = req.role;
-            const { ticketId, newFirstName, newLastName, newGender, newManagerId, newSalary, newJobType, newDepartmentID, notes } = req.body;
+            const { ticketId, newFirstName, newLastName, newGender, newSalary, newJobType, newDepartmentID, notes } = req.body;
 
             if (!staffId) {
                 return res
@@ -136,7 +132,7 @@ const ticketController = {
             `;
 
             const [rows] = await pool.query(query, [
-                ticketId, staffId, newFirstName, newLastName, newGender, newSalary, newJobType, newDepartmentID, newManagerId, notes
+                ticketId, staffId, newFirstName, newLastName, newGender, newSalary, newJobType, newDepartmentID, notes
             ]);
 
             const message = rows[0][0].message;
@@ -228,7 +224,7 @@ const ticketController = {
 
             return res
                 .status(httpStatus.OK().code)
-                .json({ message: message });
+                .json({ message: 'Reject Ticket Successfully' });
         } catch (error) {
             return next(error);
         }
@@ -265,7 +261,7 @@ const ticketController = {
 
             return res
                 .status(httpStatus.OK().code)
-                .json({ message: message });
+                .json({ message: 'Delete Successfully' });
         } catch (error) {
             return next(error);
         }
