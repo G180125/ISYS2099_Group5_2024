@@ -75,7 +75,7 @@ const scheduleController = {
       }
 
       res.json({
-        results: results[0],
+        results: results[0][0],
       });
     } catch (error) {
       return next(error);
