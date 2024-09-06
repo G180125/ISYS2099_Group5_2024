@@ -90,6 +90,8 @@ const departmentController = {
                 .status(httpStatus.OK().code)
                 .json({ message: "Department updated successfully." });
         } catch (error) {
+            if (error.message.includes('foreign key'))
+                return next(new Error('No department found or No manager found.'));
             return next(error);
         }
     },    
