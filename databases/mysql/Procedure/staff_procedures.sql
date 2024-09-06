@@ -142,12 +142,14 @@ BEGIN
         LEAVE this_proc;
     END IF;
 
+    SELECT * FROM staff WHERE user_id = s_id FOR UPDATE;
+
     UPDATE staff
     SET 
         job_type = COALESCE(s_job_type, job_type),
         department_id = COALESCE(s_department_id, department_id),
         salary = COALESCE(s_salary, salary)
-    WHERE staff_id = s_id;
+    WHERE user_id = s_id;
 
     -- Check if there was an error during the update
     IF _rollback THEN
