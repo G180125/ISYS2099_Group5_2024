@@ -89,7 +89,7 @@ const departmentController = {
             if (results.affectedRows === 0) {
                 return res
                     .status(httpStatus.NOT_FOUND().code)
-                    .json({ error: "No department found with the provided ID." });
+                    .json({ error: "No department found or No manager found." });
             }
     
             return res

@@ -247,14 +247,14 @@ const treatmentController = {
 
             const pool = mysqlClient.getPool(role);
 
-            const query = `UPDATE treatment_record SET status = 'M' WHERE record_id = ? and status = 'U'`;
+            const query = `UPDATE treatment_record SET status = 'M' WHERE record_id = ? AND status = 'U' `;
             const [result] = await pool.query(query, [record_id]);
 
-            if (result == 0) {
+            if (result.affectedRows === 0) {
                 return res
-                  .status(httpStatus.BAD_REQUEST().code)
-                  .json({ error: httpStatus.BAD_REQUEST(message).message });
-              }
+                  .status(httpStatus.BAD_REQUEST().code) 
+                  .json({ error: "No matching treatment record found or record is not in 'U' (upcoming) status." });
+            }
 
             return res
                 .status(httpStatus.OK().code)
@@ -281,11 +281,11 @@ const treatmentController = {
             const query = `UPDATE treatment_record SET status = 'F' WHERE record_id = ? AND status = 'U'`;
             const [result] = await pool.query(query, [record_id]);
 
-            if (result == 0) {
+            if (result.affectedRows === 0) {
                 return res
-                  .status(httpStatus.BAD_REQUEST().code)
-                  .json({ error: httpStatus.BAD_REQUEST(message).message });
-              }
+                  .status(httpStatus.BAD_REQUEST().code) 
+                  .json({ error: "No matching treatment record found or record is not in 'U' (upcoming) status." });
+            }
 
             return res
                 .status(httpStatus.OK().code)

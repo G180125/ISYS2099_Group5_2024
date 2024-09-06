@@ -111,6 +111,7 @@ BEGIN
        ST.first_name AS staff_first_name,
        ST.last_name AS staff_last_name,
        D.department_name,
+       P.patient_id,
        P.first_name AS patient_first_name,
        P.last_name AS patient_last_name,
        COALESCE(SUM(T.treatment_cost), 0) AS total_cost
@@ -130,6 +131,7 @@ BEGIN
         ST.first_name,
         ST.last_name,
         D.department_name,
+        P.patient_id,
         P.first_name,
         P.last_name;
 END;

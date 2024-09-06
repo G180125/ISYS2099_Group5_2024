@@ -158,7 +158,50 @@ const reportController = {
         } catch (error) {
             return next(error);
         }
-    }
+    },
+
+    viewBilling: async (req, res, next) => {
+        const role = req.role;
+        const { appointment_id, patient_id } = req.query; 
+      
+        if (!appointment_id) {
+          return res
+            .status(httpStatus.BAD_REQUEST().code)
+            .json({ error: httpStatus.BAD_REQUEST("No input for Appointment Id").message });
+        }
+      
+        try {
+          const pool = mysqlClient.getPool(role);
+      
+          let query = `SELECT * FROM billing_report WHERE appointment_id = ?`;
+          let queryParams = [appointment_id];
+      
+          // Restrict the query if patient_id is provided
+          if (patient_id) {
+            query += ` AND patient_id = ?`;
+            queryParams.push(patient_id);
+          }
+      
+          const [rows] = await pool.query(query, queryParams);
+      
+          // Check if the result set is empty
+          if (rows.length === 0) {
+            return res
+              .status(httpStatus.NOT_FOUND().code)
+              .json({ error: httpStatus.NOT_FOUND("No reports found for the given appointment.").message });
+          }
+      
+          const billingReport = rows[0]; 
+      
+          return res
+            .status(httpStatus.OK().code)
+            .json({ message: "Reports retrieved successfully", data: billingReport });
+          
+        } catch (error) {
+          console.error("Error in viewBilling:", error.message);
+          return next(error);
+        }
+      }
 };
 
 module.exports = reportController;
