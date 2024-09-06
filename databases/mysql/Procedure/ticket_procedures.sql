@@ -291,24 +291,22 @@ BEGIN
 
     START TRANSACTION;
 
-    -- Lock the ticket for update and check if staff_id is the creator
-    SELECT status
-    INTO _ticket_status
-    FROM ticket 
-    WHERE ticket_id = t_id 
-    FOR UPDATE;
-
-    IF _ticket_status <> 'P' THEN
-        SET result = 0;
-        SET message = 'Cannot reject a non-pending ticket.';
+    -- check if ticket exists
+    IF NOT EXISTS (SELECT status FROM ticket WHERE ticket_id = t_id) THEN
         ROLLBACK;
+        SET result = 0;
+        SET message = 'Ticket not found';
+        SELECT result, message;
         LEAVE this_proc;
     END IF;
 
     -- Check if any rollback was set
-    IF _rollback THEN
-        SET result = 0;
+    -- check if pending
+    IF EXISTS (SELECT status FROM ticket WHERE ticket_id = t_id AND status <> 'P') THEN
         ROLLBACK;
+        
+        SET result = 0;
+        SET message = 'Cannot reject a non-pending ticket.';
     ELSE
         UPDATE ticket
         SET 
@@ -316,10 +314,10 @@ BEGIN
             handled_by = admin_id,
             note = note
         WHERE ticket_id = t_id;
-
+        COMMIT;
+        
         SET result = 1;
         SET message = CONCAT('Ticket rejected ', message);
-        COMMIT;
     END IF;
 
     -- Return the result and message
