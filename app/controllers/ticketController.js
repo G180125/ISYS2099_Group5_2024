@@ -1,4 +1,4 @@
-const mysqlClient = require("../databases/mysqlClient");
+    const mysqlClient = require("../databases/mysqlClient");
 const httpStatus = require("../utils/httpStatus.js");
 
 const ticketController = {
