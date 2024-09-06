@@ -115,7 +115,7 @@ BEGIN
         LEAVE this_proc;
     END IF;
 
-    SELECT * FROM patient WHERE WHERE user_id = p_id FOR UPDATE;
+    SELECT * FROM patient WHERE user_id = p_id FOR UPDATE;
 
     -- Update the patient-specific fields
     UPDATE patient
