@@ -11,17 +11,21 @@ app.use(cookieParser());
 
 const registerPatient = async (req, res, next) => {
   try {
-    const { email, password, f_name, l_name, gender, dob, allergies} = req.body;
+    const { email, password, f_name, l_name, gender, dob, allergies } =
+      req.body;
 
     if (!email || !password) {
       return res
         .status(httpStatus.BAD_REQUEST().code)
-        .json({ error: httpStatus.BAD_REQUEST("Please provide email, password").message });
+        .json({
+          error: httpStatus.BAD_REQUEST("Please provide email, password")
+            .message,
+        });
     }
 
-    let result = 0; 
-    let message = '';
-    let newPatientId = 0; 
+    let result = 0;
+    let message = "";
+    let newPatientId = 0;
 
     const salt = genSaltSync(10);
     const hashedPassword = hashSync(password, salt);
@@ -30,9 +34,17 @@ const registerPatient = async (req, res, next) => {
 
     // const query = `CALL register_patient(?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
     // const [rows] = await pool.query(query, [null, null, email, hashedPassword, null, 'O', null]);
-    
+
     const query = `CALL register_patient(?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
-    const [rows] = await pool.query(query, [f_name, l_name, email, hashedPassword, dob, gender || "O", allergies]);
+    const [rows] = await pool.query(query, [
+      f_name,
+      l_name,
+      email,
+      hashedPassword,
+      dob,
+      gender || "O",
+      allergies,
+    ]);
 
     console.log(rows);
 
@@ -47,7 +59,7 @@ const registerPatient = async (req, res, next) => {
     }
 
     req.id = newPatientId;
-    req.role = 'patient';
+    req.role = "patient";
 
     return res
       .status(httpStatus.OK().code)
@@ -59,26 +71,48 @@ const registerPatient = async (req, res, next) => {
 
 const registerStaff = async (req, res, next) => {
   try {
-    const { email, password, job_type, f_name, l_name, gender, department_id, salary } = req.body;
+    const {
+      email,
+      password,
+      job_type,
+      f_name,
+      l_name,
+      gender,
+      department_id,
+      salary,
+    } = req.body;
 
     if (!email || !job_type || !password) {
       return res
         .status(httpStatus.BAD_REQUEST().code)
-        .json({ error: httpStatus.BAD_REQUEST("Please provide email, password, and role").message });
+        .json({
+          error: httpStatus.BAD_REQUEST(
+            "Please provide email, password, and role"
+          ).message,
+        });
     }
 
-    let result = 0; 
-    let message = ''; 
+    let result = 0;
+    let message = "";
     let newStaffId = 0;
 
     const salt = genSaltSync(10);
     const hashedPassword = hashSync(password, salt);
     const pool = mysqlClient.getPool("admin");
-    
+
     const query = `CALL add_new_staff(?, ?, ?, ?, ?, ?, ?, ?, @result, @message, @newPatientId)`;
-    const [rows] = await pool.query(query, [f_name, l_name, email, hashedPassword, gender, job_type, department_id, salary || 1]);
-    const role = (job_type === 'admin') ? 'admin' : 'staff';
-    
+    const [rows] = await pool.query(query, [
+      f_name,
+      l_name,
+      email,
+      hashedPassword,
+      gender,
+      job_type,
+      department_id,
+      salary || 1,
+    ]);
+    const role = job_type === "admin" ? "admin" : "staff";
+
     console.log(rows);
 
     result = rows[0][0].result;
@@ -109,12 +143,15 @@ const login = async (req, res, next) => {
     if (!email || !password) {
       return res
         .status(httpStatus.BAD_REQUEST().code)
-        .json({ error: httpStatus.BAD_REQUEST("Please provide email and password").message });
+        .json({
+          error: httpStatus.BAD_REQUEST("Please provide email and password")
+            .message,
+        });
     }
 
     const role = await models.getRoleByEmail(email);
 
-    if (!role){
+    if (!role) {
       return res
         .status(httpStatus.UNAUTHORIZED().code)
         .json({ error: httpStatus.UNAUTHORIZED().message });
@@ -138,7 +175,7 @@ const login = async (req, res, next) => {
 
     return res
       .status(httpStatus.OK().code)
-      .json({ message: "User authenticated", tokens });
+      .json({ message: "User authenticated", role: role });
   } catch (err) {
     return next(err);
   }
@@ -171,7 +208,6 @@ const logout = async (req, res, next) => {
     return next(err);
   }
 };
-
 
 module.exports = {
   registerPatient,
