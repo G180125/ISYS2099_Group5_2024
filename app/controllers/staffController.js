@@ -36,7 +36,7 @@ const staffController = {
         countQuery = `SELECT COUNT(*) as total FROM staff_secure_report WHERE department_id = ?`;
         [countResult] = await pool.query(countQuery, [department]);
       } else if (job_type) {
-        query = `SELECT * FROM staff_secure_report WHERE job_type = ? ORDER BY name ${order} LIMIT ? OFFSET ?`;
+        query = `SELECT * FROM staff_secure_report WHERE job_type = ? LIMIT ? OFFSET ?`;
         results = await pool.query(query, [job_type, limit, offset]);
 
         countQuery = `SELECT COUNT(*) as total FROM staff_secure_report WHERE job_type = ?`;
@@ -124,6 +124,7 @@ const staffController = {
           U.email,
           U.gender,
           S.job_type,
+          S.salary,
           D.department_id,
           D.department_name,
           D.manager_id

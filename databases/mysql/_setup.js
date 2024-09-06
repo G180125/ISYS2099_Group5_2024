@@ -110,16 +110,15 @@ async function setupDb() {
     // if (process.argv.length === 2) {
     scripts = [
       `${pathPrefix}/tables.sql`,
+      `${pathPrefix}/materialized_view.sql`,
       `${pathPrefix}/index.sql`,
       `${pathPrefix}/Procedure/user_procedures.sql`,
       `${pathPrefix}/Procedure/appointment_procedures.sql`,
       `${pathPrefix}/Procedure/patient_procedures.sql`,
-      `${pathPrefix}/Procedure/view_report.sql`,
+      `${pathPrefix}/Procedure/view_report_procedures.sql`,
       `${pathPrefix}/Procedure/staff_procedures.sql`,
       `${pathPrefix}/Procedure/ticket_procedures.sql`,
-      `${pathPrefix}/Procedure/ticket_procedures.sql`,
       `${pathPrefix}/insert_data.sql`,
-      `${pathPrefix}/materialized_view.sql`,
       `${pathPrefix}/Procedure/refresh_procedures.sql`,
       `${pathPrefix}/Trigger/billing_report_trigger.sql`,
       `${pathPrefix}/Trigger/doctor_work_report_trigger.sql`,

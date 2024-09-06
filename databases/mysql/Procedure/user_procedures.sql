@@ -71,9 +71,9 @@ BEGIN
 
     -- Update the user record
     UPDATE user
-    SET first_name = u_first_name,
-        last_name = u_last_name,
-        gender = u_gender
+    SET first_name = COALESCE(u_first_name, first_name),
+        last_name = COALESCE(u_last_name, last_name),
+        gender = COALESCE(u_gender, gender)
     WHERE user_id = u_id;
 
     IF _rollback THEN
