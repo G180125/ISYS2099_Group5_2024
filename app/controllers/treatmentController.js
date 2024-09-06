@@ -63,7 +63,7 @@ const treatmentRecordController = {
             }
            
             res.json({
-                results: results
+                message : 'Add Treatment Successfully'
             });
         } catch (error) {
             return next(error);
@@ -78,7 +78,7 @@ const treatmentRecordController = {
             if (!treatment_id) {
                 return res
                     .status(httpStatus.NOT_FOUND().code)
-                    .json({ error: "No Treatement Found" });
+                    .json({ error: "No Treatement Id Found" });
             }
 
             // Check if both treatment_name and treatment_cost are null
@@ -116,7 +116,7 @@ const treatmentRecordController = {
             if (results.affectedRows === 0) {
                 return res
                     .status(httpStatus.BAD_REQUEST().code)
-                    .json({ error: "Something Wrong! Please try again!" });
+                    .json({ error: "No treatment Updated!" });
             }
     
             return res
