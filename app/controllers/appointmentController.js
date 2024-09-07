@@ -26,6 +26,7 @@ const appointmentController = {
         S.schedule_date, 
         A.slot_number,
         A.purpose,
+        A.status,
         ST.first_name AS staff_first_name, 
         ST.last_name AS staff_last_name,
         ST.gender AS staff_gender, 

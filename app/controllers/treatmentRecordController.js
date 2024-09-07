@@ -173,7 +173,7 @@ const treatmentRecordController = {
             let query = `
                 SELECT *
                 FROM treatment_record
-                WHERE treatment_id = ?`;
+                WHERE record_id = ?`;
 
             let queryParams = [treatmentId];
             
@@ -185,10 +185,13 @@ const treatmentRecordController = {
             const pool = mysqlClient.getPool(role);
 
             const [result] = await pool.query(query, queryParams);
-
+            
+            if (result.length === 0) 
+                throw new Error("No matching treatment record found.");
+            
             return res 
                     .status(httpStatus.OK().code)
-                    .json({ result: result });
+                    .json({result : result[0]});
         } catch (error) {
             return next(error);
         }
@@ -231,7 +234,7 @@ const treatmentRecordController = {
     markTreatmentRecordAsMissing: async (req, res, next)=>{
         try{
             const role = req.role;
-            const record_id = req.body.id;
+            const record_id = req.params.id;
 
             if(!record_id){
                 return res
@@ -262,7 +265,7 @@ const treatmentRecordController = {
     finishTreatmentRecord: async (req, res, next)=>{
         try{
             const role = req.role;
-            const record_id = req.body.id;
+            const record_id = req.params.id;
 
             if(!record_id){
                 return res

@@ -58,7 +58,7 @@ treatmentRecordRouter.post(
 //     "appointment_id":"3"
 // }
 treatmentRecordRouter.put(
-    "/missing",
+    "/missing/:id",
     authenticate,
     checkRoles(["staff"]),
     treatmentRecordController.markTreatmentRecordAsMissing
@@ -69,7 +69,7 @@ treatmentRecordRouter.put(
 //     "appointment_id":"3"
 // }
 treatmentRecordRouter.put(
-    "/finish",
+    "/finish/:id",
     authenticate,
     checkRoles(["staff"]),
     treatmentRecordController.finishTreatmentRecord
