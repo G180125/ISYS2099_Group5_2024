@@ -7,7 +7,7 @@ const departmentController = {
             const pool = mysqlClient.getPool("patient");
 
             const [results] = await pool.query(`
-            SELECT department_name
+            SELECT department_name, department_id
             FROM department`);
 
             res
@@ -34,6 +34,8 @@ const departmentController = {
             `,
             [department_id]
             );
+
+            console.log(response)
 
             res
             .status(httpStatus.OK().code)
