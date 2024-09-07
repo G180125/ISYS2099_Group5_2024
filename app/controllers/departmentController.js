@@ -21,23 +21,45 @@ const departmentController = {
     getAllDoctorsByDepartment: async (req, res, next) => {
         try {
             const department_id = req.params.id;
-
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const offset = (page - 1) * limit;
+    
             const pool = mysqlClient.getPool("patient");
-
-            // Execute query to fetch doctors by department name
+    
+            // Query to fetch doctors by department with pagination
             const [results] = await pool.query(
-            `
-            SELECT S.first_name, S.last_name, S.staff_id, D.department_name
-            FROM staff_secure_report S
-            JOIN department D ON S.department_id = D.department_id
-            WHERE S.job_type = 'D' AND D.department_id = ?
-            `,
-            [department_id]
+                `
+                SELECT S.first_name, S.last_name, S.staff_id, D.department_name
+                FROM staff_secure_report S
+                JOIN department D ON S.department_id = D.department_id
+                WHERE S.job_type = 'D' AND D.department_id = ?
+                LIMIT ? OFFSET ?
+                `,
+                [department_id, limit, offset]
             );
-
-            res
-            .status(httpStatus.OK().code)
-            .json(results);
+    
+            // Query to get the total number of doctors in the department
+            const [countResult] = await pool.query(
+                `
+                SELECT COUNT(*) as total FROM staff_secure_report S
+                WHERE S.job_type = 'D' AND S.department_id = ?
+                `,
+                [department_id]
+            );
+    
+            const totalRecords = countResult[0].total;
+            const totalPages = Math.ceil(totalRecords / limit);
+    
+            res.status(httpStatus.OK().code).json({
+                results,
+                pagination: {
+                    totalRecords: totalRecords,
+                    totalPages: totalPages,
+                    currentPage: page,
+                    pageSize: limit,
+                },
+            });
         } catch (error) {
             return next(error);
         }
