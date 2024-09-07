@@ -7,55 +7,112 @@ This project is part of the ISYS2099 course, where Group 5 has developed a compr
 
 ```bash
 ./
-├── .env
-├── .gitignore
-├── package-lock.json
+├── app/
+│   ├── app.js
+│   ├── controllers/
+│   ├── databases/
+│   ├── middleware/
+│   ├── routers/
+│   ├── services/
+│   └── utils/
+├── databases/
+│   ├── initDb.js
+│   ├── mongo/
+│   └── mysql/
+├── jsconfig.json
 ├── package.json
-├── app
-└── mySQL
+├── package-lock.json
+├── README.md
+└── tests/
+    ├── Hospital Management.postman_collection copy.json
+    ├── image.png
+    └── README.md
 ```
 
-**Explanation of Directories and Files**:
-
-- **`.env`**: 
-- **`.gitignore`**: Specifies intentionally untracked files to ignore by Git.
-- **`package-lock.json`**: 
-- **`package.json`**: Contains metadata relevant to the project and manages dependencies.
-- **`app`**: 
-- **`mySQL`**: This NodeJS project folder contains the setup script (NodeJS), utilities SQL scripts, and sample data for the local MySQL database instance. See Installation - Database - MySQL below for more detail.
-
+**Important directories and files**:
+- `.env`: Global environmental variables (e.g., for setting up databases, encryption key).
+- `package.json`: This folder contains basic information about the project (e.g., description, scripts, dependencies).
+- `databases/`: This folder contains the setup scripts and sample data for MySQL and MongoDB databases. See [Installation](#installation) for more details.
+- `app/`: This folder typically contains the server's core logic, communicating with the web client via API handling.
+  - `middlewares/`, `controllers/`, `routers/`: Handle incoming HTTP requests and responses with REST API design.
+  - `databases/`: contains database-related logic, like model definitions or ORM configurations; Not to confused with the identical-named `databases/` above.
+- `tests/`: contains the Postman Test Collections for all API endpoints. See [this link](/tests/README.md) for more details.
 ## Technology Stack
+**Frontend**: 
+  ![VueJS](https://img.shields.io/badge/Vue.js-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D)
+  ![Tailwind](https://img.shields.io/badge/Tailwind-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-- **Database**:
-  ![MySQL](https://img.shields.io/badge/MySQL-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
-  ![MongoDB](https://img.shields.io/badge/MongoDB-%2347A248.svg?style=for-the-badge&logo=mongodb&logoColor=white)
-
-- **Backend**: 
+**Backend**: 
   ![NodeJS](https://img.shields.io/badge/Node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
   ![Express](https://img.shields.io/badge/Express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
   ![Mongoose](https://img.shields.io/badge/Mongoose-%23880000.svg?style=for-the-badge&logo=mongoose&logoColor=white)
+  
+**Database**:
+  ![MySQL](https://img.shields.io/badge/MySQL-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
+  ![MongoDB](https://img.shields.io/badge/MongoDB-%2347A248.svg?style=for-the-badge&logo=mongodb&logoColor=white)
 
-- **Frontend**: 
-  ![VueJS](https://img.shields.io/badge/Vue.js-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D)
 
-## Scripts
 
-```bash
-# cloning the project
+### Dependencies 
+| Dependency | Version |
+| --- | --- |
+| NodeJS | 18.19.\* |
+| MySQL Community Server | 8.4.\* |
+| MongoDB Community Server | 7.0.\* |
+
+
+## Usage
+For full installation and usage instructions of the front-end, please visit [here](https://github.com/tsogp/asm2-database-frtnd)
+
+### Installation
+1. Make sure your local server of MySQL and MongoDB is running
+2. Clone and Navigate to the project
+```sh
 git clone https://github.com/G180125/ISYS2099_Group5_2024.git
 
-# change into project folder
 cd ISYS2099_Group5_2024
+```
 
-# instal packages
+3. Install dependencies
+```sh
 npm install
+```
 
-# init database (MySQL + MongoDB)
+4. Initialize Database
+```sh
 npm run init-db
+```
 
-# run server
+### Usage
+1. Make sure your local server of MySQL and MongoDB is running and initialized.
+2. Start the server
+```sh
 npm run app
 ```
+
+3. The API server now starts listening at port 2099 with the URL below.
+```
+localhost:2099/hospital_management/api/v1
+```
+
+## Testing
+### Requirement 
+- Postman version v11.10.0
+
+### Setup 
+1. Import tests collection `tests/Hospital Management.postman_collection.json`
+
+2. Check if the base URL `{{base_url}}` is available by clicking into the highlighted variable as below picture. If not, set it with a value `localhost:2099/hospital_management/api/v1`
+![alt text](assets/image1.png)
+
+### Usage
+- Make sure the API server is running.
+- Endpoints are splitted based on funtionaclities (e.g., Authorization, Appointment, Treatments). You can get started with the `Testing Server` test.
+![alt text](assets/image2.png)
+ 
+- Since most of endpoints are protected by auth, relevant account (e.g., admin, staff) should be logged in. Inspect the [routers list](app/routers) for more priviledge details.
+![alt text](assets/image.png)
+
 
 ## Contributors
 
@@ -67,6 +124,7 @@ npm run app
 | Nhan Truong Vo Thien  | s3929215@rmit.edu.vn       | 7     |
 | Pavel Potemkin        | s3963284@rmit.edu.vn       | 7     |
 
-## Video Demo:
+## Video Demo
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
 
 
