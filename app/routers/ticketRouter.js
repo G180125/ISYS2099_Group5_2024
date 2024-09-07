@@ -4,20 +4,20 @@ const appointmentController = require("../controllers/ticketController");
 const { authenticate } = require("../middleware/authenticate");
 const checkRoles = require("../middleware/checkRoles");
 
-//get all the tickets
-ticketRouter.get(
-    "",
-    authenticate,
-    checkRoles(["admin"]),
-    appointmentController.getAllTickets
-);
-
 //get all the tickets of a staff
 ticketRouter.get(
     "/my",
     authenticate,
     checkRoles(["staff"]),
     appointmentController.getMyTickets
+);
+
+//get all the tickets
+ticketRouter.get(
+    "/all",
+    authenticate,
+    checkRoles(["admin"]),
+    appointmentController.getAllTickets
 );
 
 // Create a ticket
@@ -48,7 +48,7 @@ ticketRouter.put(
 //  "ticketId" : 1
 // }
 ticketRouter.put(
-    "/approve",
+    "/approve/:ticket_id",
     authenticate,
     checkRoles(["admin"]),
     appointmentController.approveTicket
@@ -60,7 +60,7 @@ ticketRouter.put(
 //  "note" : "reject because of  ..."
 // }    
 ticketRouter.put(
-    "/reject",
+    "/reject/:ticket_id",
     authenticate,
     checkRoles(["admin"]),
     appointmentController.rejectTicket
