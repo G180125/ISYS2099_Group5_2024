@@ -31,18 +31,6 @@ ticketRouter.post(
     appointmentController.createTicket
 );
 
-// Update a ticket
-//{ 
-//  "ticketId" : 1,
-//  "newFirstName" : "testing"
-// }
-ticketRouter.put(
-    "",
-    authenticate,
-    checkRoles(["staff"]),
-    appointmentController.updateTicket
-);
-
 //approve a ticket
 //{ 
 //  "ticketId" : 1
@@ -66,12 +54,24 @@ ticketRouter.put(
     appointmentController.rejectTicket
 );
 
+// Update a ticket
+//{ 
+//  "ticketId" : 1,
+//  "newFirstName" : "testing"
+// }
+ticketRouter.put(
+    "/:ticket_id",
+    authenticate,
+    checkRoles(["staff"]),
+    appointmentController.updateTicket
+);
+
 //delete a ticket
 //{ 
 //  "ticketId" : 1,
 // } 
 ticketRouter.delete(
-    "",
+    "/:ticket_id",
     authenticate,
     checkRoles(["admin"]),
     appointmentController.deleteTicket

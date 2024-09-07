@@ -117,7 +117,8 @@ const ticketController = {
         try {
             const staffId = req.id;
             const role = req.role;
-            const { ticketId, newFirstName, newLastName, newGender, newSalary, newJobType, newDepartmentID, notes } = req.body;
+            const ticketId = req.params.ticket_id;
+            const { newFirstName, newLastName, newGender, newSalary, newJobType, newDepartmentID, notes } = req.body;
 
             if (!staffId) {
                 return res
@@ -233,7 +234,7 @@ const ticketController = {
 
     deleteTicket: async (req, res, next) => {
         try {
-            const { ticketId } = req.body;
+            const ticketId  = req.params.ticket_id;
             const role = req.role;
             if (!ticketId) {
                 return res
