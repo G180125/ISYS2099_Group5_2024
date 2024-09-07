@@ -35,8 +35,6 @@ const departmentController = {
             [department_id]
             );
 
-            console.log(response)
-
             res
             .status(httpStatus.OK().code)
             .json(results);
