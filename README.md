@@ -81,6 +81,16 @@ npm install
 4. Initialize Database
 ```sh
 npm run init-db
+
+> isys2099_group5_2024@1.0.0 init-db
+> node databases/initDb.js
+
+> Init MySQL . . .
+Enter MySQL root username: # your root here
+Enter MySQL password for "your-root-here": # your root password here
+validate_password.policy not found. Skipping policy setting.
+Script executed successfully: databases/mysql/tables.sql
+. . .
 ```
 
 ### Usage
