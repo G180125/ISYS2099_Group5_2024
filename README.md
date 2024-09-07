@@ -36,7 +36,7 @@ This project is part of the ISYS2099 course, where Group 5 has developed a compr
 - `app/`: This folder typically contains the server's core logic, communicating with the web client via API handling.
   - `middlewares/`, `controllers/`, `routers/`: Handle incoming HTTP requests and responses with REST API design.
   - `databases/`: contains database-related logic, like model definitions or ORM configurations; Not to confused with the identical-named `databases/` above.
-- `tests/`: contains the Postman Test Collections for all API endpoints. See [this link](/tests/README.md) for more details.
+- `tests/`: contains the Postman Test Collections for all API endpoints. See [this link](#testing) for more details.
 ## Technology Stack
 **Frontend**: 
   ![VueJS](https://img.shields.io/badge/Vue.js-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D)
