@@ -211,9 +211,9 @@ const appointmentController = {
 
       const totalRecords = countResult[0].total;
       const totalPages = Math.ceil(totalRecords / limit);
-
+      // console.log(results);
       res.json({
-        results: results[0],
+        results: results,
         pagination: {
           totalRecords: totalRecords,
           totalPages: totalPages,
