@@ -81,7 +81,7 @@ appointmentRouter.put(
 appointmentRouter.put(
   "",
   authenticate,
-  checkRoles(["staff", "patient"]),
+  checkRoles(["staff"]),
   appointmentController.updateAppointment
 );
 
