@@ -49,7 +49,11 @@ const reportController = {
 
             return res
             .status(httpStatus.OK().code)
-            .json(httpStatus.OK("Reports retrieved successfully", rows));
+            .json({
+                message : 'Report retrieved successfully',
+                results : rows[0]
+            });
+            // .json(httpStatus.OK("Reports retrieved successfully", rows));
         } catch (error) {
             return next(error);
         }
@@ -79,7 +83,7 @@ const reportController = {
                 .status(httpStatus.NOT_FOUND().code)
                 .json({ error: httpStatus.NOT_FOUND("No reports found for the given date.").message });
             }
-            console.log(rows);
+            // console.log(rows);
             const message = rows[1][0].message;
             const result = rows[1][0].result;
             
@@ -88,6 +92,8 @@ const reportController = {
                   .status(httpStatus.BAD_REQUEST().code)
                   .json({ error: httpStatus.BAD_REQUEST(message).message });
             }
+            
+            const results = rows[0].map(obj => ({...obj, time: timeSlotMap[obj.time]}));
             
             // Convert the time_slot numbers to their corresponding time ranges
             const resultsWithTimeSlots = rows.map(result => ({
@@ -99,7 +105,11 @@ const reportController = {
 
             return res
             .status(httpStatus.OK().code)
-            .json(httpStatus.OK("Reports retrieved successfully", resultsWithTimeSlots));
+            .json({
+                message : 'Reports retrieved successfully',
+                results : results
+            });
+            // .json(httpStatus.OK("Reports retrieved successfully", resultsWithTimeSlots));
         } catch (error) {
             return next(error);
         }
@@ -124,13 +134,13 @@ const reportController = {
 
             const [rows] = await pool.query("CALL view_staff_job_change(?, ?, ?, @result, @message)", [start_date, end_date, email_]);
             
-            if (rows[0].length === 0) {
-                return res
-                .status(httpStatus.NOT_FOUND().code)
-                .json({ error: httpStatus.NOT_FOUND("No reports found for the given date.").message });
-            }
+            // if (rows[0].length === 0) {
+            //     return res
+            //     .status(httpStatus.NOT_FOUND().code)
+            //     .json({ error: httpStatus.NOT_FOUND("No reports found for the given date.").message });
+            // }
             console.log(rows);
-            const message = rows[1][0].message;
+            let message = rows[1][0].message;
             const result = rows[1][0].result;
             
             if (result == 0) {
@@ -139,17 +149,16 @@ const reportController = {
                   .json({ error: httpStatus.BAD_REQUEST(message).message });
             }
             
+            if (rows[0].length === 0) 
+                message = 'No reports found!';
             // Convert the time_slot numbers to their corresponding time ranges
-            const resultsWithTimeSlots = rows.map(result => ({
-                ...result,
-                time: timeSlotMap[rows.time]
-            }));
-
-            // console.log(resultsWithTimeSlots);
 
             return res
-            .status(httpStatus.OK().code)
-            .json(httpStatus.OK("Reports retrieved successfully", resultsWithTimeSlots));
+                .status(httpStatus.OK().code)
+                .json({
+                    message : message,
+                    results : rows[0]
+                });
         } catch (error) {
             return next(error);
         }
