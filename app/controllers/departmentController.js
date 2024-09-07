@@ -27,7 +27,7 @@ const departmentController = {
             // Execute query to fetch doctors by department name
             const [results] = await pool.query(
             `
-            SELECT S.first_name, S.last_name, D.department_name
+            SELECT S.first_name, S.last_name, S.staff_id, D.department_name
             FROM staff_secure_report S
             JOIN department D ON S.department_id = D.department_id
             WHERE S.job_type = 'D' AND D.department_id = ?

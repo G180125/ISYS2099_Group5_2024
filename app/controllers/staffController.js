@@ -76,7 +76,7 @@ const staffController = {
       const pool = mysqlClient.getPool("patient");
 
       const query = `
-        SELECT S.first_name, S.last_name, S.department_name
+        SELECT S.first_name, S.last_name, S.department_name, S.staff_id
         FROM staff_secure_report S
         WHERE S.job_type = 'D'
         LIMIT ? OFFSET ?;`;
