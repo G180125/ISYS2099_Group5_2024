@@ -133,12 +133,7 @@ const reportController = {
             const pool = mysqlClient.getPool(role);
 
             const [rows] = await pool.query("CALL view_staff_job_change(?, ?, ?, @result, @message)", [start_date, end_date, email_]);
-            
-            // if (rows[0].length === 0) {
-            //     return res
-            //     .status(httpStatus.NOT_FOUND().code)
-            //     .json({ error: httpStatus.NOT_FOUND("No reports found for the given date.").message });
-            // }
+
             console.log(rows);
             let message = rows[1][0].message;
             const result = rows[1][0].result;
@@ -151,7 +146,6 @@ const reportController = {
             
             if (rows[0].length === 0) 
                 message = 'No reports found!';
-            // Convert the time_slot numbers to their corresponding time ranges
 
             return res
                 .status(httpStatus.OK().code)
@@ -166,7 +160,7 @@ const reportController = {
 
     viewBilling: async (req, res, next) => {
         const role = req.role;
-        const { appointment_id, patient_id } = req.query; 
+        const { appointment_id } = req.params; 
       
         if (!appointment_id) {
           return res
@@ -179,12 +173,6 @@ const reportController = {
       
           let query = `SELECT * FROM billing_report WHERE appointment_id = ?`;
           let queryParams = [appointment_id];
-      
-          // Restrict the query if patient_id is provided
-          if (patient_id) {
-            query += ` AND patient_id = ?`;
-            queryParams.push(patient_id);
-          }
       
           const [rows] = await pool.query(query, queryParams);
       

@@ -50,7 +50,7 @@ reportRouter.get(
 //   "email": "eve.brown@hospital.management.com"
 // }
 reportRouter.get(
-  "/billing",
+  "/billing/:appointment_id",
   authenticate, 
   checkRoles(["admin", "staff", "patient"]), 
   reportController.viewBilling
