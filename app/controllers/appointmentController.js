@@ -26,6 +26,7 @@ const appointmentController = {
         S.schedule_date, 
         A.slot_number,
         A.purpose,
+        A.status,
         ST.first_name AS staff_first_name, 
         ST.last_name AS staff_last_name,
         ST.gender AS staff_gender, 
@@ -210,9 +211,9 @@ const appointmentController = {
 
       const totalRecords = countResult[0].total;
       const totalPages = Math.ceil(totalRecords / limit);
-
+      // console.log(results);
       res.json({
-        results: results[0],
+        results: results,
         pagination: {
           totalRecords: totalRecords,
           totalPages: totalPages,

@@ -24,7 +24,7 @@ reportRouter.get(
 //   "email": "eve.brown@hospital.management.com"
 // }
 reportRouter.get(
-  "/doctor/work",
+  "/staff/work",
   authenticate, 
   checkRoles(["admin", "staff"]), 
   reportController.viewDoctorWork
@@ -37,7 +37,7 @@ reportRouter.get(
 //   "email": "eve.brown@hospital.management.com"
 // }
 reportRouter.get(
-  "/doctor/job_changes",
+  "/staff/job_changes",
   authenticate, 
   checkRoles(["admin", "staff"]), 
   reportController.viewStaffJobChanges
@@ -50,10 +50,12 @@ reportRouter.get(
 //   "email": "eve.brown@hospital.management.com"
 // }
 reportRouter.get(
-  "/billing",
+  "/billing/:appointment_id",
   authenticate, 
   checkRoles(["admin", "staff", "patient"]), 
   reportController.viewBilling
 );
+
+
 
 module.exports = reportRouter;

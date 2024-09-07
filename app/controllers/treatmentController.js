@@ -33,9 +33,7 @@ const treatmentRecordController = {
                   .json({ error: httpStatus.NOT_FOUND("Treatment not found").message });
               }
 
-            res.json({
-                results: results
-            });
+            res.json(results[0]);
         } catch (error) {
             return next(error);
         } 

@@ -123,6 +123,30 @@ const scheduleController = {
       return next(error);
     }
   },
+
+  getAllSchedulesOfDoctorById: async (req, res, next) => {
+    try {
+      const role = req.role;
+      const id = req.params.id;
+
+      const pool = mysqlClient.getPool(role);
+
+      const query = `SELECT * FROM doctor_free_slot_report WHERE staff_id = ?`;
+      const results = await pool.query(query, [id]);
+
+      if (results[0].length == 0) {
+        return res
+          .status(httpStatus.NOT_FOUND().code)
+          .json({ error: httpStatus.NOT_FOUND("No Data Found").message });
+      }
+
+      res.json({
+        results: results[0]
+      });
+    } catch (error) {
+      return next(error);
+    }
+  },
 };
 
 module.exports = scheduleController;

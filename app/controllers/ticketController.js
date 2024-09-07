@@ -117,7 +117,8 @@ const ticketController = {
         try {
             const staffId = req.id;
             const role = req.role;
-            const { ticketId, newFirstName, newLastName, newGender, newSalary, newJobType, newDepartmentID, notes } = req.body;
+            const ticketId = req.params.ticket_id;
+            const { newFirstName, newLastName, newGender, newSalary, newJobType, newDepartmentID, notes } = req.body;
 
             if (!staffId) {
                 return res
@@ -128,15 +129,15 @@ const ticketController = {
             const pool = mysqlClient.getPool(role);
 
             const query = `
-                CALL update_ticket_for_update(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message);
+                CALL update_ticket_for_update(?, ?, ?, ?, ?, ?, ?, ?, ?, @result, @message);
             `;
 
             const [rows] = await pool.query(query, [
                 ticketId, staffId, newFirstName, newLastName, newGender, newSalary, newJobType, newDepartmentID, notes
             ]);
-
-            const message = rows[0][0].message;
-            const result = rows[0][0].result;
+            // console.log(rows);
+            const message = rows[1][0].message;
+            const result = rows[1][0].result;
 
             if (result == 0) {
                 return res
@@ -156,9 +157,9 @@ const ticketController = {
         try {
             const adminId = req.id;
             const role = req.role;
-            const { ticketId } = req.body;
+            const { ticket_id } = req.params;
 
-            if (!ticketId) {
+            if (!ticket_id) {
                 return res
                     .status(httpStatus.UNAUTHORIZED().code)
                     .json({ error: httpStatus.UNAUTHORIZED("Invalid number of input").message });
@@ -171,7 +172,7 @@ const ticketController = {
             `;
 
             const [rows] = await pool.query(query, [
-                ticketId, adminId
+                ticket_id, adminId
             ]);
 
             const message = rows[0][0].message;
@@ -185,7 +186,7 @@ const ticketController = {
 
             return res
                 .status(httpStatus.OK().code)
-                .json({ message: message });
+                .json({ message: 'Ticket approval successfully!' });
         } catch (error) {
             return next(error);
         }
@@ -195,9 +196,10 @@ const ticketController = {
         try {
             const adminId = req.id;
             const role = req.role;
-            const { ticketId, note } = req.body;
+            const { ticket_id } = req.params;
+            const { note } = req.body;
 
-            if (!ticketId || !note) {
+            if (!ticket_id || !note) {
                 return res
                     .status(httpStatus.UNAUTHORIZED().code)
                     .json({ error: httpStatus.UNAUTHORIZED("Invalid number of input").message });
@@ -210,7 +212,7 @@ const ticketController = {
             `;
 
             const [rows] = await pool.query(query, [
-                ticketId, adminId, note
+                ticket_id, adminId, note
             ]);
 
             const message = rows[0][0].message;
@@ -232,7 +234,7 @@ const ticketController = {
 
     deleteTicket: async (req, res, next) => {
         try {
-            const { ticketId } = req.body;
+            const ticketId  = req.params.ticket_id;
             const role = req.role;
             if (!ticketId) {
                 return res
