@@ -32,11 +32,11 @@ This project is part of the ISYS2099 course, where Group 5 has developed a compr
 **Important directories and files**:
 - `.env`: Global environmental variables (e.g., for setting up databases, encryption key).
 - `package.json`: This folder contains basic information about the project (e.g., description, scripts, dependencies).
-- `databases/`: This folder contains the setup scripts and sample data for MySQL and MongoDB databases. See [Installation](#installation) for more details.
+- `databases/`: This folder contains the setup scripts and sample data for MySQL and MongoDB databases. ( See [Installation](#installation) )
 - `app/`: This folder typically contains the server's core logic, communicating with the web client via API handling.
   - `middlewares/`, `controllers/`, `routers/`: Handle incoming HTTP requests and responses with REST API design.
   - `databases/`: contains database-related logic, like model definitions or ORM configurations; Not to confused with the identical-named `databases/` above.
-- `tests/`: contains the Postman Test Collections for all API endpoints. See [this link](#testing) for more details.
+- `tests/`: contains the Postman Test Collections for all API endpoints. ( See [Testing](#testing) )
 ## Technology Stack
 **Frontend**: 
   ![VueJS](https://img.shields.io/badge/Vue.js-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D)
