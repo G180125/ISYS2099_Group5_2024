@@ -85,6 +85,7 @@ SELECT
     T.last_name AS ticket_last_name,
     T.gender AS ticket_gender,
     T.job_type AS ticket_job_type,
+    T.salary AS ticket_salary,
     D.department_name AS ticket_department_name,
     D.manager_id AS ticket_manager
 FROM ticket T
