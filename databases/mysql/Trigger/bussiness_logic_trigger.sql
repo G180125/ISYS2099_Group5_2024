@@ -2,19 +2,19 @@ CREATE TRIGGER before_finish_appointment
 BEFORE UPDATE ON appointment
 FOR EACH ROW
 BEGIN
-    DECLARE treatments_finished INT;
+    DECLARE treatments_upcoming INT;
 
     -- Check if the new status is being updated to 'F' (finished)
     IF NEW.status = 'F' THEN
-        -- Count the number of treatment records that are not finished (status != 'F') for the appointment
+        -- Count the number of treatment records that are upcoming (status - 'U') for the appointment
         SELECT COUNT(*)
-        INTO treatments_finished
+        INTO treatments_upcoming
         FROM treatment_record
         WHERE appointment_id = NEW.appointment_id
-        AND status != 'F';
+        AND status = 'U';
 
         -- If there are any treatment records that are not finished, raise an error
-        IF treatments_finished > 0 THEN
+        IF treatments_upcoming > 0 THEN
             SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Cannot finish appointment. Not all treatments are completed.';
         END IF;

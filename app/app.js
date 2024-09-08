@@ -43,7 +43,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get(`${API_PREFIX}`, (req, res) => {
   return res
   .status(httpStatus.OK().code)
-  .json({ message: "Server is running" });
+  .json({ message: "Hello world! Server is running well" });
 });
 
 // Routes setup with prefix

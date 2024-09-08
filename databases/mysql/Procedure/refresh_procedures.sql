@@ -47,7 +47,7 @@ BEGIN
             ST.last_name AS staff_last_name, 
             ST.job_type, 
             D.department_name,
-            TR.treatment_id,
+            TR.record_id,
             T.treatment_name, 
             TR.treatment_date,
             T.treatment_cost
@@ -68,7 +68,7 @@ BEGIN
             ST.last_name, 
             ST.job_type, 
             D.department_name,
-            TR.treatment_id, 
+            TR.record_id, 
             T.treatment_name, 
             TR.treatment_date,
             T.treatment_cost;
@@ -103,25 +103,27 @@ CREATE PROCEDURE refresh_billing_report()
 BEGIN
     DELETE FROM billing_report;
     INSERT INTO billing_report
-    SELECT A.appointment_id,
-       S.schedule_date AS appointment_date,
-       A.slot_number AS time,
-       A.status AS appointment_status,
-       A.purpose,
-       ST.first_name AS staff_first_name,
-       ST.last_name AS staff_last_name,
-       D.department_name,
-       P.patient_id,
-       P.first_name AS patient_first_name,
-       P.last_name AS patient_last_name,
-       COALESCE(SUM(T.treatment_cost), 0) AS total_cost
+    SELECT 
+        A.appointment_id,
+        S.schedule_date AS appointment_date,
+        A.slot_number AS time_slot,
+        A.status AS appointment_status,
+        A.purpose,
+        ST.first_name AS staff_first_name,
+        ST.last_name AS staff_last_name,
+        D.department_name,
+        P.patient_id,
+        P.first_name AS patient_first_name,
+        P.last_name AS patient_last_name,
+        COALESCE(SUM(T.treatment_cost), 0) AS total_cost
     FROM appointment A
     JOIN patient_secure_report P ON A.patient_id = P.patient_id
     JOIN schedule S ON A.schedule_id = S.schedule_id
     JOIN staff_secure_report ST ON S.staff_id = ST.staff_id
     JOIN department D ON ST.department_id = D.department_id
-    LEFT JOIN treatment_record TR ON A.appointment_id = TR.appointment_id
+    LEFT JOIN treatment_record TR ON A.appointment_id = TR.appointment_id AND TR.status = 'F'
     LEFT JOIN treatment T ON TR.treatment_id = T.treatment_id
+    WHERE A.status = 'F'
     GROUP BY 
         A.appointment_id,
         S.schedule_date,

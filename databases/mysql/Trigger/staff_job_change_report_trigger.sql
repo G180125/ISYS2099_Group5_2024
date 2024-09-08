@@ -21,6 +21,7 @@ BEGIN
         ticket_last_name,
         ticket_gender,
         ticket_job_type,
+        ticket_salary,
         ticket_department_name,
         ticket_manager
     )
@@ -42,6 +43,7 @@ BEGIN
         NEW.last_name AS ticket_last_name,
         NEW.gender AS ticket_gender,
         NEW.job_type AS ticket_job_type,
+        NEW.salary AS ticket_salary,
         D.department_name AS ticket_department_name,
         D.manager_id AS ticket_manager_id
     FROM staff_secure_report S

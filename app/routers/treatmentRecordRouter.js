@@ -61,7 +61,7 @@ treatmentRecordRouter.put(
     "/missing/:id",
     authenticate,
     checkRoles(["staff"]),
-    treatmentRecordController.markTreatmentRecordAsMissing
+    treatmentRecordController.markTreatmentRecordAsMissing //mark from U to M 
 );
 
 // {{base_url}}/treatment_record/finish
