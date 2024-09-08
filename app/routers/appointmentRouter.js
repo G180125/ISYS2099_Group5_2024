@@ -14,19 +14,23 @@ appointmentRouter.get(
 );
 
 // Get my appointments
-// {{base_url}}/appointment/my?status=U&page=1&limit=1
+// {{base_url}}/appointment/patient/my?status=U&page=1&limit=1
 appointmentRouter.get(
-  "/my",
+  "/patient/my",
   authenticate,
   checkRoles(["patient"]),
   appointmentController.getMyAppoinments
 );
 
-// Get my appointments
-// {{base_url}}/appointment/patient?status=U&page=1&limit=1
-// {
-//   "id": "2"
-// }
+// {{base_url}}/appointment/doctor/my?status=U&page=1&limit=1
+appointmentRouter.get(
+  "/doctor/my",
+  authenticate,
+  checkRoles(["staff"]),
+  appointmentController.getAppointmentsByStaff
+);
+
+// {{base_url}}/appointment/patient/41?status=U&page=1&limit=1
 appointmentRouter.get(
   "/patient/:id",
   authenticate,

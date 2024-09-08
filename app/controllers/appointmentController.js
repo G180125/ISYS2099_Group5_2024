@@ -148,6 +148,67 @@ const appointmentController = {
     }
   },
 
+  getAppointmentsByStaff: async (req, res, next) => {
+    try{    
+        const role = req.role;
+        const id = req.id;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        const query = 
+        `SELECT 
+        A.appointment_id, 
+        S.schedule_date, 
+        A.slot_number,
+        A.purpose,
+        A.status,
+        ST.first_name AS staff_first_name, 
+        ST.last_name AS staff_last_name,
+        ST.gender AS staff_gender, 
+        ST.job_type, 
+        D.department_name
+        FROM 
+            appointment A
+        JOIN 
+            patient_secure_report P ON A.patient_id = P.patient_id
+        JOIN 
+            schedule S ON A.schedule_id = S.schedule_id
+        JOIN 
+            staff_secure_report ST ON S.staff_id = ST.staff_id
+        JOIN 
+            department D ON ST.department_id = D.department_id
+        WHERE 
+            ST.staff_id = ?
+        LIMIT ? OFFSET ?`;
+
+        const pool = mysqlClient.getPool(role);
+
+        const [results] = await pool.query(query, [id, limit, offset]);
+
+        const [countResult] = await pool.query(`
+        SELECT COUNT(*) as total FROM appointment A
+        JOIN 
+          schedule S ON A.schedule_id = S.schedule_id
+        WHERE
+          S.staff_id = ?;`, [id]);
+        const totalRecords = countResult[0].total;
+        const totalPages = Math.ceil(totalRecords / limit);
+
+        res.json({
+          results,
+          pagination: {
+            totalRecords: totalRecords,
+            totalPages: totalPages,
+            currentPage: page,
+            pageSize: limit,
+          }
+        });
+    } catch (error) {
+        return next(error);
+      }
+  },
+
   getAppointmentsByPatient: async (req, res, next) => {
     try {
       const role = req.role;
