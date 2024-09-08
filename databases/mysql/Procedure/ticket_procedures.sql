@@ -135,8 +135,6 @@ BEGIN
             ROLLBACK;
             SELECT result, message;
             leave this_proc;
-        ELSE
-			SET notes = CONCAT(notes, 'Job type update request from ', current_job_type, ' to ', new_job_type, '. ');
         END IF;
     END IF;
 
