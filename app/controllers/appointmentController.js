@@ -163,11 +163,8 @@ const appointmentController = {
         A.slot_number,
         A.purpose,
         A.status,
-        ST.first_name AS staff_first_name, 
-        ST.last_name AS staff_last_name,
-        ST.gender AS staff_gender, 
-        ST.job_type, 
-        D.department_name
+        P.first_name AS patient_first_name, 
+        P.last_name AS patient_last_name 
         FROM 
             appointment A
         JOIN 
