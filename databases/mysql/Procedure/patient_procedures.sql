@@ -34,16 +34,6 @@ BEGIN
 
     START TRANSACTION;
 
-    -- Call the add_new_user procedure to insert the user
-    CALL add_new_user(p_first_name, p_last_name, p_email, p_password, p_gender, result, message, new_user_id);
-
-    -- Check if adding user was successful
-    IF result = 0 THEN
-        SET _rollback = 1;
-        ROLLBACK;
-        LEAVE this_proc;
-    END IF;
-
     -- Check if the date of birth is in the future
     IF p_date_of_birth > CURDATE() THEN
         SET result = 0;
@@ -51,9 +41,20 @@ BEGIN
         ROLLBACK;
         LEAVE this_proc;
     END IF;
+    
+    -- Call the add_new_user procedure to insert the user
+    CALL add_new_user(p_first_name, p_last_name, p_email, p_password, p_gender, result, message, new_user_id);
+
+    -- Check if adding user was successful
+    IF result = 0 THEN
+        SET _rollback = 1;
+        ROLLBACK;
+        SELECT result, message, new_user_id;
+        LEAVE this_proc;
+    END IF;
 
     -- Insert the new patient record using the new_user_id
-    INSERT INTO patient (patient_id, date_of_birth, allergies)
+    INSERT INTO patient (user_id, date_of_birth, allergies)
     VALUES (new_user_id, p_date_of_birth, p_allergies);
 
     -- Final check before committing the transaction
@@ -66,6 +67,7 @@ BEGIN
         SET message = 'Patient registered successfully';
         COMMIT;
     END IF;
+    SELECT result, message, new_user_id;
 END;
 
 DROP PROCEDURE IF EXISTS update_patient;

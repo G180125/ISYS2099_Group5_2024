@@ -29,15 +29,6 @@ BEGIN
     WHERE patient_id = NEW.user_id;
 END;
 
--- Trigger for deletes on the patient table
-CREATE TRIGGER patient_delete_trigger
-AFTER DELETE ON patient
-FOR EACH ROW
-BEGIN
-    DELETE FROM patient_secure_report
-    WHERE patient_id = OLD.user_id;
-END;
-
 -- Trigger for updates on the user table
 CREATE TRIGGER patient_user_update_trigger
 AFTER UPDATE ON user
@@ -49,4 +40,13 @@ BEGIN
         email = NEW.email,
         gender = NEW.gender
     WHERE patient_id = NEW.user_id;
+END;
+
+-- Trigger for deletes on the patient table
+CREATE TRIGGER user_delete_trigger
+AFTER DELETE ON user
+FOR EACH ROW
+BEGIN
+    DELETE FROM patient_secure_report
+    WHERE patient_id = OLD.user_id;
 END;

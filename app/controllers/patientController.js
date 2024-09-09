@@ -184,7 +184,7 @@ const patientController = {
   
     deletePatientById: async (req, res, next) => {
       try {
-        const id = req.body.id;
+        const id = req.query.id;
         const role = req.role;
         if(!id || id == ""){
             return res

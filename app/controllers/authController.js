@@ -48,9 +48,9 @@ const registerPatient = async (req, res, next) => {
 
     console.log(rows);
 
-    result = rows[0][0].result;
-    message = rows[0][0].message;
-    newPatientId = rows[0][0].new_user_id;
+    result = rows[1][0].result;
+    message = rows[1][0].message;
+    newPatientId = rows[1][0].new_user_id;
 
     if (result == 0) {
       return res
@@ -106,7 +106,7 @@ const registerStaff = async (req, res, next) => {
       l_name,
       email,
       hashedPassword,
-      gender,
+      gender || 'O',
       job_type,
       department_id,
       salary || 1,
@@ -138,7 +138,7 @@ const registerStaff = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password , loginRole} = req.body;
 
     if (!email || !password) {
       return res
@@ -156,6 +156,13 @@ const login = async (req, res, next) => {
         .status(httpStatus.UNAUTHORIZED().code)
         .json({ error: httpStatus.UNAUTHORIZED().message });
     }
+
+    if ((role === 'patient' & role !== loginRole) ||
+        (role !== loginRole & loginRole === 'patient')) {
+      return res
+        .status(httpStatus.FORBIDDEN().code)
+        .json({ error: httpStatus.FORBIDDEN("Inappropriate role access").message });
+    } 
 
     const user = await models.getUserByEmail(email);
 
