@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"paul@gmail.com\",\n    \"password\": \"test\"\n}",
+							"raw": "{\n    \"email\": \"paul@gmail.com\",\n    \"password\": \"test\",\n    \"loginRole\" : \"patient\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -43,7 +43,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"hank.smith@hospital.management.com\",\n    \"password\": \"test\"\n}",
+							"raw": "{\n    \"email\": \"hank.smith@hospital.management.com\",\n    \"password\": \"test\",\n    \"loginRole\" : \"staff\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -70,7 +70,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"eve.williams@hospital.management.com\",\n    \"password\": \"test\"\n}",
+							"raw": "{\n    \"email\": \"eve.williams@hospital.management.com\",\n    \"password\": \"test\",\n    \"loginRole\" : \"staff\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -97,7 +97,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"nickkyjimmy@gmail.com\",\n    \"password\": \"test\",\n    \"f_name\": \"joun\",\n    \"l_name\": \"pham\"\n    // \"gender\": \"M\n}",
+							"raw": "{\n    \"email\": \"nickkyjimmy@gmail.com\",\n    \"password\": \"test\",\n    \"f_name\": \"joun\",\n    \"l_name\": \"pham\",\n    \"gender\": \"M\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -315,8 +315,23 @@
 				{
 					"name": "Delete patient by id",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/patient?id=42",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"patient"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "42"
+								}
+							]
+						}
 					},
 					"response": []
 				}
@@ -597,7 +612,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/schedule/doctor/25",
+							"raw": "{{base_url}}/schedule/doctor/25?page=1&limit=4",
 							"host": [
 								"{{base_url}}"
 							],
@@ -609,13 +624,11 @@
 							"query": [
 								{
 									"key": "page",
-									"value": "1",
-									"disabled": true
+									"value": "1"
 								},
 								{
 									"key": "limit",
-									"value": "4",
-									"disabled": true
+									"value": "4"
 								}
 							]
 						}
@@ -673,7 +686,7 @@
 					"response": []
 				},
 				{
-					"name": "Get my appointments",
+					"name": "Get my appointments / patient",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -690,12 +703,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{base_url}}/appointment/my?status=U",
+							"raw": "{{base_url}}/appointment/patient/my?status=U",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"appointment",
+								"patient",
 								"my"
 							],
 							"query": [
@@ -1281,8 +1295,8 @@
 							"formdata": [
 								{
 									"key": "fileTarget",
-									"type": "file",
-									"src": "/mnt/data/Media/Wallpaper/official/manuel-cosentino-7IO8Uei5TzA-unsplash.jpg"
+									"value": "",
+									"type": "file"
 								},
 								{
 									"key": "dirTarget",
@@ -1291,7 +1305,7 @@
 								},
 								{
 									"key": "fileType",
-									"value": "Avatar",
+									"value": "Certificate",
 									"type": "text"
 								},
 								{
