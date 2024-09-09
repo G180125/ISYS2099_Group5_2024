@@ -33,15 +33,6 @@ BEGIN
     WHERE staff_id = NEW.user_id;
 END;
 
--- Trigger for deletes on the staff table
-CREATE TRIGGER staff_delete_trigger
-AFTER DELETE ON staff
-FOR EACH ROW
-BEGIN
-    DELETE FROM staff_secure_report
-    WHERE staff_id = OLD.user_id;
-END;
-
 -- Trigger for updates on the user table
 CREATE TRIGGER staff_user_update_trigger
 AFTER UPDATE ON user
@@ -64,4 +55,13 @@ BEGIN
     SET department_name = NEW.department_name,
         manager_id = NEW.manager_id
     WHERE department_id = NEW.department_id;
+END;
+
+-- Trigger for deletes on the patient table
+CREATE TRIGGER user_delete_trigger
+AFTER DELETE ON user
+FOR EACH ROW
+BEGIN
+    DELETE FROM patient_secure_report
+    WHERE patient_id = OLD.user_id;
 END;
