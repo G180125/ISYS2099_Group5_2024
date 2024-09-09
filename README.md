@@ -135,6 +135,5 @@ localhost:2099/hospital_management/api/v1
 | Pavel Potemkin        | s3963284@rmit.edu.vn       | 7     |
 
 ## Video Demo
-https://www.youtube.com/watch?v=dQw4w9WgXcQ
-
+[Video Link](https://rmiteduau-my.sharepoint.com/:v:/g/personal/s3929215_rmit_edu_vn/EQqpK3PZH8FKirYV8UP8KC0BpnbtAx3_uSlSUq3yAdXMEg?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=c6YiG2)
 
