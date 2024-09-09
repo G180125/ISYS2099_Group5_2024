@@ -58,7 +58,7 @@ BEGIN
 END;
 
 -- Trigger for deletes on the patient table
-CREATE TRIGGER user_delete_trigger
+CREATE TRIGGER user_delete_trigger1
 AFTER DELETE ON user
 FOR EACH ROW
 BEGIN
