@@ -138,7 +138,7 @@ const registerStaff = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password , loginRole} = req.body;
 
     if (!email || !password) {
       return res
@@ -156,6 +156,13 @@ const login = async (req, res, next) => {
         .status(httpStatus.UNAUTHORIZED().code)
         .json({ error: httpStatus.UNAUTHORIZED().message });
     }
+
+    if ((role === 'patient' & role !== loginRole) ||
+        (role !== loginRole & loginRole === 'patient')) {
+      return res
+        .status(httpStatus.FORBIDDEN().code)
+        .json({ error: httpStatus.FORBIDDEN("Inappropriate role access").message });
+    } 
 
     const user = await models.getUserByEmail(email);
 

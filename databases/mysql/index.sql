@@ -46,7 +46,7 @@ ALTER TABLE treatment_record ADD INDEX idx_treatment_record_status (status);
 
 -- TREATMENT REPORT
 ALTER TABLE treatment_report ADD INDEX idx_treatment_report_patient_id (patient_id);
-ALTER TABLE treatment_report ADD INDEX idx_treatment_report_treatment_id (treatment_id);
+ALTER TABLE treatment_report ADD INDEX idx_treatment_report_treatment_id (record_id);
 ALTER TABLE treatment_report ADD INDEX idx_treatment_report_appointment_id (appointment_id);
 ALTER TABLE treatment_report ADD INDEX idx_treatment_report_patient_email (patient_email); 
 ALTER TABLE treatment_report ADD INDEX idx_treatment_report_treatment_date (treatment_date);
